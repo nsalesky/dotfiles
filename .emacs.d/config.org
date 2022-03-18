@@ -1,3 +1,11 @@
+#+title: My Emacs Configuration
+#+author: Nick Salesky
+#+PROPERTY: header-args:emacs-lisp :tangle ./init.el
+
+* Package System Setup
+
+#+begin_src emacs-lisp
+
 ;; Initialize package sources
 (require 'package)
 
@@ -16,6 +24,14 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t) ;; Installs packages that you use if they're not already installed
+
+#+end_src
+
+* Appearance
+** Basic UI configuration
+These are the very basic configuration settings for the base Emacs appearance.
+
+#+begin_src emacs-lisp
 
 (setq inhibit-startup-message t)
 (scroll-bar-mode -1) ; Disable visible scrollbar
@@ -43,10 +59,21 @@
 
 ;; Better commenting
 (use-package smart-comment)
+#+end_src
+
+** Fonts
+These are my font settings.
+
+#+begin_src emacs-lisp
 
 (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
 (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 140)
+
+#+end_src
+
+Also install helpful icons
+#+begin_src emacs-lisp
 
 ;; NOTE: The first time you run this on a new machine, you'll need to run this
 ;; command interactively
@@ -54,17 +81,44 @@
 ;; M-x all-the-icons-install-fonts
 (use-package all-the-icons)
 
+#+end_src
+
+** Theme
+
+#+begin_src emacs-lisp
+
 (use-package doom-themes
   :init
   (load-theme 'doom-moonlight t))
+
+#+end_src
+
+#+RESULTS:
+
+** Dashboard
+
+#+begin_src emacs-lisp
 
 (use-package dashboard
 :config
 (dashboard-setup-startup-hook))
 
+#+end_src
+
+** Modeline
+
+#+begin_src emacs-lisp
+
 (use-package doom-modeline
   :custom ((doom-modeline-height 35))
   :init (doom-modeline-mode 1))
+
+#+end_src
+
+** Helpful
+Make the Emacs help pages more "helpful".
+
+#+begin_src emacs-lisp
 
 (use-package helpful
   :custom
@@ -75,6 +129,12 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
+
+#+end_src
+* Ivy and Counsel
+** Basic Config
+
+#+begin_src emacs-lisp
 
 (use-package ivy
   :diminish
@@ -104,12 +164,24 @@
 	 ("C-x C-f" . counsel-find-file)
 	 :map minibuffer-local-map
 	 ("C-r" . 'counsel-minibuffer-history)))
+#+end_src
+** Which-key
+Display the keybindings for the commands listed in Ivy.
+
+#+begin_src emacs-lisp
 
 (use-package which-key
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.3))
+
+#+end_src
+
+* Keybindings
+** General
+
+#+begin_src emacs-lisp
 
 (use-package general
   :config
@@ -145,9 +217,24 @@
    "wk" '(windmove-up :which-key "Select up window")
    "wl" '(windmove-right :which-key "Select right window")
   ))
+#+end_src
+** Basic keybindings
+These are the very basic keybindings.
+
+#+begin_src emacs-lisp
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+#+end_src
+
+#+RESULTS:
+: keyboard-escape-quit
+
+** Evil
+It's hard for me to function without VIM-style keybindings at this point, so Evil mode is a must-have feature.
+
+#+begin_src emacs-lisp
 
 (use-package evil
   :init
@@ -174,7 +261,22 @@
   :config
   (evil-collection-init))
 
+#+end_src
+
+#+RESULTS:
+: t
+
+** Hydra
+*** Basic Config
+Install the base Hydra package.
+
+#+begin_src emacs-lisp
 (use-package hydra)
+#+end_src
+*** Text Scale
+Sets up a hydra to let me easily change the text scale.
+
+#+begin_src emacs-lisp
 
 (defhydra hydra-text-scale (:timeout 4)
   "scale text"
@@ -184,6 +286,12 @@
 
 (my-leader
  "ts" '(hydra-text-scale/body :which-key "scale text"))
+#+end_src
+
+** Tabs Not Spaces
+I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
+
+#+begin_src emacs-lisp
 
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
@@ -207,6 +315,15 @@
 (setq whitespace-display-mappings 
 '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
 (global-whitespace-mode) ; Enable whitespace mode everywhere
+
+#+end_src
+
+#+RESULTS:
+: t
+
+* Org Mode
+** Basic config
+#+begin_src emacs-lisp
 
 (defun ns/org-mode-setup ()
   (org-indent-mode)
@@ -256,15 +373,33 @@
 (use-package visual-fill-column
   :hook (org-mode . ns/org-mode-visual-fill))
 
-(org-babel-do-load-languages 'org-babel-load-languages
-    '((emacs-lisp . t)
-      (python . t)))
+#+end_src
 
-(setq org-confirm-babel-evaluate nil)
+#+RESULTS:
+| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | ns/org-mode-visual-fill | org-modern-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | ns/org-mode-setup | (lambda nil (display-line-numbers-mode 0)) |
 
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
+** Configure Babel
+#+begin_src emacs-lisp
+
+  (org-babel-do-load-languages 'org-babel-load-languages
+      '((emacs-lisp . t)
+        (python . t)))
+
+  (setq org-confirm-babel-evaluate nil)
+
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+
+#+end_src
+
+#+RESULTS:
+: ((py . src python) (el . src emacs-lisp) (sh . src shell) (a . export ascii) (c . center) (C . comment) (e . example) (E . export) (h . export html) (l . export latex) (q . quote) (s . src) (v . verse))
+
+** Auto-tangle configuration files
+Automatically tangle the =config.org= file whenever it is saved. I currently have this turned off because I prefer to be safe and run =(org-babel-tangle)= manually whenever I'm done editing this file.
+
+#+begin_src emacs-lisp
 
 (defun ns/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
@@ -274,9 +409,21 @@
 
 ;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
 
+#+end_src
+
+* Development
+** Magit
+
+#+begin_src emacs-lisp
+
 (use-package magit)
 
 ;(use-package forge)
+#+end_src
+
+** Projectile
+
+#+begin_src emacs-lisp
 
 (use-package projectile
   :diminish projectile-mode
@@ -292,4 +439,9 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
+#+end_src
+* Temp
 
+#+begin_src emacs-lisp
+
+#+end_src
