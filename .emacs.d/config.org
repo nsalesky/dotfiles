@@ -33,32 +33,32 @@ These are the very basic configuration settings for the base Emacs appearance.
 
 #+begin_src emacs-lisp
 
-(setq inhibit-startup-message t)
-(scroll-bar-mode -1) ; Disable visible scrollbar
-(tool-bar-mode -1)   ; Disable the toolbar
-(tooltip-mode -1)    ; Disable tooltips
-(set-fringe-mode 10) ; Give some breathing room
-(menu-bar-mode -1)   ; Disable the menu bar
-(setq ring-bell-function 'ignore) ; Disable alarms
+  (setq inhibit-startup-message t)
+  (scroll-bar-mode -1) ; Disable visible scrollbar
+  (tool-bar-mode -1)   ; Disable the toolbar
+  (tooltip-mode -1)    ; Disable tooltips
+  (set-fringe-mode 10) ; Give some breathing room
+  (menu-bar-mode -1)   ; Disable the menu bar
+  (setq ring-bell-function 'ignore) ; Disable alarms
 
-;; Enable line numbers
-(column-number-mode)
-(global-display-line-numbers-mode t)
+  ;; Enable line numbers
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
 
-;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		eshell-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+          term-mode-hook
+          shell-mode-hook
+          eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 
-;; Rainbox delimiters for all programming modes
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+  ;; Rainbox delimiters for all programming modes
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 
-;; Better commenting
-(use-package smart-comment)
+  ;; Better commenting
+  (use-package smart-comment)
 #+end_src
 
 ** Fonts
@@ -98,12 +98,16 @@ Also install helpful icons
 ** Dashboard
 
 #+begin_src emacs-lisp
+    ;(use-package page-break-lines)
 
-(use-package dashboard
-:config
-(dashboard-setup-startup-hook))
+        ;(use-package dashboard
+        ;:config
+  ;(dashboard-setup-startup-hook))
 
 #+end_src
+
+#+RESULTS:
+: t
 
 ** Modeline
 
@@ -136,34 +140,40 @@ Make the Emacs help pages more "helpful".
 
 #+begin_src emacs-lisp
 
-(use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-	 :map ivy-minibuffer-map
-	 ("TAB" . ivy-alt-done)
-	 ("C-l" . ivy-alt-done)
-	 ("C-j" . ivy-next-line)
-	 ("C-k" . ivy-previous-line)
-	 :map ivy-switch-buffer-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-l" . ivy-done)
-	 ("C-d" . ivy-switch-buffer-kill)
-	 :map ivy-reverse-i-search-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-d" . ivy-reverse-i-search-kill))
-  :init
-  (ivy-mode 1))
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+       :map ivy-minibuffer-map
+       ("TAB" . ivy-alt-done)
+       ("C-l" . ivy-alt-done)
+       ("C-j" . ivy-next-line)
+       ("C-k" . ivy-previous-line)
+       :map ivy-switch-buffer-map
+       ("C-k" . ivy-previous-line)
+       ("C-l" . ivy-done)
+       ("C-d" . ivy-switch-buffer-kill)
+       :map ivy-reverse-i-search-map
+       ("C-k" . ivy-previous-line)
+       ("C-d" . ivy-reverse-i-search-kill))
+    :init
+    (ivy-mode 1))
 
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1))
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
 
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-	 ("C-x b" . counsel-ibuffer)
-	 ("C-x C-f" . counsel-find-file)
-	 :map minibuffer-local-map
-	 ("C-r" . 'counsel-minibuffer-history)))
+  (use-package ivy-posframe
+    :init
+    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+    :config
+    (ivy-posframe-mode 1))
+
+  (use-package counsel
+    :bind (("M-x" . counsel-M-x)
+       ("C-x b" . counsel-ibuffer)
+       ("C-x C-f" . counsel-find-file)
+       :map minibuffer-local-map
+       ("C-r" . 'counsel-minibuffer-history)))
 #+end_src
 ** Which-key
 Display the keybindings for the commands listed in Ivy.
@@ -198,7 +208,6 @@ Display the keybindings for the commands listed in Ivy.
     "," '(counsel-switch-buffer :which-key "Switch buffer")
     "." '(counsel-find-file :which-key "Find file")
     ;"p" (:ignore t :which-key "project")
-    
 
     ;; Toggle
    "t"  '(:ignore t :which-key "toggle")
@@ -293,33 +302,33 @@ I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
 
 #+begin_src emacs-lisp
 
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-(setq-default c-basic-offset 4)
-(setq-default evil-shift-width 4)
+  (setq-default tab-width 4)
+  (setq-default indent-tabs-mode nil)
+  (setq-default c-basic-offset 4)
+  (setq-default evil-shift-width 4)
 
-(setq-default electric-indent-inhibit t)
+  (setq-default electric-indent-inhibit t)
 
-;; Make the backspace properly erase the whole tab instead of removing
-;; 1 space at a time
-(setq backward-delete-char-untabify-method 'hungry)
+  ;; Make the backspace properly erase the whole tab instead of removing
+  ;; 1 space at a time
+  (setq backward-delete-char-untabify-method 'hungry)
 
 
-;; WARNING: This will change your life
-;; (OPTIONAL) Visualize tabs as a pipe character - "|"
-;; This will also show trailing characters as they are useful to spot.
-(setq whitespace-style '(face tabs tab-mark trailing))
-(custom-set-faces
-'(whitespace-tab ((t (:foreground "#636363")))))
+  ;; WARNING: This will change your life
+  ;; (OPTIONAL) Visualize tabs as a pipe character - "|"
+  ;; This will also show trailing characters as they are useful to spot.
+  ;; (setq whitespace-style '(face tabs tab-mark trailing))
+  ;; (custom-set-faces
+  ;; '(whitespace-tab ((t (:foreground "#636363")))))
 
-(setq whitespace-display-mappings 
-'((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
-(global-whitespace-mode) ; Enable whitespace mode everywhere
+  ;; (setq whitespace-display-mappings 
+  ;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+  ;; (global-whitespace-mode) ; Enable whitespace mode everywhere
 
 #+end_src
 
 #+RESULTS:
-: t
+: hungry
 
 * Org Mode
 ** Basic config
@@ -351,7 +360,7 @@ I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
 	org-pretty-entities t
 
 	org-directory "~/org"
-    
+
     org-src-tab-acts-natively t
 
 	org-todo-keywords
@@ -411,7 +420,7 @@ Automatically tangle the =config.org= file whenever it is saved. I currently hav
 
 #+end_src
 
-* Development
+* Development Tools
 ** Magit
 
 #+begin_src emacs-lisp
@@ -440,6 +449,82 @@ Automatically tangle the =config.org= file whenever it is saved. I currently hav
   :config (counsel-projectile-mode))
 
 #+end_src
+** Treemacs
+
+#+begin_src emacs-lisp
+
+  (use-package treemacs)
+  (use-package treemacs-evil
+    :after (treemacs evil))
+  (use-package treemacs-projectile
+    :after (treemacs projectile))
+  (use-package treemacs-icons-dired
+    :hook (dired-mode . treemacs-icons-dired-enable-once))
+  (use-package treemacs-magit
+    :after (treemacs magit))
+  (use-package lsp-treemacs
+    :after (treemacs lsp-modde)
+    :config (lsp-treemacs-sync-mode 1))
+
+#+end_src
+** LSP
+
+#+begin_src emacs-lisp
+
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "C-l")
+    :config
+    (lsp-enable-which-key-integration t))
+
+
+#+end_src
+
+#+RESULTS:
+: t
+
+** Company Mode
+
+#+begin_src emacs-lisp
+
+  (use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+            ("<tab>" . company-complete-selection))
+           (:map lsp-mode-map
+            ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+
+#+end_src
+
+#+RESULTS:
+: company-indent-or-complete-common
+
+* Language-specific Configuration
+My configuration for each programming language that I want to be able to work with.
+
+** Typescript
+
+#+begin_src emacs-lisp
+
+
+#+end_src
+** Rust
+
+#+begin_src emacs-lisp
+
+(use-package rustic)
+
+#+end_src
+
 * Temp
 
 #+begin_src emacs-lisp

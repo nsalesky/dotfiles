@@ -31,9 +31,9 @@
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		eshell-mode-hook))
+        term-mode-hook
+        shell-mode-hook
+        eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 
@@ -58,9 +58,11 @@
   :init
   (load-theme 'doom-moonlight t))
 
-(use-package dashboard
-:config
-(dashboard-setup-startup-hook))
+;(use-package page-break-lines)
+
+      ;(use-package dashboard
+      ;:config
+;(dashboard-setup-startup-hook))
 
 (use-package doom-modeline
   :custom ((doom-modeline-height 35))
@@ -126,7 +128,6 @@
     "," '(counsel-switch-buffer :which-key "Switch buffer")
     "." '(counsel-find-file :which-key "Find file")
     ;"p" (:ignore t :which-key "project")
-    
 
     ;; Toggle
    "t"  '(:ignore t :which-key "toggle")
@@ -202,7 +203,11 @@
 ;; This will also show trailing characters as they are useful to spot.
 (setq whitespace-style '(face tabs tab-mark trailing))
 (custom-set-faces
-'(whitespace-tab ((t (:foreground "#636363")))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(whitespace-tab ((t (:foreground "#636363")))))
 
 (setq whitespace-display-mappings 
 '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
@@ -234,7 +239,7 @@
 	org-pretty-entities t
 
 	org-directory "~/org"
-    
+
     org-src-tab-acts-natively t
 
 	org-todo-keywords
@@ -292,4 +297,20 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-l")
+  :config
+  (lsp-enable-which-key-integration t))
 
+
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(ivy-posframe lsp-treemacs treemacs-magit treemacs-icons-dired treemacs-projectile treemacs-evil treemacs company rustic yaml which-key visual-fill-column visual-fill use-package treepy smart-comment rainbow-delimiters page-break-lines org-modern magit lsp-mode ivy-rich hydra helpful general evil-collection doom-themes doom-modeline dashboard counsel-projectile)))
