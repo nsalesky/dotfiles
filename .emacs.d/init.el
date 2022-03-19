@@ -81,18 +81,18 @@
 (use-package ivy
   :diminish
   :bind (("C-s" . swiper)
-	 :map ivy-minibuffer-map
-	 ("TAB" . ivy-alt-done)
-	 ("C-l" . ivy-alt-done)
-	 ("C-j" . ivy-next-line)
-	 ("C-k" . ivy-previous-line)
-	 :map ivy-switch-buffer-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-l" . ivy-done)
-	 ("C-d" . ivy-switch-buffer-kill)
-	 :map ivy-reverse-i-search-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-d" . ivy-reverse-i-search-kill))
+     :map ivy-minibuffer-map
+     ("TAB" . ivy-alt-done)
+     ("C-l" . ivy-alt-done)
+     ("C-j" . ivy-next-line)
+     ("C-k" . ivy-previous-line)
+     :map ivy-switch-buffer-map
+     ("C-k" . ivy-previous-line)
+     ("C-l" . ivy-done)
+     ("C-d" . ivy-switch-buffer-kill)
+     :map ivy-reverse-i-search-map
+     ("C-k" . ivy-previous-line)
+     ("C-d" . ivy-reverse-i-search-kill))
   :init
   (ivy-mode 1))
 
@@ -100,12 +100,18 @@
   :init
   (ivy-rich-mode 1))
 
+(use-package ivy-posframe
+  :init
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+  :config
+  (ivy-posframe-mode 1))
+
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
-	 ("C-x b" . counsel-ibuffer)
-	 ("C-x C-f" . counsel-find-file)
-	 :map minibuffer-local-map
-	 ("C-r" . 'counsel-minibuffer-history)))
+     ("C-x b" . counsel-ibuffer)
+     ("C-x C-f" . counsel-find-file)
+     :map minibuffer-local-map
+     ("C-r" . 'counsel-minibuffer-history)))
 
 (use-package which-key
   :init (which-key-mode)
@@ -201,17 +207,13 @@
 ;; WARNING: This will change your life
 ;; (OPTIONAL) Visualize tabs as a pipe character - "|"
 ;; This will also show trailing characters as they are useful to spot.
-(setq whitespace-style '(face tabs tab-mark trailing))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(whitespace-tab ((t (:foreground "#636363")))))
+;; (setq whitespace-style '(face tabs tab-mark trailing))
+;; (custom-set-faces
+;; '(whitespace-tab ((t (:foreground "#636363")))))
 
-(setq whitespace-display-mappings 
-'((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
-(global-whitespace-mode) ; Enable whitespace mode everywhere
+;; (setq whitespace-display-mappings 
+;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+;; (global-whitespace-mode) ; Enable whitespace mode everywhere
 
 (defun ns/org-mode-setup ()
   (org-indent-mode)
@@ -297,6 +299,19 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
+(use-package treemacs)
+(use-package treemacs-evil
+  :after (treemacs evil))
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once))
+(use-package treemacs-magit
+  :after (treemacs magit))
+(use-package lsp-treemacs
+  :after (treemacs lsp-modde)
+  :config (lsp-treemacs-sync-mode 1))
+
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :init
@@ -304,13 +319,27 @@
   :config
   (lsp-enable-which-key-integration t))
 
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+(use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+            ("<tab>" . company-complete-selection))
+           (:map lsp-mode-map
+            ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(ivy-posframe lsp-treemacs treemacs-magit treemacs-icons-dired treemacs-projectile treemacs-evil treemacs company rustic yaml which-key visual-fill-column visual-fill use-package treepy smart-comment rainbow-delimiters page-break-lines org-modern magit lsp-mode ivy-rich hydra helpful general evil-collection doom-themes doom-modeline dashboard counsel-projectile)))
+(use-package rustic)
+
+
