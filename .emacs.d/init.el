@@ -33,7 +33,9 @@
 (dolist (mode '(org-mode-hook
         term-mode-hook
         shell-mode-hook
-        eshell-mode-hook))
+        eshell-mode-hook
+        treemacs-mode-hook
+        ))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 
@@ -343,3 +345,16 @@
 (use-package rustic)
 
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(company-box yaml which-key visual-fill-column visual-fill use-package treepy treemacs-projectile treemacs-magit treemacs-icons-dired treemacs-evil smart-comment rustic rainbow-delimiters page-break-lines org-modern lsp-ui lsp-treemacs ivy-rich ivy-posframe helpful general evil-collection doom-themes doom-modeline dashboard counsel-projectile company)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
