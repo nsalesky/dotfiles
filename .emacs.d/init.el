@@ -311,7 +311,7 @@
 (use-package treemacs-magit
   :after (treemacs magit))
 (use-package lsp-treemacs
-  :after (treemacs lsp-modde)
+  :after (treemacs lsp-mode)
   :config (lsp-treemacs-sync-mode 1))
 
 (use-package lsp-mode
@@ -320,6 +320,8 @@
   (setq lsp-keymap-prefix "C-l")
   :config
   (lsp-enable-which-key-integration t))
+
+(use-package lsp-ivy)
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -340,21 +342,16 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
+(use-package format-all)
+  ;:hook
+  ;(prog-mode . format-all-mode)
 
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 4))
 
 (use-package rustic)
 
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(company-box yaml which-key visual-fill-column visual-fill use-package treepy treemacs-projectile treemacs-magit treemacs-icons-dired treemacs-evil smart-comment rustic rainbow-delimiters page-break-lines org-modern lsp-ui lsp-treemacs ivy-rich ivy-posframe helpful general evil-collection doom-themes doom-modeline dashboard counsel-projectile company)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

@@ -1,69 +1,5 @@
-(setq auto-save-default t
-      auto-save-timeout 30)
-
-(setq confirm-kill-emacs nil)
-
-(setq doom-theme 'doom-moonlight)
-(map! :leader
-      :desc "Load new theme" "h t" #'counsel-load-theme)
-
-(map! :leader
-      (:prefix ("d" . "dired")
-       :desc "Open dired" "d" #'dired
-       :desc "Dired jump to current" "j" #'dired-jump)
-      (:after dired
-       (:map dired-mode-map
-        :desc "Peep-dired image previews" "d p" #'peep-dired
-        :desc "Dired view file" "d v" #'dired-view-file)))
-
-(evil-define-key 'normal dired-mode-map
-  (kbd "M-RET") 'dired-display-file
-  (kbd "h") 'dired-up-directory
-  (kbd "l") 'dired-open-file ; use dired-find-file instead of dired-open.
-  (kbd "m") 'dired-mark
-  (kbd "t") 'dired-toggle-marks
-  (kbd "u") 'dired-unmark
-  (kbd "C") 'dired-do-copy
-  (kbd "D") 'dired-do-delete
-  (kbd "J") 'dired-goto-file
-  (kbd "M") 'dired-do-chmod
-  (kbd "O") 'dired-do-chown
-  (kbd "P") 'dired-do-print
-  (kbd "R") 'dired-do-rename
-  (kbd "T") 'dired-do-touch
-  (kbd "Y") 'dired-copy-filenamecopy-filename-as-kill ; copies filename to kill ring.
-  (kbd "+") 'dired-create-directory
-  (kbd "-") 'dired-up-directory
-  (kbd "% l") 'dired-downcase
-  (kbd "% u") 'dired-upcase
-  (kbd "; d") 'epa-dired-do-decrypt
-  (kbd "; e") 'epa-dired-do-encrypt)
-
-;; Get file icons in dired
-(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
-
-;; With dired-open plugin you can launch external programs for certain extensions
-;;(setq dired-open-extensions '(("jpg" . "gimp")
-;;                              ("mp4" . "vlc" )))
-
-(evil-define-key 'normal peep-dired-mode-map
-  (kbd "j") 'peep-dired-next-file
-  (kbd "k") 'peep-dired-prev-file)
-(add-hook 'peep-dired-hook 'evil-normalize-keymaps)
-
-(use-package emojify
-  :hook (after-init . global-emojify-mode))
-
-(map! :leader
-      (:prefix ("e". "evaluate")
-       :desc "Evaluate elisp in buffer" "b" #'eval-buffer
-       :desc "Evaluate defun" "d" #'eval-defun
-       :desc "Evaluate elisp expression" "e" #'eval-expression
-       :desc "Evaluate last sexpr" "l" #'eval-last-sexp
-       :desc "Evaluate elisp in region" "r" #'eval-region))
-
 (setq doom-font (font-spec :family "Iosevka Nerd Font" :size 16)
-      doom-variable-pitch-font (font-spec :family "Iosevka" :size 15)
+      doom-variable-pitch-font (font-spec :family "Source Sans Pro" :size 15)
       doom-big-font (font-spec :family "Iosevka Nerd Font" :size 24))
 (after! doom-themes
   (setq doom-themes-enable-bold t
@@ -72,11 +8,19 @@
   '(font-lock-comment-face :slant italic)
   '(font-lock-keyword-face :slant italic))
 
-;; (if (eq initial-window-system 'x)
-;;     (toggle-frame-maximized)
-;;   (toggle-frame-fullscreen))
+(set-face-attribute 'mode-line nil :font "Ubuntu Mono-13")
+(setq doom-modeline-height 30     ;; sets modeline height
+      doom-modeline-bar-width 5   ;; sets right bar width
+      doom-modeline-persp-name t  ;; adds perspective name to the modeline
+      doom-modeline-persp-icon t) ;; adds a folder icon next to the perspective name
 
+(setq doom-theme 'doom-moonlight)
+(map! :leader
+      :desc "Load new theme" "h t" #'counsel-load-theme)
 
+(use-package emojify
+  :ensure t
+  :hook (after-init . global-emojify-mode))
 
 (setq frame-title-format
       '(""
@@ -90,6 +34,12 @@
          (let ((project-name (projectile-project-name)))
            (unless (string= "-" project-name)
              (format (if (buffer-modified-p) " ◉ %s" "  ●  %s") project-name))))))
+
+;; (if (eq initial-window-system 'x)
+;;     (toggle-frame-maximized)
+;;   (toggle-frame-fullscreen))
+
+
 
 (setq ivy-posframe-display-functions-alist
       '((swiper                     . ivy-posframe-display-at-point)
@@ -108,39 +58,6 @@
         (dmenu . 20)
         (t . 10)))
 (ivy-posframe-mode 1) ; 1 enables posframe-mode, 0 disables it.
-
-(map! :leader
-      (:prefix ("v" . "Ivy")
-       :desc "Ivy push view" "v p" #'ivy-push-view
-       :desc "Ivy switch view" "v s" #'ivy-switch-view))
-
-(setq display-line-numbers-type t)
-(map! :leader
-      :desc "Comment or uncomment lines" "TAB TAB" #'comment-line
-      (:prefix ("t" . "toggle")
-       :desc "Toggle line numbers" "l" #'doom/toggle-line-numbers
-       :desc "Toggle line highlight in frame" "h" #'hl-line-mode
-       :desc "Toggle line highlight globally" "H" #'global-hl-line-mode
-       :desc "Toggle truncate lines" "t" #'toggle-truncate-lines))
-
-;; (setq +latex-viewers '(pdf-tools))
-
-(setq lsp-tex-server 'digestif)
-
-(set-face-attribute 'mode-line nil :font "Ubuntu Mono-13")
-(setq doom-modeline-height 30     ;; sets modeline height
-      doom-modeline-bar-width 5   ;; sets right bar width
-      doom-modeline-persp-name t  ;; adds perspective name to the modeline
-      doom-modeline-persp-icon t) ;; adds a folder icon next to the perspective name
-
-(after! neotree
-  (setq neo-smart-open t
-        neo-window-fixed-size nil))
-(after! doom-themes
-  (setq doom-neotree-enable-variable-pitch t))
-(map! :leader
-      :desc "Toggle neotree file viewer" "t n" #'neotree-toggle
-      :desc "Open directory in neotree" "d n" #'neotree-dir)
 
 (map! :leader
       :desc "Org babel tangle" "m B" #'org-babel-tangle)
@@ -206,8 +123,69 @@
           :unnarrowed t)
                         )))
 
-(setq user-full-name "Nick Salesky"
-      user-mail-address "nicksalesky@gmail.com")
+(setq display-line-numbers-type t)
+(map! :leader
+      :desc "Comment or uncomment lines" "TAB TAB" #'comment-line
+      (:prefix ("t" . "toggle")
+       :desc "Toggle line numbers" "l" #'doom/toggle-line-numbers
+       :desc "Toggle line highlight in frame" "h" #'hl-line-mode
+       :desc "Toggle line highlight globally" "H" #'global-hl-line-mode
+       :desc "Toggle truncate lines" "t" #'toggle-truncate-lines))
+
+(setq auto-save-default t
+      auto-save-timeout 30)
+
+(map! :leader
+      (:prefix ("e". "evaluate")
+       :desc "Evaluate elisp in buffer" "b" #'eval-buffer
+       :desc "Evaluate defun" "d" #'eval-defun
+       :desc "Evaluate elisp expression" "e" #'eval-expression
+       :desc "Evaluate last sexpr" "l" #'eval-last-sexp
+       :desc "Evaluate elisp in region" "r" #'eval-region))
+
+(map! :leader
+      (:prefix ("d" . "dired")
+       :desc "Open dired" "d" #'dired
+       :desc "Dired jump to current" "j" #'dired-jump)
+      (:after dired
+       (:map dired-mode-map
+        :desc "Peep-dired image previews" "d p" #'peep-dired
+        :desc "Dired view file" "d v" #'dired-view-file)))
+
+(evil-define-key 'normal dired-mode-map
+  (kbd "M-RET") 'dired-display-file
+  (kbd "h") 'dired-up-directory
+  (kbd "l") 'dired-open-file ; use dired-find-file instead of dired-open.
+  (kbd "m") 'dired-mark
+  (kbd "t") 'dired-toggle-marks
+  (kbd "u") 'dired-unmark
+  (kbd "C") 'dired-do-copy
+  (kbd "D") 'dired-do-delete
+  (kbd "J") 'dired-goto-file
+  (kbd "M") 'dired-do-chmod
+  (kbd "O") 'dired-do-chown
+  (kbd "P") 'dired-do-print
+  (kbd "R") 'dired-do-rename
+  (kbd "T") 'dired-do-touch
+  (kbd "Y") 'dired-copy-filenamecopy-filename-as-kill ; copies filename to kill ring.
+  (kbd "+") 'dired-create-directory
+  (kbd "-") 'dired-up-directory
+  (kbd "% l") 'dired-downcase
+  (kbd "% u") 'dired-upcase
+  (kbd "; d") 'epa-dired-do-decrypt
+  (kbd "; e") 'epa-dired-do-encrypt)
+
+;; Get file icons in dired
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
+;; With dired-open plugin you can launch external programs for certain extensions
+;;(setq dired-open-extensions '(("jpg" . "gimp")
+;;                              ("mp4" . "vlc" )))
+
+(evil-define-key 'normal peep-dired-mode-map
+  (kbd "j") 'peep-dired-next-file
+  (kbd "k") 'peep-dired-prev-file)
+(add-hook 'peep-dired-hook 'evil-normalize-keymaps)
 
 (map! :leader
       :desc "Switch to perspective NAME" "DEL" #'persp-switch
@@ -216,3 +194,10 @@
       :desc "Switch to previous perspective" "[" #'persp-prev
       :desc "Add a buffer current perspective" "+" #'persp-add-buffer
       :desc "Remove perspective by name" "-" #'persp-remove-by-name)
+
+;; (setq +latex-viewers '(pdf-tools))
+
+(setq lsp-tex-server 'digestif)
+
+(setq user-full-name "Nick Salesky"
+      user-mail-address "nicksalesky@gmail.com")
