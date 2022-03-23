@@ -41,6 +41,9 @@
 
 
 
+(evil-global-set-key 'motion "j" 'evil-next-visual-line)
+(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
 (setq ivy-posframe-display-functions-alist
       '((swiper                     . ivy-posframe-display-at-point)
         (complete-symbol            . ivy-posframe-display-at-point)
@@ -78,6 +81,19 @@
         ;;    "|" ; Seperator between "active" and "inactive" states
         ;;    "DONE(d)" ; Task has been completed
         ;;    "CANCELLED(c)" ; Task has been canceled
+
+(use-package org-modern
+  :hook
+  (org-mode . org-modern-mode)
+  (org-agenda-finalize . org-modern-agenda))
+
+(defun ns/org-mode-visual-fill ()
+  (setq visual-fill-column-width 200
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . ns/org-mode-visual-fill))
 
 (custom-set-faces
   '(org-level-1 ((t (:inherit outline-1 :height 1.4))))
@@ -131,6 +147,8 @@
        :desc "Toggle line highlight in frame" "h" #'hl-line-mode
        :desc "Toggle line highlight globally" "H" #'global-hl-line-mode
        :desc "Toggle truncate lines" "t" #'toggle-truncate-lines))
+
+(setq confirm-kill-emacs nil)
 
 (setq auto-save-default t
       auto-save-timeout 30)
