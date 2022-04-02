@@ -11,7 +11,6 @@
   - [[#fonts][Fonts]]
   - [[#modeline][Modeline]]
   - [[#theme][Theme]]
-  - [[#emojis][Emojis]]
   - [[#window-title][Window Title]]
   - [[#full-screen][Full Screen]]
   - [[#home-screen][Home Screen]]
@@ -33,6 +32,7 @@
   - [[#evaluate-elisp-expressions][Evaluate ELisp Expressions]]
   - [[#dired][Dired]]
   - [[#perspective][Perspective]]
+  - [[#wakatime][Wakatime]]
 - [[#specific-programming-languages-and-workflows][Specific Programming Languages and Workflows]]
   - [[#latex][LaTeX]]
 - [[#personal-information][Personal Information]]
@@ -83,15 +83,6 @@ This is where I setup the default theme and also a command to let me load new th
 
 #+RESULTS:
 : counsel-load-theme
-
-** Emojis
-Emojify is an Emacs extension to display emojis. It can display github style emojis like :smile: or plain ascii ones like :)
-
-#+BEGIN_SRC emacs-lisp
-(use-package emojify
-  :ensure t
-  :hook (after-init . global-emojify-mode))
-#+END_SRC
 
 ** Window Title
 Show the buffer name and the project folder, if applicable
@@ -492,14 +483,26 @@ Perspective provides multiple named workspaces (or "perspectives") in Emacs, sim
 | +workspace/switch-to-{0-9} | Switch to workspace /n/               | SPC 0-9    |
 
 #+begin_src emacs-lisp
-(map! :leader
-      :desc "Switch to perspective NAME" "DEL" #'persp-switch
-      :desc "Switch to buffer in perspective" "," #'persp-switch-to-buffer
-      :desc "Switch to next perspective" "]" #'persp-next
-      :desc "Switch to previous perspective" "[" #'persp-prev
-      :desc "Add a buffer current perspective" "+" #'persp-add-buffer
-      :desc "Remove perspective by name" "-" #'persp-remove-by-name)
+;; (map! :leader
+;;       :desc "Switch to perspective NAME" "DEL" #'persp-switch
+;;       :desc "Switch to buffer in perspective" "," #'persp-switch-to-buffer
+;;       :desc "Switch to next perspective" "]" #'persp-next
+;;       :desc "Switch to previous perspective" "[" #'persp-prev
+;;       :desc "Add a buffer current perspective" "+" #'persp-add-buffer
+;;       :desc "Remove perspective by name" "-" #'persp-remove-by-name)
 #+end_src
+** Wakatime
+Setup the Wakatime minor mode to track my work across different projects. Helps me know how much time I'm wasting each day :cry:
+
+#+begin_src emacs-lisp
+
+(use-package wakatime-mode
+  :ensure t
+  :config
+  (global-wakatime-mode))
+
+#+end_src
+
 * Specific Programming Languages and Workflows
 ** LaTeX
 Set the default PDF viewer and LSP server for LaTeX

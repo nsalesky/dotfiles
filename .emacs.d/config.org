@@ -389,7 +389,7 @@ I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
 #+end_src
 
 #+RESULTS:
-| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | ns/org-mode-visual-fill | org-modern-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | ns/org-mode-setup | (lambda nil (display-line-numbers-mode 0)) |
+| ns/org-mode-visual-fill | ns/org-mode-setup | er/add-org-mode-expansions | +lookup--init-org-mode-handlers-h | (closure ((hook . org-mode-hook) (--dolist-tail--) t) (&rest _) (add-hook 'before-save-hook 'org-encrypt-entries nil t)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-modern-mode | doom-disable-show-paren-mode-h | doom-disable-show-trailing-whitespace-h | +org-enable-auto-reformat-tables-h | +org-enable-auto-update-cookies-h | +org-make-last-point-visible-h | org-fancy-priorities-mode | org-superstar-mode | evil-org-mode | toc-org-enable | embrace-org-mode-hook | org-eldoc-load | +literate-enable-recompile-h |
 
 ** Configure Babel
 #+begin_src emacs-lisp

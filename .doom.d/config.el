@@ -18,10 +18,6 @@
 (map! :leader
       :desc "Load new theme" "h t" #'counsel-load-theme)
 
-(use-package emojify
-  :ensure t
-  :hook (after-init . global-emojify-mode))
-
 (setq frame-title-format
       '(""
         (:eval
@@ -205,13 +201,18 @@
   (kbd "k") 'peep-dired-prev-file)
 (add-hook 'peep-dired-hook 'evil-normalize-keymaps)
 
-(map! :leader
-      :desc "Switch to perspective NAME" "DEL" #'persp-switch
-      :desc "Switch to buffer in perspective" "," #'persp-switch-to-buffer
-      :desc "Switch to next perspective" "]" #'persp-next
-      :desc "Switch to previous perspective" "[" #'persp-prev
-      :desc "Add a buffer current perspective" "+" #'persp-add-buffer
-      :desc "Remove perspective by name" "-" #'persp-remove-by-name)
+;; (map! :leader
+;;       :desc "Switch to perspective NAME" "DEL" #'persp-switch
+;;       :desc "Switch to buffer in perspective" "," #'persp-switch-to-buffer
+;;       :desc "Switch to next perspective" "]" #'persp-next
+;;       :desc "Switch to previous perspective" "[" #'persp-prev
+;;       :desc "Add a buffer current perspective" "+" #'persp-add-buffer
+;;       :desc "Remove perspective by name" "-" #'persp-remove-by-name)
+
+(use-package wakatime-mode
+  :ensure t
+  :config
+  (global-wakatime-mode))
 
 ;; (setq +latex-viewers '(pdf-tools))
 

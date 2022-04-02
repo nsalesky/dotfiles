@@ -61,3 +61,4 @@
 (package! tldr)
 (package! wc-mode)
 (package! org-modern)
+(package! wakatime-mode)
