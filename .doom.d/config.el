@@ -135,6 +135,36 @@
           :unnarrowed t)
                         )))
 
+(use-package org-remark
+  :init
+  (map! :leader
+        (:prefix ("r" . "remark")
+         ;; custom pen bindings
+         :desc "Mark yellow" "y" #'org-remark-mark-yellow
+         :desc "Mark green" "g" #'org-remark-mark-green
+         :desc "Mark red" "r" #'org-remark-mark-red
+
+         ;; general bindings
+         :desc "Open current remark" "o" #'org-remark-open
+         :desc "View current remark" "v" #'org-remark-view
+         :desc "View previous remark" "p" #'org-remark-view-prev
+         :desc "View next remark" "n" #'org-remark-view-next
+         :desc "Delete remark" "d" #'org-remark-remove))
+  :config
+
+  ;; set up my pens
+  (org-remark-create "orange"
+                     '(:underline "gold" :background "dark orange")
+                     '(CATEGORY "important"))
+  (org-remark-create "green"
+                     '(:background "lime green" :inherit shadow)
+                     '(CATEGORY "vocab"))
+  (org-remark-create "red"
+                     '(:background "tomato" :underline "dark red" :inherit shadow)
+                     '(CATEGORY "important"))
+
+  (org-remark-global-tracking-mode))
+
 (setq display-line-numbers-type t)
 (map! :leader
       :desc "Comment or uncomment lines" "TAB TAB" #'comment-line

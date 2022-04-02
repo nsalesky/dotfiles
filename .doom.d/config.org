@@ -25,6 +25,7 @@
   - [[#org-export][Org-export]]
   - [[#org-journal][Org-journal]]
   - [[#org-roam][Org-roam]]
+  - [[#org-remark][Org-remark]]
 - [[#editor][Editor]]
   - [[#line-settings][Line Settings]]
   - [[#exit-prompt][Exit Prompt]]
@@ -299,6 +300,46 @@ This sets up the basic templates for new notes in =org-roam=
 
 #+RESULTS:
 | d | default | plain | %? | :if-new | (file+head %<%Y%m%d%H%M%S>-${slug}.org #+title: ${title} |
+** Org-remark
+Add marginal notes for any text file!
+
+#+begin_src emacs-lisp
+
+(use-package org-remark
+  :init
+  (map! :leader
+        (:prefix ("r" . "remark")
+         ;; custom pen bindings
+         :desc "Mark yellow" "y" #'org-remark-mark-yellow
+         :desc "Mark green" "g" #'org-remark-mark-green
+         :desc "Mark red" "r" #'org-remark-mark-red
+
+         ;; general bindings
+         :desc "Open current remark" "o" #'org-remark-open
+         :desc "View current remark" "v" #'org-remark-view
+         :desc "View previous remark" "p" #'org-remark-view-prev
+         :desc "View next remark" "n" #'org-remark-view-next
+         :desc "Delete remark" "d" #'org-remark-remove))
+  :config
+
+  ;; set up my pens
+  (org-remark-create "orange"
+                     '(:underline "gold" :background "dark orange")
+                     '(CATEGORY "important"))
+  (org-remark-create "green"
+                     '(:background "lime green" :inherit shadow)
+                     '(CATEGORY "vocab"))
+  (org-remark-create "red"
+                     '(:background "tomato" :underline "dark red" :inherit shadow)
+                     '(CATEGORY "important"))
+
+  (org-remark-global-tracking-mode))
+
+#+end_src
+
+#+RESULTS:
+: t
+
 * Editor
 ** Line Settings
 I set comment-line to 'SPC TAB TAB' which is a rather comfortable keybinding for me on my ZSA Moonlander keyboard.  The standard Emacs keybinding for comment-line is 'C-x C-;'.  The other keybindings are for commands that toggle on/off various line-related settings.  Doom Emacs uses 'SPC t' for "toggle" commands, so I choose 'SPC t' plus 'key' for those bindings.
