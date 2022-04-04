@@ -3,8 +3,8 @@
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
 			 ;("melpa-stable" . "https://stable.melpa.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")))
+			 ("elpa" . "https://elpa.gnu.org/packages/")
+             ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
 (package-initialize)
 (unless package-archive-contents
@@ -238,8 +238,11 @@
    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
+(use-package org-contrib :pin nongnu)
+
 ;; Org Mode
 (use-package org
+    :pin elpa
     :hook (org-mode . ns/org-mode-setup)
     :config
     ;; (ns/org-font-setup)
@@ -255,21 +258,11 @@
     org-todo-keywords
     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
         (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-            "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
+            "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
 
-
-(use-package org-modern
-    :config
-    (add-hook 'org-mode-hook #'org-modern-mode)
-    (add-hook 'org-agenda-finalize #'org-modern-agenda))
-
-(defun ns/org-mode-visual-fill ()
-    (setq visual-fill-column-width 100
-    visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
-
-(use-package visual-fill-column
-    :hook (org-mode . ns/org-mode-visual-fill))
+    :general
+    (my-leader
+      "n" '(:ignore t :which-key "notes")))
 
   (org-babel-do-load-languages 'org-babel-load-languages
       '((emacs-lisp . t)
@@ -284,6 +277,34 @@
       (org-babel-tangle))))
 
 ;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
+
+(defun ns/org-mode-visual-fill ()
+    (setq visual-fill-column-width 120
+    visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+    :hook (org-mode . ns/org-mode-visual-fill))
+
+(use-package org-modern
+    :config
+    (add-hook 'org-mode-hook #'org-modern-mode)
+    (add-hook 'org-agenda-finalize #'org-modern-agenda))
+
+(use-package org-roam
+  :custom
+  (org-roam-directory "~/org/roam/")
+  :config
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  :general
+  (my-leader
+    "n r" '(:ignore t :which-key "roam")
+    ;;"n r" '(:keymap org-roam-mode-map :which-key "roam")
+    "n r f" '(org-roam-node-find :which-key "Find Node")
+    "n r i" '(org-roam-node-insert :which-key "Insert Node")
+    "n r o" '(org-roam-node-open :which-key "Open Node")
+    "n r g" '(org-roam-graph :which-key "Graph")))
 
 (use-package magit)
 
