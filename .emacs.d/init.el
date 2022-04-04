@@ -17,34 +17,34 @@
 (require 'use-package)
 (setq use-package-always-ensure t) ;; Installs packages that you use if they're not already installed
 
-(setq inhibit-startup-message t)
-(scroll-bar-mode -1) ; Disable visible scrollbar
-(tool-bar-mode -1)   ; Disable the toolbar
-(tooltip-mode -1)    ; Disable tooltips
-(set-fringe-mode 10) ; Give some breathing room
-(menu-bar-mode -1)   ; Disable the menu bar
-(setq ring-bell-function 'ignore) ; Disable alarms
+  (setq inhibit-startup-message t)
+  (scroll-bar-mode -1) ; Disable visible scrollbar
+  (tool-bar-mode -1)   ; Disable the toolbar
+  (tooltip-mode -1)    ; Disable tooltips
+  (set-fringe-mode 10) ; Give some breathing room
+  (menu-bar-mode -1)   ; Disable the menu bar
+  (setq ring-bell-function 'ignore) ; Disable alarms
 
-;; Enable line numbers
-(column-number-mode)
-(global-display-line-numbers-mode t)
+  ;; Enable line numbers
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
 
-;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-        term-mode-hook
-        shell-mode-hook
-        eshell-mode-hook
-        treemacs-mode-hook
-        ))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+          term-mode-hook
+          shell-mode-hook
+          eshell-mode-hook
+          treemacs-mode-hook
+          ))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 
-;; Rainbox delimiters for all programming modes
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+  ;; Rainbox delimiters for all programming modes
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 
-;; Better commenting
-(use-package smart-comment)
+  ;; Better commenting
+  (use-package smart-comment)
 
 (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
@@ -60,11 +60,11 @@
   :init
   (load-theme 'doom-moonlight t))
 
-;(use-package page-break-lines)
+    ;(use-package page-break-lines)
 
-      ;(use-package dashboard
-      ;:config
-;(dashboard-setup-startup-hook))
+        ;(use-package dashboard
+        ;:config
+  ;(dashboard-setup-startup-hook))
 
 (use-package doom-modeline
   :custom ((doom-modeline-height 35))
@@ -80,40 +80,44 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-(use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-     :map ivy-minibuffer-map
-     ("TAB" . ivy-alt-done)
-     ("C-l" . ivy-alt-done)
-     ("C-j" . ivy-next-line)
-     ("C-k" . ivy-previous-line)
-     :map ivy-switch-buffer-map
-     ("C-k" . ivy-previous-line)
-     ("C-l" . ivy-done)
-     ("C-d" . ivy-switch-buffer-kill)
-     :map ivy-reverse-i-search-map
-     ("C-k" . ivy-previous-line)
-     ("C-d" . ivy-reverse-i-search-kill))
-  :init
-  (ivy-mode 1))
-
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1))
-
-(use-package ivy-posframe
-  :init
-  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+(use-package emojify
   :config
-  (ivy-posframe-mode 1))
+  (global-emojify-mode))
 
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-     ("C-x b" . counsel-ibuffer)
-     ("C-x C-f" . counsel-find-file)
-     :map minibuffer-local-map
-     ("C-r" . 'counsel-minibuffer-history)))
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+       :map ivy-minibuffer-map
+       ("TAB" . ivy-alt-done)
+       ("C-l" . ivy-alt-done)
+       ("C-j" . ivy-next-line)
+       ("C-k" . ivy-previous-line)
+       :map ivy-switch-buffer-map
+       ("C-k" . ivy-previous-line)
+       ("C-l" . ivy-done)
+       ("C-d" . ivy-switch-buffer-kill)
+       :map ivy-reverse-i-search-map
+       ("C-k" . ivy-previous-line)
+       ("C-d" . ivy-reverse-i-search-kill))
+    :init
+    (ivy-mode 1))
+
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
+
+  (use-package ivy-posframe
+    :init
+    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+    :config
+    (ivy-posframe-mode 1))
+
+  (use-package counsel
+    :bind (("M-x" . counsel-M-x)
+       ("C-x b" . counsel-ibuffer)
+       ("C-x C-f" . counsel-find-file)
+       :map minibuffer-local-map
+       ("C-r" . 'counsel-minibuffer-history)))
 
 (use-package which-key
   :init (which-key-mode)
@@ -121,39 +125,40 @@
   :config
   (setq which-key-idle-delay 0.3))
 
-(use-package general
-  :config
-  (general-evil-setup t)
-  (general-create-definer my-leader
-			  :keymaps '(normal insert visual emacs)
-			  :prefix "SPC"
-			  :global-prefix "C-SPC")
+  (use-package general
+    :config
+    (general-override-mode)
+    (general-evil-setup t)
+    (general-create-definer my-leader
+                :keymaps '(normal insert visual emacs)
+                :prefix "SPC"
+                :global-prefix "C-SPC")
 
-  ;; Global Keybindings
-  (my-leader
-    ;; Projectile
-    "SPC" '(projectile-find-file :which-key "Find file in project")
-    "," '(counsel-switch-buffer :which-key "Switch buffer")
-    "." '(counsel-find-file :which-key "Find file")
-    ;"p" (:ignore t :which-key "project")
+    ;; Global Keybindings
+    (my-leader
+      ;; Projectile
+      "SPC" '(projectile-find-file :which-key "Find file in project")
+      "," '(counsel-switch-buffer :which-key "Switch buffer")
+      "." '(counsel-find-file :which-key "Find file")
+      ;"p" (:ignore t :which-key "project")
 
-    ;; Toggle
-   "t"  '(:ignore t :which-key "toggle")
-   "tt" '(counsel-load-theme :which-key "Choose theme")
+      ;; Toggle
+     "t"  '(:ignore t :which-key "toggle")
+     "tt" '(counsel-load-theme :which-key "Choose theme")
 
-   ;; Line formatting
-   "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines")
+     ;; Line formatting
+     "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines")
 
-   ;; Window
-   "w" '(:ignore t :which-key "window")
-   "wc" '(delete-window :which-key "Close window")
-   "wv" '(split-window-right :which-key "Vertical split")
-   "ws" '(split-window-below :which-key "Horizontal split")
-   "wh" '(windmove-left :which-key "Select left window")
-   "wj" '(windmove-down :which-key "Select down window")
-   "wk" '(windmove-up :which-key "Select up window")
-   "wl" '(windmove-right :which-key "Select right window")
-  ))
+     ;; Window
+     "w" '(:ignore t :which-key "window")
+     "wc" '(delete-window :which-key "Close window")
+     "wv" '(split-window-right :which-key "Vertical split")
+     "ws" '(split-window-below :which-key "Horizontal split")
+     "wh" '(windmove-left :which-key "Select left window")
+     "wj" '(windmove-down :which-key "Select down window")
+     "wk" '(windmove-up :which-key "Select up window")
+     "wl" '(windmove-right :which-key "Select right window")
+))
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -194,86 +199,83 @@
 (my-leader
  "ts" '(hydra-text-scale/body :which-key "scale text"))
 
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-(setq-default c-basic-offset 4)
-(setq-default evil-shift-width 4)
+  (setq-default tab-width 4)
+  (setq-default indent-tabs-mode nil)
+  (setq-default c-basic-offset 4)
+  (setq-default evil-shift-width 4)
 
-(setq-default electric-indent-inhibit t)
+  (setq-default electric-indent-inhibit t)
 
-;; Make the backspace properly erase the whole tab instead of removing
-;; 1 space at a time
-(setq backward-delete-char-untabify-method 'hungry)
+  ;; Make the backspace properly erase the whole tab instead of removing
+  ;; 1 space at a time
+  (setq backward-delete-char-untabify-method 'hungry)
 
 
-;; WARNING: This will change your life
-;; (OPTIONAL) Visualize tabs as a pipe character - "|"
-;; This will also show trailing characters as they are useful to spot.
-;; (setq whitespace-style '(face tabs tab-mark trailing))
-;; (custom-set-faces
-;; '(whitespace-tab ((t (:foreground "#636363")))))
+  ;; WARNING: This will change your life
+  ;; (OPTIONAL) Visualize tabs as a pipe character - "|"
+  ;; This will also show trailing characters as they are useful to spot.
+  ;; (setq whitespace-style '(face tabs tab-mark trailing))
+  ;; (custom-set-faces
+  ;; '(whitespace-tab ((t (:foreground "#636363")))))
 
-;; (setq whitespace-display-mappings 
-;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
-;; (global-whitespace-mode) ; Enable whitespace mode everywhere
+  ;; (setq whitespace-display-mappings 
+  ;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
+  ;; (global-whitespace-mode) ; Enable whitespace mode everywhere
 
-(defun ns/org-mode-setup ()
-  (org-indent-mode)
-  ;; (variable-pitch-mode 1)
-  (visual-line-mode 1))
+ (defun ns/org-mode-setup ()
+   (org-indent-mode)
+   ;; (variable-pitch-mode 1)
+   (visual-line-mode 1))
 
-(defun ns/org-font-setup ()
-  ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
-  ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+ (defun ns/org-font-setup ()
+   ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
+   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+   (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+   ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 ;; Org Mode
 (use-package org
-  :hook (org-mode . ns/org-mode-setup)
-  :config
-  ;; (ns/org-font-setup)
-  (setq org-hide-emphasis-markers t
-	org-ellipsis " ▾"
-	org-pretty-entities t
+    :hook (org-mode . ns/org-mode-setup)
+    :config
+    ;; (ns/org-font-setup)
+    (setq org-hide-emphasis-markers t
+    org-ellipsis " ▾"
+    org-pretty-entities t
 
-	org-directory "~/org"
+    org-directory "~/org"
 
     org-src-tab-acts-natively t
+    org-src-preserve-indentation t
 
-	org-todo-keywords
-	'((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-	  (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-		    "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
+    org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+        (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
+            "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
 
 
 (use-package org-modern
-  :config
-  (add-hook 'org-mode-hook #'org-modern-mode)
-  (add-hook 'org-agenda-finalize #'org-modern-agenda))
+    :config
+    (add-hook 'org-mode-hook #'org-modern-mode)
+    (add-hook 'org-agenda-finalize #'org-modern-agenda))
 
 (defun ns/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-	visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
+    (setq visual-fill-column-width 100
+    visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
 
 (use-package visual-fill-column
-  :hook (org-mode . ns/org-mode-visual-fill))
+    :hook (org-mode . ns/org-mode-visual-fill))
 
-(org-babel-do-load-languages 'org-babel-load-languages
-    '((emacs-lisp . t)
-      (python . t)))
+  (org-babel-do-load-languages 'org-babel-load-languages
+      '((emacs-lisp . t)
+        (python . t)))
 
-(setq org-confirm-babel-evaluate nil)
-
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (setq org-confirm-babel-evaluate nil)
 
 (defun ns/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
@@ -301,34 +303,34 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
-(use-package treemacs)
-(use-package treemacs-evil
-  :after (treemacs evil))
-(use-package treemacs-projectile
-  :after (treemacs projectile))
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once))
-(use-package treemacs-magit
-  :after (treemacs magit))
-(use-package lsp-treemacs
-  :after (treemacs lsp-mode)
-  :config (lsp-treemacs-sync-mode 1))
+  (use-package treemacs)
+  (use-package treemacs-evil
+    :after (treemacs evil))
+  (use-package treemacs-projectile
+    :after (treemacs projectile))
+  (use-package treemacs-icons-dired
+    :hook (dired-mode . treemacs-icons-dired-enable-once))
+  (use-package treemacs-magit
+    :after (treemacs magit))
+  (use-package lsp-treemacs
+    :after (treemacs lsp-mode)
+    :config (lsp-treemacs-sync-mode 1))
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :init
-  (setq lsp-keymap-prefix "C-l")
-  :config
-  (lsp-enable-which-key-integration t))
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "C-l")
+    :config
+    (lsp-enable-which-key-integration t))
 
-(use-package lsp-ivy)
+  (use-package lsp-ivy)
 
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-position 'bottom))
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-position 'bottom))
 
-(use-package company
+  (use-package company
     :after lsp-mode
     :hook (lsp-mode . company-mode)
     :bind (:map company-active-map
@@ -346,6 +348,14 @@
   ;:hook
   ;(prog-mode . format-all-mode)
 
+(use-package yasnippet
+  :config
+  (yas-global-mode))
+
+(use-package wakatime-mode
+  :config
+  (global-wakatime-mode))
+
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :hook (typescript-mode . lsp-deferred)
@@ -353,5 +363,7 @@
   (setq typescript-indent-level 4))
 
 (use-package rustic)
+
+
 
 

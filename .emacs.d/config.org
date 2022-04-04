@@ -139,6 +139,17 @@ Make the Emacs help pages more "helpful".
   ([remap describe-key] . helpful-key))
 
 #+end_src
+** Emoji
+Display emojis in any text mode!! :smile:
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package emojify
+  :config
+  (global-emojify-mode))
+
+#+END_SRC 
+
 * Ivy and Counsel
 ** Basic Config
 
@@ -197,40 +208,45 @@ Display the keybindings for the commands listed in Ivy.
 
 #+begin_src emacs-lisp
 
-(use-package general
-  :config
-  (general-evil-setup t)
-  (general-create-definer my-leader
-			  :keymaps '(normal insert visual emacs)
-			  :prefix "SPC"
-			  :global-prefix "C-SPC")
+  (use-package general
+    :config
+    (general-override-mode)
+    (general-evil-setup t)
+    (general-create-definer my-leader
+                :keymaps '(normal insert visual emacs)
+                :prefix "SPC"
+                :global-prefix "C-SPC")
 
-  ;; Global Keybindings
-  (my-leader
-    ;; Projectile
-    "SPC" '(projectile-find-file :which-key "Find file in project")
-    "," '(counsel-switch-buffer :which-key "Switch buffer")
-    "." '(counsel-find-file :which-key "Find file")
-    ;"p" (:ignore t :which-key "project")
+    ;; Global Keybindings
+    (my-leader
+      ;; Projectile
+      "SPC" '(projectile-find-file :which-key "Find file in project")
+      "," '(counsel-switch-buffer :which-key "Switch buffer")
+      "." '(counsel-find-file :which-key "Find file")
+      ;"p" (:ignore t :which-key "project")
 
-    ;; Toggle
-   "t"  '(:ignore t :which-key "toggle")
-   "tt" '(counsel-load-theme :which-key "Choose theme")
+      ;; Toggle
+     "t"  '(:ignore t :which-key "toggle")
+     "tt" '(counsel-load-theme :which-key "Choose theme")
 
-   ;; Line formatting
-   "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines")
+     ;; Line formatting
+     "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines")
 
-   ;; Window
-   "w" '(:ignore t :which-key "window")
-   "wc" '(delete-window :which-key "Close window")
-   "wv" '(split-window-right :which-key "Vertical split")
-   "ws" '(split-window-below :which-key "Horizontal split")
-   "wh" '(windmove-left :which-key "Select left window")
-   "wj" '(windmove-down :which-key "Select down window")
-   "wk" '(windmove-up :which-key "Select up window")
-   "wl" '(windmove-right :which-key "Select right window")
-  ))
+     ;; Window
+     "w" '(:ignore t :which-key "window")
+     "wc" '(delete-window :which-key "Close window")
+     "wv" '(split-window-right :which-key "Vertical split")
+     "ws" '(split-window-below :which-key "Horizontal split")
+     "wh" '(windmove-left :which-key "Select left window")
+     "wj" '(windmove-down :which-key "Select down window")
+     "wk" '(windmove-up :which-key "Select up window")
+     "wl" '(windmove-right :which-key "Select right window")
+))
 #+end_src
+
+#+RESULTS:
+: t
+
 ** Basic keybindings
 These are the very basic keybindings.
 
@@ -334,62 +350,68 @@ I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
 #+RESULTS:
 : hungry
 
+** Buffers
+Some useful keybindings for working with buffers.
+
+*** Basics
+
 * Org Mode
 ** Basic config
 #+begin_src emacs-lisp
 
-(defun ns/org-mode-setup ()
-  (org-indent-mode)
-  ;; (variable-pitch-mode 1)
-  (visual-line-mode 1))
+ (defun ns/org-mode-setup ()
+   (org-indent-mode)
+   ;; (variable-pitch-mode 1)
+   (visual-line-mode 1))
 
-(defun ns/org-font-setup ()
-  ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
-  ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+ (defun ns/org-font-setup ()
+   ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
+   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+   (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+   ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 ;; Org Mode
 (use-package org
-  :hook (org-mode . ns/org-mode-setup)
-  :config
-  ;; (ns/org-font-setup)
-  (setq org-hide-emphasis-markers t
-	org-ellipsis " ▾"
-	org-pretty-entities t
+    :hook (org-mode . ns/org-mode-setup)
+    :config
+    ;; (ns/org-font-setup)
+    (setq org-hide-emphasis-markers t
+    org-ellipsis " ▾"
+    org-pretty-entities t
 
-	org-directory "~/org"
+    org-directory "~/org"
 
     org-src-tab-acts-natively t
+    org-src-preserve-indentation t
 
-	org-todo-keywords
-	'((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-	  (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-		    "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
+    org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+        (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
+            "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
 
 
 (use-package org-modern
-  :config
-  (add-hook 'org-mode-hook #'org-modern-mode)
-  (add-hook 'org-agenda-finalize #'org-modern-agenda))
+    :config
+    (add-hook 'org-mode-hook #'org-modern-mode)
+    (add-hook 'org-agenda-finalize #'org-modern-agenda))
 
 (defun ns/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-	visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
+    (setq visual-fill-column-width 100
+    visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
 
 (use-package visual-fill-column
-  :hook (org-mode . ns/org-mode-visual-fill))
+    :hook (org-mode . ns/org-mode-visual-fill))
 
 #+end_src
 
 #+RESULTS:
-| ns/org-mode-visual-fill | ns/org-mode-setup | er/add-org-mode-expansions | +lookup--init-org-mode-handlers-h | (closure ((hook . org-mode-hook) (--dolist-tail--) t) (&rest _) (add-hook 'before-save-hook 'org-encrypt-entries nil t)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-modern-mode | doom-disable-show-paren-mode-h | doom-disable-show-trailing-whitespace-h | +org-enable-auto-reformat-tables-h | +org-enable-auto-update-cookies-h | +org-make-last-point-visible-h | org-fancy-priorities-mode | org-superstar-mode | evil-org-mode | toc-org-enable | embrace-org-mode-hook | org-eldoc-load | +literate-enable-recompile-h |
+| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | ns/org-mode-visual-fill | org-modern-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | ns/org-mode-setup | (lambda nil (display-line-numbers-mode 0)) |
 
 ** Configure Babel
 #+begin_src emacs-lisp
@@ -400,9 +422,6 @@ I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
 
   (setq org-confirm-babel-evaluate nil)
 
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
 
 #+end_src
 
@@ -534,6 +553,27 @@ A simple code formatting system for a ton of languages.
 
 #+end_src
 
+** YASnippet
+Add various templates to Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package yasnippet
+  :config
+  (yas-global-mode))
+
+#+END_SRC
+
+** Wakatime
+Wakatime makes it easy for me to keep track of how much time I'm spending on various projects.
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package wakatime-mode
+  :config
+  (global-wakatime-mode))
+
+#+END_SRC 
 * Language-specific Configuration
 My configuration for each programming language that I want to be able to work with.
 
@@ -564,7 +604,6 @@ My configuration for each programming language that I want to be able to work wi
 
 #+begin_src emacs-lisp
 
-(use-package ccls
 
 
 #+end_src
@@ -573,3 +612,4 @@ My configuration for each programming language that I want to be able to work wi
 #+begin_src emacs-lisp
 
 #+end_src
+cad47d99-0782-47d9-867e-ee210ffabd7d
