@@ -22,40 +22,40 @@
   :config
   (exec-path-from-shell-initialize))
 
-(use-package ivy
-  :diminish
-  :bind (("C-s" . swiper)
-     :map ivy-minibuffer-map
-     ("TAB" . ivy-alt-done)
-     ("C-l" . ivy-alt-done)
-     ("C-j" . ivy-next-line)
-     ("C-k" . ivy-previous-line)
-     :map ivy-switch-buffer-map
-     ("C-k" . ivy-previous-line)
-     ("C-l" . ivy-done)
-     ("C-d" . ivy-switch-buffer-kill)
-     :map ivy-reverse-i-search-map
-     ("C-k" . ivy-previous-line)
-     ("C-d" . ivy-reverse-i-search-kill))
-  :init
-  (ivy-mode 1))
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+       :map ivy-minibuffer-map
+       ("TAB" . ivy-alt-done)
+       ("C-l" . ivy-alt-done)
+       ("C-j" . ivy-next-line)
+       ("C-k" . ivy-previous-line)
+       :map ivy-switch-buffer-map
+       ("C-k" . ivy-previous-line)
+       ("C-l" . ivy-done)
+       ("C-d" . ivy-switch-buffer-kill)
+       :map ivy-reverse-i-search-map
+       ("C-k" . ivy-previous-line)
+       ("C-d" . ivy-reverse-i-search-kill))
+    :init
+    (ivy-mode 1))
 
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1))
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
 
-(use-package ivy-posframe
-  :init
-  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
-  :config
-  (ivy-posframe-mode 1))
+  (use-package ivy-posframe
+    :init
+    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+    :config
+    (ivy-posframe-mode 1))
 
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-     ("C-x b" . counsel-ibuffer)
-     ("C-x C-f" . counsel-find-file)
-     :map minibuffer-local-map
-     ("C-r" . 'counsel-minibuffer-history)))
+  (use-package counsel
+    :bind (("M-x" . counsel-M-x)
+       ("C-x b" . counsel-ibuffer)
+       ("C-x C-f" . counsel-find-file)
+       :map minibuffer-local-map
+       ("C-r" . 'counsel-minibuffer-history)))
 
 (use-package which-key
   :init (which-key-mode)
@@ -63,34 +63,34 @@
   :config
   (setq which-key-idle-delay 0.3))
 
-(setq inhibit-startup-message t)
-(scroll-bar-mode -1) ; Disable visible scrollbar
-(tool-bar-mode -1)   ; Disable the toolbar
-(tooltip-mode -1)    ; Disable tooltips
-(set-fringe-mode 10) ; Give some breathing room
-(menu-bar-mode -1)   ; Disable the menu bar
-(setq ring-bell-function 'ignore) ; Disable alarms
+  (setq inhibit-startup-message t)
+  (scroll-bar-mode -1) ; Disable visible scrollbar
+  (tool-bar-mode -1)   ; Disable the toolbar
+  (tooltip-mode -1)    ; Disable tooltips
+  (set-fringe-mode 10) ; Give some breathing room
+  (menu-bar-mode -1)   ; Disable the menu bar
+  (setq ring-bell-function 'ignore) ; Disable alarms
 
-;; Enable line numbers
-(column-number-mode)
-(global-display-line-numbers-mode t)
+  ;; Enable line numbers
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
 
-;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-        term-mode-hook
-        shell-mode-hook
-        eshell-mode-hook
-        treemacs-mode-hook
-        ))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+          term-mode-hook
+          shell-mode-hook
+          eshell-mode-hook
+          treemacs-mode-hook
+          ))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 
-;; Rainbox delimiters for all programming modes
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+  ;; Rainbox delimiters for all programming modes
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 
-;; Better commenting
-(use-package smart-comment)
+  ;; Better commenting
+  (use-package smart-comment)
 
 (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
@@ -111,11 +111,11 @@
   :init
   (load-theme 'doom-moonlight t))
 
-;(use-package page-break-lines)
+    ;(use-package page-break-lines)
 
-      ;(use-package dashboard
-      ;:config
-;(dashboard-setup-startup-hook))
+        ;(use-package dashboard
+        ;:config
+  ;(dashboard-setup-startup-hook))
 
 (use-package doom-modeline
   :custom ((doom-modeline-height 35))
@@ -235,7 +235,21 @@
       "b" '(:ignore t :which-key "buffers")
       "b k" '(kill-buffer :which-key "Kill buffer"))
 
-(defun ns/org-mode-setup ()
+(general-define-key
+ :states 'normal
+ "s" 'avy-goto-char-timer
+ "S" 'avy-pop-mark)
+
+(my-leader
+  "s" '(:ignore t :which-key "search")
+  "s b" '(swiper :which-key "Search buffer"))
+
+(use-package ag
+  :general
+  (my-leader
+    "s p" '(projectile-ag :which-key "Search project")))
+
+ (defun ns/org-mode-setup ()
    (org-indent-mode)
    ;; (variable-pitch-mode 1)
    (visual-line-mode 1))
@@ -277,11 +291,11 @@
     (my-leader
       "n" '(:ignore t :which-key "notes")))
 
-(org-babel-do-load-languages 'org-babel-load-languages
-    '((emacs-lisp . t)
-      (python . t)))
+  (org-babel-do-load-languages 'org-babel-load-languages
+      '((emacs-lisp . t)
+        (python . t)))
 
-(setq org-confirm-babel-evaluate nil)
+  (setq org-confirm-babel-evaluate nil)
 
 (defun ns/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
@@ -344,38 +358,38 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
-(use-package treemacs)
-(use-package treemacs-evil
-  :after (treemacs evil))
-(use-package treemacs-projectile
-  :after (treemacs projectile))
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once))
-(use-package treemacs-magit
-  :after (treemacs magit))
-(use-package lsp-treemacs
-  :after (treemacs lsp-mode)
-  :config (lsp-treemacs-sync-mode 1))
+  (use-package treemacs)
+  (use-package treemacs-evil
+    :after (treemacs evil))
+  (use-package treemacs-projectile
+    :after (treemacs projectile))
+  (use-package treemacs-icons-dired
+    :hook (dired-mode . treemacs-icons-dired-enable-once))
+  (use-package treemacs-magit
+    :after (treemacs magit))
+  (use-package lsp-treemacs
+    :after (treemacs lsp-mode)
+    :config (lsp-treemacs-sync-mode 1))
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :init
-  (setq lsp-keymap-prefix "C-l")
-  :config
-  (lsp-enable-which-key-integration t)
-  :general
-  ;; TODO figure this out
-  (my-leader
-    "c" '(:keymap lsp-mode-map :which-key "code")))
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "C-l")
+    :config
+    (lsp-enable-which-key-integration t)
+    :general
+    ;; TODO figure this out
+    (my-leader
+      "c" '(:keymap lsp-mode-map :which-key "code")))
 
-(use-package lsp-ivy)
+  (use-package lsp-ivy)
 
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-position 'bottom))
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-position 'bottom))
 
-(use-package company
+  (use-package company
     :after lsp-mode
     :hook (lsp-mode . company-mode)
     :bind (:map company-active-map
