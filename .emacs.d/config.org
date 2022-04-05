@@ -26,6 +26,10 @@
 (require 'use-package)
 (setq use-package-always-ensure t) ;; Installs packages that you use if they're not already installed
 
+;; Make sure PATH is correct
+(use-package exec-path-from-shell
+  :config
+  (exec-path-from-shell-initialize))
 #+end_src
 
 * Ivy and Counsel
@@ -219,55 +223,30 @@ Display emojis in any text mode!! :smile:
 #+END_SRC 
 
 * Keybindings
-** General
+** General.el
+Set up =general.el= to control all of my custom keybindings.
 
 #+begin_src emacs-lisp
 
-  (use-package general
+(use-package general
     :config
     (general-override-mode)
     (general-evil-setup t)
     (general-create-definer my-leader
-                :keymaps '(normal insert visual emacs)
-                :prefix "SPC"
-                :global-prefix "C-SPC")
+        :keymaps '(normal insert visual emacs)
+            :prefix "SPC"
+            :global-prefix "C-SPC"))
 
-    ;; Global Keybindings
-    (my-leader
-      ;; Projectile
-      "SPC" '(projectile-find-file :which-key "Find file in project")
-      "," '(counsel-switch-buffer :which-key "Switch buffer")
-      "." '(counsel-find-file :which-key "Find file")
-      ;"p" (:ignore t :which-key "project")
-
-      ;; Toggle
-     "t"  '(:ignore t :which-key "toggle")
-     "tt" '(counsel-load-theme :which-key "Choose theme")
-
-     ;; Line formatting
-     "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines")
-
-     ;; Window
-     "w" '(:ignore t :which-key "window")
-     "wc" '(delete-window :which-key "Close window")
-     "wv" '(split-window-right :which-key "Vertical split")
-     "ws" '(split-window-below :which-key "Horizontal split")
-     "wh" '(windmove-left :which-key "Select left window")
-     "wj" '(windmove-down :which-key "Select down window")
-     "wk" '(windmove-up :which-key "Select up window")
-     "wl" '(windmove-right :which-key "Select right window")
-))
 #+end_src
 
 #+RESULTS:
 : t
 
-** Basic keybindings
-These are the very basic keybindings.
+** ESC quits prompts
+Make ESC quit prompts.
 
 #+begin_src emacs-lisp
 
-;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 #+end_src
@@ -296,8 +275,11 @@ It's hard for me to function without VIM-style keybindings at this point, so Evi
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
+  ;; set the initial state for certain special modes
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+  (evil-set-initial-state 'dashboard-mode 'normal)
+  ;; disable Evil-mode for certain buffers
+  (evil-set-initial-state 'eshell-mode 'emacs))
 
 ;; Gives us default Evil configurations for a lot of other modes
 (use-package evil-collection
@@ -337,37 +319,100 @@ I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
 
 #+begin_src emacs-lisp
 
-  (setq-default tab-width 4)
-  (setq-default indent-tabs-mode nil)
-  (setq-default c-basic-offset 4)
-  (setq-default evil-shift-width 4)
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 4)
+(setq-default evil-shift-width 4)
 
-  ;; (setq-default electric-indent-inhibit t)
+;; (setq-default electric-indent-inhibit t)
 
-  ;; Make the backspace properly erase the whole tab instead of removing
-  ;; 1 space at a time
-  (setq backward-delete-char-untabify-method 'hungry)
+;; Make the backspace properly erase the whole tab instead of removing
+;; 1 space at a time
+(setq backward-delete-char-untabify-method 'hungry)
 
-
-  ;; WARNING: This will change your life
-  ;; (OPTIONAL) Visualize tabs as a pipe character - "|"
-  ;; This will also show trailing characters as they are useful to spot.
-  ;; (setq whitespace-style '(face tabs tab-mark trailing))
-  ;; (custom-set-faces
-  ;; '(whitespace-tab ((t (:foreground "#636363")))))
-
-  ;; (setq whitespace-display-mappings 
-  ;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
-  ;; (global-whitespace-mode) ; Enable whitespace mode everywhere
+;; Make Evil mode backspace delete a whole tab's worth of spaces at a time
+(general-define-key
+    :states 'insert
+    "<backspace>" 'backward-delete-char-untabify)
 
 #+end_src
 
 #+RESULTS:
 : hungry
 
+** Line Formatting
+Keybindings for formatting lines of text/code.
+
+#+BEGIN_SRC emacs-lisp
+
+(my-leader
+    ;; Line formatting
+    "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines"))
+
+#+END_SRC 
+** Files
+Keybindings for working with files.
+
+#+BEGIN_SRC emacs-lisp
+
+(my-leader
+      "." '(counsel-find-file :which-key "Find file"))
+
+#+END_SRC 
+
+** Toggling
+Some keybindings for toggling different functionalities on/off.
+
+#+BEGIN_SRC emacs-lisp
+
+(my-leader
+     "t"  '(:ignore t :which-key "toggle")
+     "t s" '(counsel-load-theme :which-key "Choose theme")
+
+     "t t" '(treemacs :which-key "Treemacs")
+     "t y" '(lsp-treemacs-symbols :which-key "Treemacs Symbols"))
+
+#+END_SRC 
+
+** Open Applications
+Different keybindings to open certain applications.
+
+#+BEGIN_SRC emacs-lisp
+
+(my-leader
+    "o" '(:ignore t :which-key "open")
+    "o e" '(eshell :which-key "Open EShell"))
+
+#+END_SRC 
+** Windows
+Keybindings for operating windows.
+
+#+BEGIN_SRC emacs-lisp
+
+(my-leader
+     "w" '(:ignore t :which-key "window")
+     "wc" '(delete-window :which-key "Close window")
+     "wv" '(split-window-right :which-key "Vertical split")
+     "ws" '(split-window-below :which-key "Horizontal split")
+     "wh" '(windmove-left :which-key "Select left window")
+     "wj" '(windmove-down :which-key "Select down window")
+     "wk" '(windmove-up :which-key "Select up window")
+     "wl" '(windmove-right :which-key "Select right window"))
+
+#+END_SRC 
+
 ** Buffers
 Some useful keybindings for working with buffers.
 
+#+BEGIN_SRC emacs-lisp
+
+(my-leader
+      "," '(counsel-switch-buffer :which-key "Switch buffer")
+
+      "b" '(:ignore t :which-key "buffers")
+      "b k" '(kill-buffer :which-key "Kill buffer"))
+
+#+END_SRC 
 *** Basics
 
 * Org Mode
@@ -532,7 +577,11 @@ Give Org-mode documents some extra visual polish.
   :init
   ;(when (file-directory-p "~/Documents")
     ;(setq projectile-project-search-path '("~/Documents")))
-  (setq projectile-switch-project-action #'projectile-dired))
+  (setq projectile-switch-project-action #'projectile-dired)
+
+  :general
+  (my-leader
+      "SPC" '(projectile-find-file :which-key "Find file in project")))
 
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
@@ -649,7 +698,7 @@ My configuration for each programming language that I want to be able to work wi
 
 ** Typescript
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :results output
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -660,7 +709,6 @@ My configuration for each programming language that I want to be able to work wi
 #+end_src
 
 #+RESULTS:
-: ((\.ts\' . typescript-mode) (\.gpg\(~\|\.~[0-9]+~\)?\' nil epa-file) (\.rs\' . rustic-mode) (\.\(?:md\|markdown\|mkd\|mdown\|mkdn\|mdwn\)\' . markdown-mode) (/git-rebase-todo\' . git-rebase-mode) (\.elc\' . elisp-byte-code-mode) (\.zst\' nil jka-compr) (\.dz\' nil jka-compr) (\.xz\' nil jka-compr) (\.lzma\' nil jka-compr) (\.lz\' nil jka-compr) (\.g?z\' nil jka-compr) (\.bz2\' nil jka-compr) (\.Z\' nil jka-compr) (\.vr[hi]?\' . vera-mode) (\(?:\.\(?:rbw?\|ru\|rake\|thor\|jbuilder\|rabl\|gemspec\|podspec\)\|/\(?:Gem\|Rake\|Cap\|Thor\|Puppet\|Berks\|Vagrant\|Guard\|Pod\)file\)\' . ruby-mode) (\.re?st\' . rst-mode) (\.py[iw]?\' . python-mode) (\.m\' . octave-maybe-mode) (\.less\' . less-css-mode) (\.scss\' . scss-mode) (\.awk\' . awk-mode) (\.\(u?lpc\|pike\|pmod\(\.in\)?\)\' . pike-mode) (\.idl\' . idl-mode) (\.java\' . java-mode) (\.m\' . objc-mode) (\.ii\' . c++-mode) (\.i\' . c-mode) (\.lex\' . c-mode) (\.y\(acc\)?\' . c-mode) (\.h\' . c-or-c++-mode) (\.c\' . c-mode) (\.\(CC?\|HH?\)\' . c++-mode) (\.[ch]\(pp\|xx\|\+\+\)\' . c++-mode) (\.\(cc\|hh\)\' . c++-mode) (\.\(bat\|cmd\)\' . bat-mode) (\.[sx]?html?\(\.[a-zA-Z_]+\)?\' . mhtml-mode) (\.svgz?\' . image-mode) (\.svgz?\' . xml-mode) (\.x[bp]m\' . image-mode) (\.x[bp]m\' . c-mode) (\.p[bpgn]m\' . image-mode) (\.tiff?\' . image-mode) (\.gif\' . image-mode) (\.png\' . image-mode) (\.jpe?g\' . image-mode) (\.te?xt\' . text-mode) (\.[tT]e[xX]\' . tex-mode) (\.ins\' . tex-mode) (\.ltx\' . latex-mode) (\.dtx\' . doctex-mode) (\.org\' . org-mode) (\.el\' . emacs-lisp-mode) (Project\.ede\' . emacs-lisp-mode) (\.\(scm\|stk\|ss\|sch\)\' . scheme-mode) (\.l\' . lisp-mode) (\.li?sp\' . lisp-mode) (\.[fF]\' . fortran-mode) (\.for\' . fortran-mode) (\.p\' . pascal-mode) (\.pas\' . pascal-mode) (\.\(dpr\|DPR\)\' . delphi-mode) (\.ad[abs]\' . ada-mode) (\.ad[bs]\.dg\' . ada-mode) (\.\([pP]\([Llm]\|erl\|od\)\|al\)\' . perl-mode) (Imakefile\' . makefile-imake-mode) (Makeppfile\(?:\.mk\)?\' . makefile-makepp-mode) (\.makepp\' . makefile-makepp-mode) (\.mk\' . makefile-gmake-mode) (\.make\' . makefile-gmake-mode) ([Mm]akefile\' . makefile-gmake-mode) (\.am\' . makefile-automake-mode) (\.texinfo\' . texinfo-mode) (\.te?xi\' . texinfo-mode) (\.[sS]\' . asm-mode) (\.asm\' . asm-mode) (\.css\' . css-mode) (\.mixal\' . mixal-mode) (\.gcov\' . compilation-mode) (/\.[a-z0-9-]*gdbinit . gdb-script-mode) (-gdb\.gdb . gdb-script-mode) ([cC]hange\.?[lL]og?\' . change-log-mode) ([cC]hange[lL]og[-.][0-9]+\' . change-log-mode) (\$CHANGE_LOG\$\.TXT . change-log-mode) (\.scm\.[0-9]*\' . scheme-mode) (\.[ckz]?sh\'\|\.shar\'\|/\.z?profile\' . sh-mode) (\.bash\' . sh-mode) (\(/\|\`\)\.\(bash_\(profile\|history\|log\(in\|out\)\)\|z?log\(in\|out\)\)\' . sh-mode) (\(/\|\`\)\.\(shrc\|zshrc\|m?kshrc\|bashrc\|t?cshrc\|esrc\)\' . sh-mode) (\(/\|\`\)\.\([kz]shenv\|xinitrc\|startxrc\|xsession\)\' . sh-mode) (\.m?spec\' . sh-mode) (\.m[mes]\' . nroff-mode) (\.man\' . nroff-mode) (\.sty\' . latex-mode) (\.cl[so]\' . latex-mode) (\.bbl\' . latex-mode) (\.bib\' . bibtex-mode) (\.bst\' . bibtex-style-mode) (\.sql\' . sql-mode) (\(acinclude\|aclocal\|acsite\)\.m4\' . autoconf-mode) (\.m[4c]\' . m4-mode) (\.mf\' . metafont-mode) (\.mp\' . metapost-mode) (\.vhdl?\' . vhdl-mode) (\.article\' . text-mode) (\.letter\' . text-mode) (\.i?tcl\' . tcl-mode) (\.exp\' . tcl-mode) (\.itk\' . tcl-mode) (\.icn\' . icon-mode) (\.sim\' . simula-mode) (\.mss\' . scribe-mode) (\.f9[05]\' . f90-mode) (\.f0[38]\' . f90-mode) (\.indent\.pro\' . fundamental-mode) (\.\(pro\|PRO\)\' . idlwave-mode) (\.srt\' . srecode-template-mode) (\.prolog\' . prolog-mode) (\.tar\' . tar-mode) (\.\(arc\|zip\|lzh\|lha\|zoo\|[jew]ar\|xpi\|rar\|cbr\|7z\|ARC\|ZIP\|LZH\|LHA\|ZOO\|[JEW]AR\|XPI\|RAR\|CBR\|7Z\)\' . archive-mode) (\.oxt\' . archive-mode) (\.\(deb\|[oi]pk\)\' . archive-mode) (\`/tmp/Re . text-mode) (/Message[0-9]*\' . text-mode) (\`/tmp/fol/ . text-mode) (\.oak\' . scheme-mode) (\.sgml?\' . sgml-mode) (\.x[ms]l\' . xml-mode) (\.dbk\' . xml-mode) (\.dtd\' . sgml-mode) (\.ds\(ss\)?l\' . dsssl-mode) (\.js[mx]?\' . javascript-mode) (\.har\' . javascript-mode) (\.json\' . javascript-mode) (\.[ds]?va?h?\' . verilog-mode) (\.by\' . bovine-grammar-mode) (\.wy\' . wisent-grammar-mode) ([:/\]\..*\(emacs\|gnus\|viper\)\' . emacs-lisp-mode) (\`\..*emacs\' . emacs-lisp-mode) ([:/]_emacs\' . emacs-lisp-mode) (/crontab\.X*[0-9]+\' . shell-script-mode) (\.ml\' . lisp-mode) (\.ld[si]?\' . ld-script-mode) (ld\.?script\' . ld-script-mode) (\.xs\' . c-mode) (\.x[abdsru]?[cnw]?\' . ld-script-mode) (\.zone\' . dns-mode) (\.soa\' . dns-mode) (\.asd\' . lisp-mode) (\.\(asn\|mib\|smi\)\' . snmp-mode) (\.\(as\|mi\|sm\)2\' . snmpv2-mode) (\.\(diffs?\|patch\|rej\)\' . diff-mode) (\.\(dif\|pat\)\' . diff-mode) (\.[eE]?[pP][sS]\' . ps-mode) (\.\(?:PDF\|DVI\|OD[FGPST]\|DOCX\|XLSX?\|PPTX?\|pdf\|djvu\|dvi\|od[fgpst]\|docx\|xlsx?\|pptx?\)\' . doc-view-mode-maybe) (configure\.\(ac\|in\)\' . autoconf-mode) (\.s\(v\|iv\|ieve\)\' . sieve-mode) (BROWSE\' . ebrowse-tree-mode) (\.ebrowse\' . ebrowse-tree-mode) (#\*mail\* . mail-mode) (\.g\' . antlr-mode) (\.mod\' . m2-mode) (\.ses\' . ses-mode) (\.docbook\' . sgml-mode) (\.com\' . dcl-mode) (/config\.\(?:bat\|log\)\' . fundamental-mode) (/\.\(authinfo\|netrc\)\' . authinfo-mode) (\.\(?:[iI][nN][iI]\|[lL][sS][tT]\|[rR][eE][gG]\|[sS][yY][sS]\)\' . conf-mode) (\.la\' . conf-unix-mode) (\.ppd\' . conf-ppd-mode) (java.+\.conf\' . conf-javaprop-mode) (\.properties\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-javaprop-mode) (\.toml\' . conf-toml-mode) (\.desktop\' . conf-desktop-mode) (/\.redshift\.conf\' . conf-windows-mode) (\`/etc/\(?:DIR_COLORS\|ethers\|.?fstab\|.*hosts\|lesskey\|login\.?de\(?:fs\|vperm\)\|magic\|mtab\|pam\.d/.*\|permissions\(?:\.d/.+\)?\|protocols\|rpc\|services\)\' . conf-space-mode) (\`/etc/\(?:acpid?/.+\|aliases\(?:\.d/.+\)?\|default/.+\|group-?\|hosts\..+\|inittab\|ksysguarddrc\|opera6rc\|passwd-?\|shadow-?\|sysconfig/.+\)\' . conf-mode) ([cC]hange[lL]og[-.][-0-9a-z]+\' . change-log-mode) (/\.?\(?:gitconfig\|gnokiirc\|hgrc\|kde.*rc\|mime\.types\|wgetrc\)\' . conf-mode) (/\.\(?:asound\|enigma\|fetchmail\|gltron\|gtk\|hxplayer\|mairix\|mbsync\|msmtp\|net\|neverball\|nvidia-settings-\|offlineimap\|qt/.+\|realplayer\|reportbug\|rtorrent\.\|screen\|scummvm\|sversion\|sylpheed/.+\|xmp\)rc\' . conf-mode) (/\.\(?:gdbtkinit\|grip\|mpdconf\|notmuch-config\|orbital/.+txt\|rhosts\|tuxracer/options\)\' . conf-mode) (/\.?X\(?:default\|resource\|re\)s\> . conf-xdefaults-mode) (/X11.+app-defaults/\|\.ad\' . conf-xdefaults-mode) (/X11.+locale/.+/Compose\' . conf-colon-mode) (/X11.+locale/compose\.dir\' . conf-javaprop-mode) (\.~?[0-9]+\.[0-9][-.0-9]*~?\' nil t) (\.\(?:orig\|in\|[bB][aA][kK]\)\' nil t) ([/.]c\(?:on\)?f\(?:i?g\)?\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-mode-maybe) (\.[1-9]\' . nroff-mode) (\.art\' . image-mode) (\.avs\' . image-mode) (\.bmp\' . image-mode) (\.cmyk\' . image-mode) (\.cmyka\' . image-mode) (\.crw\' . image-mode) (\.dcr\' . image-mode) (\.dcx\' . image-mode) (\.dng\' . image-mode) (\.dpx\' . image-mode) (\.fax\' . image-mode) (\.hrz\' . image-mode) (\.icb\' . image-mode) (\.icc\' . image-mode) (\.icm\' . image-mode) (\.ico\' . image-mode) (\.icon\' . image-mode) (\.jbg\' . image-mode) (\.jbig\' . image-mode) (\.jng\' . image-mode) (\.jnx\' . image-mode) (\.miff\' . image-mode) (\.mng\' . image-mode) (\.mvg\' . image-mode) (\.otb\' . image-mode) (\.p7\' . image-mode) (\.pcx\' . image-mode) (\.pdb\' . image-mode) (\.pfa\' . image-mode) (\.pfb\' . image-mode) (\.picon\' . image-mode) (\.pict\' . image-mode) (\.rgb\' . image-mode) (\.rgba\' . image-mode) (\.tga\' . image-mode) (\.wbmp\' . image-mode) (\.webp\' . image-mode) (\.wmf\' . image-mode) (\.wpg\' . image-mode) (\.xcf\' . image-mode) (\.xmp\' . image-mode) (\.xwd\' . image-mode) (\.yuv\' . image-mode) (\.tgz\' . tar-mode) (\.tbz2?\' . tar-mode) (\.txz\' . tar-mode) (\.tzst\' . tar-mode))
 
 ** Rust
 

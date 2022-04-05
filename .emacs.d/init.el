@@ -17,40 +17,45 @@
 (require 'use-package)
 (setq use-package-always-ensure t) ;; Installs packages that you use if they're not already installed
 
-  (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-       :map ivy-minibuffer-map
-       ("TAB" . ivy-alt-done)
-       ("C-l" . ivy-alt-done)
-       ("C-j" . ivy-next-line)
-       ("C-k" . ivy-previous-line)
-       :map ivy-switch-buffer-map
-       ("C-k" . ivy-previous-line)
-       ("C-l" . ivy-done)
-       ("C-d" . ivy-switch-buffer-kill)
-       :map ivy-reverse-i-search-map
-       ("C-k" . ivy-previous-line)
-       ("C-d" . ivy-reverse-i-search-kill))
-    :init
-    (ivy-mode 1))
+;; Make sure PATH is correct
+(use-package exec-path-from-shell
+  :config
+  (exec-path-from-shell-initialize))
 
-  (use-package ivy-rich
-    :init
-    (ivy-rich-mode 1))
+(use-package ivy
+  :diminish
+  :bind (("C-s" . swiper)
+     :map ivy-minibuffer-map
+     ("TAB" . ivy-alt-done)
+     ("C-l" . ivy-alt-done)
+     ("C-j" . ivy-next-line)
+     ("C-k" . ivy-previous-line)
+     :map ivy-switch-buffer-map
+     ("C-k" . ivy-previous-line)
+     ("C-l" . ivy-done)
+     ("C-d" . ivy-switch-buffer-kill)
+     :map ivy-reverse-i-search-map
+     ("C-k" . ivy-previous-line)
+     ("C-d" . ivy-reverse-i-search-kill))
+  :init
+  (ivy-mode 1))
 
-  (use-package ivy-posframe
-    :init
-    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
-    :config
-    (ivy-posframe-mode 1))
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1))
 
-  (use-package counsel
-    :bind (("M-x" . counsel-M-x)
-       ("C-x b" . counsel-ibuffer)
-       ("C-x C-f" . counsel-find-file)
-       :map minibuffer-local-map
-       ("C-r" . 'counsel-minibuffer-history)))
+(use-package ivy-posframe
+  :init
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+  :config
+  (ivy-posframe-mode 1))
+
+(use-package counsel
+  :bind (("M-x" . counsel-M-x)
+     ("C-x b" . counsel-ibuffer)
+     ("C-x C-f" . counsel-find-file)
+     :map minibuffer-local-map
+     ("C-r" . 'counsel-minibuffer-history)))
 
 (use-package which-key
   :init (which-key-mode)
@@ -58,34 +63,34 @@
   :config
   (setq which-key-idle-delay 0.3))
 
-  (setq inhibit-startup-message t)
-  (scroll-bar-mode -1) ; Disable visible scrollbar
-  (tool-bar-mode -1)   ; Disable the toolbar
-  (tooltip-mode -1)    ; Disable tooltips
-  (set-fringe-mode 10) ; Give some breathing room
-  (menu-bar-mode -1)   ; Disable the menu bar
-  (setq ring-bell-function 'ignore) ; Disable alarms
+(setq inhibit-startup-message t)
+(scroll-bar-mode -1) ; Disable visible scrollbar
+(tool-bar-mode -1)   ; Disable the toolbar
+(tooltip-mode -1)    ; Disable tooltips
+(set-fringe-mode 10) ; Give some breathing room
+(menu-bar-mode -1)   ; Disable the menu bar
+(setq ring-bell-function 'ignore) ; Disable alarms
 
-  ;; Enable line numbers
-  (column-number-mode)
-  (global-display-line-numbers-mode t)
+;; Enable line numbers
+(column-number-mode)
+(global-display-line-numbers-mode t)
 
-  ;; Disable line numbers for some modes
-  (dolist (mode '(org-mode-hook
-          term-mode-hook
-          shell-mode-hook
-          eshell-mode-hook
-          treemacs-mode-hook
-          ))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+        term-mode-hook
+        shell-mode-hook
+        eshell-mode-hook
+        treemacs-mode-hook
+        ))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 
-  ;; Rainbox delimiters for all programming modes
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
+;; Rainbox delimiters for all programming modes
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
 
-  ;; Better commenting
-  (use-package smart-comment)
+;; Better commenting
+(use-package smart-comment)
 
 (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
@@ -106,11 +111,11 @@
   :init
   (load-theme 'doom-moonlight t))
 
-    ;(use-package page-break-lines)
+;(use-package page-break-lines)
 
-        ;(use-package dashboard
-        ;:config
-  ;(dashboard-setup-startup-hook))
+      ;(use-package dashboard
+      ;:config
+;(dashboard-setup-startup-hook))
 
 (use-package doom-modeline
   :custom ((doom-modeline-height 35))
@@ -130,42 +135,15 @@
   :config
   (global-emojify-mode))
 
-  (use-package general
+(use-package general
     :config
     (general-override-mode)
     (general-evil-setup t)
     (general-create-definer my-leader
-                :keymaps '(normal insert visual emacs)
-                :prefix "SPC"
-                :global-prefix "C-SPC")
+        :keymaps '(normal insert visual emacs)
+            :prefix "SPC"
+            :global-prefix "C-SPC"))
 
-    ;; Global Keybindings
-    (my-leader
-      ;; Projectile
-      "SPC" '(projectile-find-file :which-key "Find file in project")
-      "," '(counsel-switch-buffer :which-key "Switch buffer")
-      "." '(counsel-find-file :which-key "Find file")
-      ;"p" (:ignore t :which-key "project")
-
-      ;; Toggle
-     "t"  '(:ignore t :which-key "toggle")
-     "tt" '(counsel-load-theme :which-key "Choose theme")
-
-     ;; Line formatting
-     "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines")
-
-     ;; Window
-     "w" '(:ignore t :which-key "window")
-     "wc" '(delete-window :which-key "Close window")
-     "wv" '(split-window-right :which-key "Vertical split")
-     "ws" '(split-window-below :which-key "Horizontal split")
-     "wh" '(windmove-left :which-key "Select left window")
-     "wj" '(windmove-down :which-key "Select down window")
-     "wk" '(windmove-up :which-key "Select up window")
-     "wl" '(windmove-right :which-key "Select right window")
-))
-
-;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (use-package evil
@@ -184,8 +162,11 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
+  ;; set the initial state for certain special modes
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+  (evil-set-initial-state 'dashboard-mode 'normal)
+  ;; disable Evil-mode for certain buffers
+  (evil-set-initial-state 'eshell-mode 'emacs))
 
 ;; Gives us default Evil configurations for a lot of other modes
 (use-package evil-collection
@@ -204,30 +185,57 @@
 (my-leader
  "ts" '(hydra-text-scale/body :which-key "scale text"))
 
-  (setq-default tab-width 4)
-  (setq-default indent-tabs-mode nil)
-  (setq-default c-basic-offset 4)
-  (setq-default evil-shift-width 4)
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 4)
+(setq-default evil-shift-width 4)
 
-  ;; (setq-default electric-indent-inhibit t)
+;; (setq-default electric-indent-inhibit t)
 
-  ;; Make the backspace properly erase the whole tab instead of removing
-  ;; 1 space at a time
-  (setq backward-delete-char-untabify-method 'hungry)
+;; Make the backspace properly erase the whole tab instead of removing
+;; 1 space at a time
+(setq backward-delete-char-untabify-method 'hungry)
 
+;; Make Evil mode backspace delete a whole tab's worth of spaces at a time
+(general-define-key
+    :states 'insert
+    "<backspace>" 'backward-delete-char-untabify)
 
-  ;; WARNING: This will change your life
-  ;; (OPTIONAL) Visualize tabs as a pipe character - "|"
-  ;; This will also show trailing characters as they are useful to spot.
-  ;; (setq whitespace-style '(face tabs tab-mark trailing))
-  ;; (custom-set-faces
-  ;; '(whitespace-tab ((t (:foreground "#636363")))))
+(my-leader
+    ;; Line formatting
+    "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines"))
 
-  ;; (setq whitespace-display-mappings 
-  ;; '((tab-mark 9 [124 9] [92 9]))) ; 124 is the ascii ID for '\|'
-  ;; (global-whitespace-mode) ; Enable whitespace mode everywhere
+(my-leader
+      "." '(counsel-find-file :which-key "Find file"))
 
- (defun ns/org-mode-setup ()
+(my-leader
+     "t"  '(:ignore t :which-key "toggle")
+     "t s" '(counsel-load-theme :which-key "Choose theme")
+
+     "t t" '(treemacs :which-key "Treemacs")
+     "t y" '(lsp-treemacs-symbols :which-key "Treemacs Symbols"))
+
+(my-leader
+    "o" '(:ignore t :which-key "open")
+    "o e" '(eshell :which-key "Open EShell"))
+
+(my-leader
+     "w" '(:ignore t :which-key "window")
+     "wc" '(delete-window :which-key "Close window")
+     "wv" '(split-window-right :which-key "Vertical split")
+     "ws" '(split-window-below :which-key "Horizontal split")
+     "wh" '(windmove-left :which-key "Select left window")
+     "wj" '(windmove-down :which-key "Select down window")
+     "wk" '(windmove-up :which-key "Select up window")
+     "wl" '(windmove-right :which-key "Select right window"))
+
+(my-leader
+      "," '(counsel-switch-buffer :which-key "Switch buffer")
+
+      "b" '(:ignore t :which-key "buffers")
+      "b k" '(kill-buffer :which-key "Kill buffer"))
+
+(defun ns/org-mode-setup ()
    (org-indent-mode)
    ;; (variable-pitch-mode 1)
    (visual-line-mode 1))
@@ -269,11 +277,11 @@
     (my-leader
       "n" '(:ignore t :which-key "notes")))
 
-  (org-babel-do-load-languages 'org-babel-load-languages
-      '((emacs-lisp . t)
-        (python . t)))
+(org-babel-do-load-languages 'org-babel-load-languages
+    '((emacs-lisp . t)
+      (python . t)))
 
-  (setq org-confirm-babel-evaluate nil)
+(setq org-confirm-babel-evaluate nil)
 
 (defun ns/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
@@ -327,43 +335,47 @@
   :init
   ;(when (file-directory-p "~/Documents")
     ;(setq projectile-project-search-path '("~/Documents")))
-  (setq projectile-switch-project-action #'projectile-dired))
+  (setq projectile-switch-project-action #'projectile-dired)
+
+  :general
+  (my-leader
+      "SPC" '(projectile-find-file :which-key "Find file in project")))
 
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
-  (use-package treemacs)
-  (use-package treemacs-evil
-    :after (treemacs evil))
-  (use-package treemacs-projectile
-    :after (treemacs projectile))
-  (use-package treemacs-icons-dired
-    :hook (dired-mode . treemacs-icons-dired-enable-once))
-  (use-package treemacs-magit
-    :after (treemacs magit))
-  (use-package lsp-treemacs
-    :after (treemacs lsp-mode)
-    :config (lsp-treemacs-sync-mode 1))
+(use-package treemacs)
+(use-package treemacs-evil
+  :after (treemacs evil))
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once))
+(use-package treemacs-magit
+  :after (treemacs magit))
+(use-package lsp-treemacs
+  :after (treemacs lsp-mode)
+  :config (lsp-treemacs-sync-mode 1))
 
-  (use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :init
-    (setq lsp-keymap-prefix "C-l")
-    :config
-    (lsp-enable-which-key-integration t)
-    :general
-    ;; TODO figure this out
-    (my-leader
-      "c" '(:keymap lsp-mode-map :which-key "code")))
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-l")
+  :config
+  (lsp-enable-which-key-integration t)
+  :general
+  ;; TODO figure this out
+  (my-leader
+    "c" '(:keymap lsp-mode-map :which-key "code")))
 
-  (use-package lsp-ivy)
+(use-package lsp-ivy)
 
-  (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
-    :custom
-    (lsp-ui-doc-position 'bottom))
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
 
-  (use-package company
+(use-package company
     :after lsp-mode
     :hook (lsp-mode . company-mode)
     :bind (:map company-active-map
