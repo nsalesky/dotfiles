@@ -17,73 +17,6 @@
 (require 'use-package)
 (setq use-package-always-ensure t) ;; Installs packages that you use if they're not already installed
 
-  (setq inhibit-startup-message t)
-  (scroll-bar-mode -1) ; Disable visible scrollbar
-  (tool-bar-mode -1)   ; Disable the toolbar
-  (tooltip-mode -1)    ; Disable tooltips
-  (set-fringe-mode 10) ; Give some breathing room
-  (menu-bar-mode -1)   ; Disable the menu bar
-  (setq ring-bell-function 'ignore) ; Disable alarms
-
-  ;; Enable line numbers
-  (column-number-mode)
-  (global-display-line-numbers-mode t)
-
-  ;; Disable line numbers for some modes
-  (dolist (mode '(org-mode-hook
-          term-mode-hook
-          shell-mode-hook
-          eshell-mode-hook
-          treemacs-mode-hook
-          ))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
-
-  ;; Rainbox delimiters for all programming modes
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
-
-  ;; Better commenting
-  (use-package smart-comment)
-
-(set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
-(set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
-(set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 140)
-
-;; NOTE: The first time you run this on a new machine, you'll need to run this
-;; command interactively
-;;
-;; M-x all-the-icons-install-fonts
-(use-package all-the-icons)
-
-(use-package doom-themes
-  :init
-  (load-theme 'doom-moonlight t))
-
-    ;(use-package page-break-lines)
-
-        ;(use-package dashboard
-        ;:config
-  ;(dashboard-setup-startup-hook))
-
-(use-package doom-modeline
-  :custom ((doom-modeline-height 35))
-  :init (doom-modeline-mode 1))
-
-(use-package helpful
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
-
-(use-package emojify
-  :config
-  (global-emojify-mode))
-
   (use-package ivy
     :diminish
     :bind (("C-s" . swiper)
@@ -124,6 +57,78 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.3))
+
+  (setq inhibit-startup-message t)
+  (scroll-bar-mode -1) ; Disable visible scrollbar
+  (tool-bar-mode -1)   ; Disable the toolbar
+  (tooltip-mode -1)    ; Disable tooltips
+  (set-fringe-mode 10) ; Give some breathing room
+  (menu-bar-mode -1)   ; Disable the menu bar
+  (setq ring-bell-function 'ignore) ; Disable alarms
+
+  ;; Enable line numbers
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
+
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+          term-mode-hook
+          shell-mode-hook
+          eshell-mode-hook
+          treemacs-mode-hook
+          ))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+
+  ;; Rainbox delimiters for all programming modes
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+  ;; Better commenting
+  (use-package smart-comment)
+
+(set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
+(set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
+(set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 140)
+
+;; NOTE: The first time you run this on a new machine, you'll need to run this
+;; command interactively
+;;
+;; M-x all-the-icons-install-fonts
+(use-package all-the-icons)
+
+;; Enable global visual line mode to wrap lines properly.
+(global-visual-line-mode 1)
+;; Highlight the current line in prog mode
+(add-hook 'prog-mode-hook 'hl-line-mode)
+
+(use-package doom-themes
+  :init
+  (load-theme 'doom-moonlight t))
+
+    ;(use-package page-break-lines)
+
+        ;(use-package dashboard
+        ;:config
+  ;(dashboard-setup-startup-hook))
+
+(use-package doom-modeline
+  :custom ((doom-modeline-height 35))
+  :init (doom-modeline-mode 1))
+
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+
+(use-package emojify
+  :config
+  (global-emojify-mode))
 
   (use-package general
     :config
@@ -204,7 +209,7 @@
   (setq-default c-basic-offset 4)
   (setq-default evil-shift-width 4)
 
-  (setq-default electric-indent-inhibit t)
+  ;; (setq-default electric-indent-inhibit t)
 
   ;; Make the backspace properly erase the whole tab instead of removing
   ;; 1 space at a time
@@ -306,7 +311,10 @@
     "n r o" '(org-roam-node-open :which-key "Open Node")
     "n r g" '(org-roam-graph :which-key "Graph")))
 
-(use-package magit)
+(use-package magit
+  :general
+  (my-leader
+    "g" '(magit-status :which-key "Git Status")))
 
 ;(use-package forge)
 
@@ -342,7 +350,11 @@
     :init
     (setq lsp-keymap-prefix "C-l")
     :config
-    (lsp-enable-which-key-integration t))
+    (lsp-enable-which-key-integration t)
+    :general
+    ;; TODO figure this out
+    (my-leader
+      "c" '(:keymap lsp-mode-map :which-key "code")))
 
   (use-package lsp-ivy)
 
@@ -385,6 +397,17 @@
 
 (use-package rustic)
 
+(add-hook 'c-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'lsp)
 
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
+
+;; set up keybindings
+(with-eval-after-load 'general
+    (my-leader
+        "f" '(:ignore t :which-key "files")
+        "f r" '(counsel-recentf :which-key "Open Recent Files")))
 
 

@@ -1,6 +1,7 @@
 #+title: My Emacs Configuration
 #+author: Nick Salesky
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el
+#+STARTUP: overview
 
 * Package System Setup
 
@@ -24,6 +25,59 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t) ;; Installs packages that you use if they're not already installed
+
+#+end_src
+
+* Ivy and Counsel
+** Basic Config
+
+#+begin_src emacs-lisp
+
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+       :map ivy-minibuffer-map
+       ("TAB" . ivy-alt-done)
+       ("C-l" . ivy-alt-done)
+       ("C-j" . ivy-next-line)
+       ("C-k" . ivy-previous-line)
+       :map ivy-switch-buffer-map
+       ("C-k" . ivy-previous-line)
+       ("C-l" . ivy-done)
+       ("C-d" . ivy-switch-buffer-kill)
+       :map ivy-reverse-i-search-map
+       ("C-k" . ivy-previous-line)
+       ("C-d" . ivy-reverse-i-search-kill))
+    :init
+    (ivy-mode 1))
+
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
+
+  (use-package ivy-posframe
+    :init
+    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+    :config
+    (ivy-posframe-mode 1))
+
+  (use-package counsel
+    :bind (("M-x" . counsel-M-x)
+       ("C-x b" . counsel-ibuffer)
+       ("C-x C-f" . counsel-find-file)
+       :map minibuffer-local-map
+       ("C-r" . 'counsel-minibuffer-history)))
+#+end_src
+** Which-key
+Display the keybindings for the commands listed in Ivy.
+
+#+begin_src emacs-lisp
+
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3))
 
 #+end_src
 
@@ -87,6 +141,20 @@ Also install helpful icons
 
 #+end_src
 
+** Line Settings
+
+#+BEGIN_SRC emacs-lisp
+
+;; Enable global visual line mode to wrap lines properly.
+(global-visual-line-mode 1)
+;; Highlight the current line in prog mode
+(add-hook 'prog-mode-hook 'hl-line-mode)
+
+#+END_SRC 
+
+#+RESULTS:
+: t
+
 ** Theme
 
 #+begin_src emacs-lisp
@@ -149,59 +217,6 @@ Display emojis in any text mode!! :smile:
   (global-emojify-mode))
 
 #+END_SRC 
-
-* Ivy and Counsel
-** Basic Config
-
-#+begin_src emacs-lisp
-
-  (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-       :map ivy-minibuffer-map
-       ("TAB" . ivy-alt-done)
-       ("C-l" . ivy-alt-done)
-       ("C-j" . ivy-next-line)
-       ("C-k" . ivy-previous-line)
-       :map ivy-switch-buffer-map
-       ("C-k" . ivy-previous-line)
-       ("C-l" . ivy-done)
-       ("C-d" . ivy-switch-buffer-kill)
-       :map ivy-reverse-i-search-map
-       ("C-k" . ivy-previous-line)
-       ("C-d" . ivy-reverse-i-search-kill))
-    :init
-    (ivy-mode 1))
-
-  (use-package ivy-rich
-    :init
-    (ivy-rich-mode 1))
-
-  (use-package ivy-posframe
-    :init
-    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
-    :config
-    (ivy-posframe-mode 1))
-
-  (use-package counsel
-    :bind (("M-x" . counsel-M-x)
-       ("C-x b" . counsel-ibuffer)
-       ("C-x C-f" . counsel-find-file)
-       :map minibuffer-local-map
-       ("C-r" . 'counsel-minibuffer-history)))
-#+end_src
-** Which-key
-Display the keybindings for the commands listed in Ivy.
-
-#+begin_src emacs-lisp
-
-(use-package which-key
-  :init (which-key-mode)
-  :diminish which-key-mode
-  :config
-  (setq which-key-idle-delay 0.3))
-
-#+end_src
 
 * Keybindings
 ** General
@@ -327,7 +342,7 @@ I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
   (setq-default c-basic-offset 4)
   (setq-default evil-shift-width 4)
 
-  (setq-default electric-indent-inhibit t)
+  ;; (setq-default electric-indent-inhibit t)
 
   ;; Make the backspace properly erase the whole tab instead of removing
   ;; 1 space at a time
@@ -494,10 +509,15 @@ Give Org-mode documents some extra visual polish.
 
 #+begin_src emacs-lisp
 
-(use-package magit)
+(use-package magit
+  :general
+  (my-leader
+    "g" '(magit-status :which-key "Git Status")))
 
 ;(use-package forge)
 #+end_src
+
+#+RESULTS:
 
 ** Projectile
 
@@ -549,7 +569,11 @@ Give Org-mode documents some extra visual polish.
     :init
     (setq lsp-keymap-prefix "C-l")
     :config
-    (lsp-enable-which-key-integration t))
+    (lsp-enable-which-key-integration t)
+    :general
+    ;; TODO figure this out
+    (my-leader
+      "c" '(:keymap lsp-mode-map :which-key "code")))
 
   (use-package lsp-ivy)
 
@@ -561,7 +585,7 @@ Give Org-mode documents some extra visual polish.
 #+end_src
 
 #+RESULTS:
-: t
+| company-mode | lsp-ui-mode |
 
 ** Company Mode
 A good code-completion package. I might consider switching to Corfu at some point.
@@ -650,11 +674,36 @@ My configuration for each programming language that I want to be able to work wi
 
 #+begin_src emacs-lisp
 
-
+(add-hook 'c-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'lsp)
 
 #+end_src
+
+#+RESULTS:
+| lsp |
+
+* Useful Settings
+** Recent Files
+Maintain a list of recently-opened files.
+
+#+BEGIN_SRC emacs-lisp
+
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
+
+;; set up keybindings
+(with-eval-after-load 'general
+    (my-leader
+        "f" '(:ignore t :which-key "files")
+        "f r" '(counsel-recentf :which-key "Open Recent Files")))
+#+END_SRC 
+
+#+RESULTS:
+
 * Temp
 
 #+begin_src emacs-lisp
 
 #+end_src
+
