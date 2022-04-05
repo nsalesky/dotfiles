@@ -230,7 +230,7 @@
      "wl" '(windmove-right :which-key "Select right window"))
 
 (my-leader
-      "," '(counsel-switch-buffer :which-key "Switch buffer")
+      ;"," '(counsel-switch-buffer :which-key "Switch buffer")
 
       "b" '(:ignore t :which-key "buffers")
       "b k" '(kill-buffer :which-key "Kill buffer"))
@@ -414,6 +414,31 @@
 (use-package wakatime-mode
   :config
   (global-wakatime-mode))
+
+(use-package perspective
+    :config
+    (persp-mode)
+
+    :general
+    (my-leader
+      "," '(persp-ivy-switch-buffer :which-key "Switch buffer")
+      "b k" '(persp-remove-buffer :which-key "Remove buffer")
+
+      "TAB" '(:ignore t :which-key "workspace")
+      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
+      "TAB r" '(persp-rename :which-key "Rename workspace")
+      "TAB s" '(persp-state-save :which-key "Save workspaces")
+      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
+      "TAB k" '(persp-kill :which-key "Kill workspace")
+      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
+      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
+      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 3")
+      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 4")
+      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 5")
+      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 6")
+      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 7")
+      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 8")
+      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 9")))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
