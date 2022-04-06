@@ -205,8 +205,17 @@
     ;; Line formatting
     "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines"))
 
+;; Keep track of recently-opened files
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
+
 (my-leader
-      "." '(counsel-find-file :which-key "Find file"))
+    "." '(counsel-find-file :which-key "Find file")
+
+    "f" '(:ignore t :which-key "files")
+    "f r" '(counsel-recentf :which-key "Open Recent Files")
+    "f c" '((lambda () (interactive)(find-file "~/.dotfiles/.emacs.d/config.org")) :which-key "Open config.org"))
 
 (my-leader
      "t"  '(:ignore t :which-key "toggle")
@@ -353,23 +362,28 @@
 
   :general
   (my-leader
-      "SPC" '(projectile-find-file :which-key "Find file in project")))
+      "SPC" '(projectile-find-file :which-key "Find file in project")
+      "p" '(:ignore t :which-key "projects")
+      "p p" '(projectile-switch-project :which-key "Switch project")))
 
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
-  (use-package treemacs)
-  (use-package treemacs-evil
+(use-package treemacs)
+(use-package treemacs-evil
     :after (treemacs evil))
-  (use-package treemacs-projectile
+(use-package treemacs-projectile
     :after (treemacs projectile))
-  (use-package treemacs-icons-dired
+(use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
-  (use-package treemacs-magit
+(use-package treemacs-magit
     :after (treemacs magit))
-  (use-package lsp-treemacs
+(use-package lsp-treemacs
     :after (treemacs lsp-mode)
     :config (lsp-treemacs-sync-mode 1))
+(use-package treemacs-all-the-icons
+  :config
+  (treemacs-load-theme "all-the-icons"))
 
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
@@ -450,15 +464,5 @@
 
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
-
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
-
-;; set up keybindings
-(with-eval-after-load 'general
-    (my-leader
-        "f" '(:ignore t :which-key "files")
-        "f r" '(counsel-recentf :which-key "Open Recent Files")))
 
 
