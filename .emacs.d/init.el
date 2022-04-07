@@ -183,7 +183,7 @@
   ("f" nil "finished" :exit t))
 
 (my-leader
- "ts" '(hydra-text-scale/body :which-key "scale text"))
+ "t k" '(hydra-text-scale/body :which-key "Scale text"))
 
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
@@ -314,13 +314,13 @@
 
 ;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
 
-(defun ns/org-mode-visual-fill ()
-    (setq visual-fill-column-width 120
-    visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
+;; (defun ns/org-mode-visual-fill ()
+;;     (setq visual-fill-column-width 120
+;;     visual-fill-column-center-text t)
+;;     (visual-fill-column-mode 1))
 
-(use-package visual-fill-column
-    :hook (org-mode . ns/org-mode-visual-fill))
+;; (use-package visual-fill-column
+;;     :hook (org-mode . ns/org-mode-visual-fill))
 
 (use-package org-modern
     :config
@@ -341,6 +341,13 @@
     "n r i" '(org-roam-node-insert :which-key "Insert Node")
     "n r o" '(org-roam-node-open :which-key "Open Node")
     "n r g" '(org-roam-graph :which-key "Graph")))
+
+(use-package olivetti
+  :init
+  (setq olivetti-body-width 80
+        olivetti-style t)
+  :hook
+  (org-mode . olivetti-mode))
 
 (use-package magit
   :general
@@ -430,6 +437,9 @@
   (global-wakatime-mode))
 
 (use-package perspective
+    :init
+    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state")
+    
     :config
     (persp-mode)
 
@@ -454,6 +464,20 @@
       "TAB 8" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 8")
       "TAB 9" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 9")))
 
+(use-package smartparens
+  :hook
+  (prog-mode . smartparens-mode))
+
+(use-package evil-smartparens
+  :hook
+  (smartparens-enabled . evil-smartparens-mode))
+
+(use-package lsp-pyright
+  :hook
+  (python-mode . (lambda ()
+                   (require 'lsp-pyright)
+                   (lsp-deferred))))
+
 (use-package typescript-mode
   :mode "\\.ts\\'"
   :hook (typescript-mode . lsp-deferred)
@@ -464,5 +488,8 @@
 
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
+
+(use-package glsl-mode
+  :mode "\\.glsl\\'")
 
 

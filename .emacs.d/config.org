@@ -311,7 +311,7 @@ Sets up a hydra to let me easily change the text scale.
   ("f" nil "finished" :exit t))
 
 (my-leader
- "ts" '(hydra-text-scale/body :which-key "scale text"))
+ "t k" '(hydra-text-scale/body :which-key "Scale text"))
 #+end_src
 
 ** Tabs Not Spaces
@@ -536,17 +536,17 @@ Automatically tangle the =config.org= file whenever it is saved. I currently hav
 #+end_src
 
 ** Visual fill
-View Org-mode documents in a centered document view.
+View Org-mode documents in a centered document view. (I replaced this with Olivetti, just keeping this around until I verify that it works well)
 
 #+BEGIN_SRC emacs-lisp
 
-(defun ns/org-mode-visual-fill ()
-    (setq visual-fill-column-width 120
-    visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
+;; (defun ns/org-mode-visual-fill ()
+;;     (setq visual-fill-column-width 120
+;;     visual-fill-column-center-text t)
+;;     (visual-fill-column-mode 1))
 
-(use-package visual-fill-column
-    :hook (org-mode . ns/org-mode-visual-fill))
+;; (use-package visual-fill-column
+;;     :hook (org-mode . ns/org-mode-visual-fill))
 
 #+END_SRC 
 
@@ -587,7 +587,28 @@ Give Org-mode documents some extra visual polish.
 
 #+RESULTS:
 
+* Editor
+This section is a little vague, but I'm planning to put general packages/configuration settings here that don't fit elsewhere and help make Emacs a better editor in general.
+
+** Olivetti
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package olivetti
+  :init
+  (setq olivetti-body-width 80
+        olivetti-style t)
+  :hook
+  (org-mode . olivetti-mode))
+
+#+END_SRC 
+
+#+RESULTS:
+| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | olivetti-mode | org-modern-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | ns/org-mode-setup | (lambda nil (display-line-numbers-mode 0)) | org-eldoc-load |
+
 * Development Tools
+Different tools for programming.
+
 ** Magit
 
 #+begin_src emacs-lisp
@@ -746,6 +767,9 @@ Add named workspaces to Emacs with their own buffers.
 #+BEGIN_SRC emacs-lisp
 
 (use-package perspective
+    :init
+    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state")
+    
     :config
     (persp-mode)
 
@@ -774,8 +798,39 @@ Add named workspaces to Emacs with their own buffers.
 
 #+RESULTS:
 
+** SmartParens
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package smartparens
+  :hook
+  (prog-mode . smartparens-mode))
+
+(use-package evil-smartparens
+  :hook
+  (smartparens-enabled . evil-smartparens-mode))
+#+END_SRC 
+
+#+RESULTS:
+| evil-smartparens-mode |
+
 * Language-specific Configuration
 My configuration for each programming language that I want to be able to work with.
+
+** Python
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package lsp-pyright
+  :hook
+  (python-mode . (lambda ()
+                   (require 'lsp-pyright)
+                   (lsp-deferred))))
+
+#+END_SRC 
+
+#+RESULTS:
+| (lambda nil (require 'lsp-pyright) (lsp-deferred)) | evil-collection-python-set-evil-shift-width | doom-modeline-env-setup-python |
 
 ** Typescript
 
@@ -811,6 +866,14 @@ My configuration for each programming language that I want to be able to work wi
 #+RESULTS:
 | lsp |
 
+** GLSL
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package glsl-mode
+  :mode "\\.glsl\\'")
+
+#+END_SRC 
 * Temp
 
 #+begin_src emacs-lisp
