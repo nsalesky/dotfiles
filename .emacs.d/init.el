@@ -63,34 +63,37 @@
   :config
   (setq which-key-idle-delay 0.3))
 
-  (setq inhibit-startup-message t)
-  (scroll-bar-mode -1) ; Disable visible scrollbar
-  (tool-bar-mode -1)   ; Disable the toolbar
-  (tooltip-mode -1)    ; Disable tooltips
-  (set-fringe-mode 10) ; Give some breathing room
-  (menu-bar-mode -1)   ; Disable the menu bar
-  (setq ring-bell-function 'ignore) ; Disable alarms
+(setq inhibit-startup-message t)
+(scroll-bar-mode -1) ; Disable visible scrollbar
+(tool-bar-mode -1)   ; Disable the toolbar
+(tooltip-mode -1)    ; Disable tooltips
+(set-fringe-mode 10) ; Give some breathing room
+(menu-bar-mode -1)   ; Disable the menu bar
+(setq ring-bell-function 'ignore) ; Disable alarms
 
-  ;; Enable line numbers
-  (column-number-mode)
-  (global-display-line-numbers-mode t)
+;; Window title
+(setq-default frame-title-format '("%b [%m]"))
 
-  ;; Disable line numbers for some modes
-  (dolist (mode '(org-mode-hook
-          term-mode-hook
-          shell-mode-hook
-          eshell-mode-hook
-          treemacs-mode-hook
-          ))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+;; Enable line numbers
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+        term-mode-hook
+        shell-mode-hook
+        eshell-mode-hook
+        treemacs-mode-hook
+        ))
+(add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 
-  ;; Rainbox delimiters for all programming modes
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
+;; Rainbox delimiters for all programming modes
+(use-package rainbow-delimiters
+:hook (prog-mode . rainbow-delimiters-mode))
 
-  ;; Better commenting
-  (use-package smart-comment)
+;; Better commenting
+(use-package smart-comment)
 
 (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
@@ -106,6 +109,16 @@
 (global-visual-line-mode 1)
 ;; Highlight the current line in prog mode
 (add-hook 'prog-mode-hook 'hl-line-mode)
+
+(use-package hl-todo
+  :config
+  (global-hl-todo-mode))
+
+(use-package smooth-scrolling
+  :init
+  (setq smooth-scroll-margin 5)
+  :config
+  (smooth-scrolling-mode))
 
 (use-package doom-themes
   :init
@@ -140,11 +153,26 @@
     (general-override-mode)
     (general-evil-setup t)
     (general-create-definer my-leader
-        :keymaps '(normal insert visual emacs)
+        :keymaps '(normal visual emacs)
             :prefix "SPC"
-            :global-prefix "C-SPC"))
+            :non-normal-prefix "C-SPC")
+    (general-create-definer my-local-leader
+        :keymaps '(normal insert visual emacs)
+        :which-key "local-leader"
+        :global-prefix "C-q"))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+(use-package hydra)
+
+(defhydra hydra-text-scale (:timeout 4)
+  "scale text"
+  ("j" text-scale-increase "up")
+  ("k" text-scale-decrease "down")
+  ("f" nil "finished" :exit t))
+
+(my-leader
+ "t k" '(hydra-text-scale/body :which-key "Scale text"))
 
 (use-package evil
   :init
@@ -174,16 +202,43 @@
   :config
   (evil-collection-init))
 
-(use-package hydra)
+;; (defhydra my-mc-hydra (:color pink
+;;                        :hint nil
+;;                        :pre (evil-mc-pause-cursors))
+;;   "
+;; ^Match^            ^Line-wise^           ^Manual^
+;; ^^^^^^----------------------------------------------------
+;; _Z_: match all     _J_: make & go down   _z_: toggle here
+;; _m_: make & next   _K_: make & go up     _r_: remove last
+;; _M_: make & prev   ^ ^                   _R_: remove all
+;; _n_: skip & next   ^ ^                   _p_: pause/resume
+;; _N_: skip & prev
 
-(defhydra hydra-text-scale (:timeout 4)
-  "scale text"
-  ("j" text-scale-increase "up")
-  ("k" text-scale-decrease "down")
-  ("f" nil "finished" :exit t))
+;; Current pattern: %`evil-mc-pattern
 
-(my-leader
- "t k" '(hydra-text-scale/body :which-key "Scale text"))
+;; "
+;;   ("Z" #'evil-mc-make-all-cursors)
+;;   ("m" #'evil-mc-make-and-goto-next-match)
+;;   ("M" #'evil-mc-make-and-goto-prev-match)
+;;   ("n" #'evil-mc-skip-and-goto-next-match)
+;;   ("N" #'evil-mc-skip-and-goto-prev-match)
+;;   ("J" #'evil-mc-make-cursor-move-next-line)
+;;   ("K" #'evil-mc-make-cursor-move-prev-line)
+;;   ("z" #'+multiple-cursors/evil-mc-toggle-cursor-here)
+;;   ("r" #'+multiple-cursors/evil-mc-undo-cursor)
+;;   ("R" #'evil-mc-undo-all-cursors)
+;;   ("p" #'+multiple-cursors/evil-mc-toggle-cursors)
+;;   ("q" #'evil-mc-resume-cursors "quit" :color blue)
+;;   ("<escape>" #'evil-mc-resume-cursors "quit" :color blue))
+
+
+;; (use-package evil-mc
+;;   :config
+;;   (global-evil-mc-mode)
+;;   (general-define-key
+;;     :states '(normal visual)
+;;     :prefix "g"
+;;     "z" 'my-mc-hydra/body))
 
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
@@ -258,6 +313,18 @@
   (my-leader
     "s p" '(projectile-ag :which-key "Search project")))
 
+(use-package multiple-cursors
+  :general
+  (general-define-key
+    :states '(normal visual)
+    "R" 'mc/mark-all-like-this
+    "L" 'mc/edit-lines)
+  ;; keybindings for when multiple cursors are active
+  (general-define-key
+   :states '(normal visual emacs)
+   :keymaps 'mc/keymap
+    "C-n" 'mc/mark-more-like-this-extended))
+
  (defun ns/org-mode-setup ()
    (org-indent-mode)
    ;; (variable-pitch-mode 1)
@@ -274,6 +341,15 @@
    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
+;; Got this from https://stackoverflow.com/questions/10969617/hiding-markup-elements-in-org-mode
+(defun ns/org-toggle-emphasis ()
+  "Toggle hiding/showing of org emphasis markers"
+  (interactive)
+  (if org-hide-emphasis-markers
+      (set-variable 'org-hide-emphasis-markers nil)
+    (set-variable 'org-hide-emphasis-markers t)))
+
+
 (use-package org-contrib :pin nongnu)
 
 ;; Org Mode
@@ -282,29 +358,36 @@
     :hook (org-mode . ns/org-mode-setup)
     :config
     ;; (ns/org-font-setup)
-    (setq org-hide-emphasis-markers t
-    org-ellipsis " ▾"
-    org-pretty-entities t
+    (setq
+     ;; org-hide-emphasis-markers nil
+        org-ellipsis " ▾"
+        org-pretty-entities t
 
-    org-directory "~/org"
+        org-directory "~/org"
 
-    org-src-tab-acts-natively t
-    org-src-preserve-indentation t
+        org-src-tab-acts-natively t
+        org-src-preserve-indentation t
 
-    org-todo-keywords
-    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-        (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-            "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+        org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+            (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
+                "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
 
     :general
     (my-leader
       "n" '(:ignore t :which-key "notes")))
 
-  (org-babel-do-load-languages 'org-babel-load-languages
-      '((emacs-lisp . t)
-        (python . t)))
+    ;; local-leader stuff
+    ;; (my-local-leader
+    ;;   :keymaps 'org-mode-map
+    ;;   "b" '(org-babel-tangle :which-key "Org babel tangle")
+    ;;   "t" '(
 
-  (setq org-confirm-babel-evaluate nil)
+(org-babel-do-load-languages 'org-babel-load-languages
+    '((emacs-lisp . t)
+    (python . t)))
+
+(setq org-confirm-babel-evaluate nil)
 
 (defun ns/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
@@ -352,9 +435,15 @@
 (use-package magit
   :general
   (my-leader
-    "g" '(magit-status :which-key "Git Status")))
+    "g" '(:ignore t :which-key "git")
+    "g g" '(magit-status :which-key "Magit Status")))
 
 ;(use-package forge)
+
+(use-package blamer
+  :general
+  (my-leader
+    "g b" '(global-blamer-mode :which-key "Toggle blamer mode")))
 
 (use-package projectile
   :diminish projectile-mode
@@ -392,23 +481,48 @@
   :config
   (treemacs-load-theme "all-the-icons"))
 
-  (use-package lsp-mode
+(use-package lsp-mode
     :commands (lsp lsp-deferred)
     :init
     (setq lsp-keymap-prefix "C-l")
     :config
     (lsp-enable-which-key-integration t)
-    :general
+    ;; :general
     ;; TODO figure this out
-    (my-leader
-      "c" '(:keymap lsp-mode-map :which-key "code")))
+    ;; (my-leader
+    ;;   "c" '(:ignore t :which-key "code")))
+    ;; (add-hook 'lsp-after-open-hook
+    ;;     (lambda ()
+    ;;       (when (lsp-find-workspace 'rust-analyzer nil)
+    ;;         (lsp-rust-analyzer-inlay-hints-mode))))
+    :custom
 
-  (use-package lsp-ivy)
+    ;; Enable/disable type hints as you type for Rust
+    (lsp-rust-analyzer-server-display-inlay-hints t)
+    (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+    (lsp-rust-analyzer-display-chaining-hints nil)
+    (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+    (lsp-rust-analyzer-display-closure-return-type-hints t)
+    (lsp-rust-analyzer-display-parameter-hints t)
+    (lsp-rust-analyzer-display-reborrow-hints nil))
 
-  (use-package lsp-ui
+(use-package lsp-ivy)
+
+(use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode)
     :custom
-    (lsp-ui-doc-position 'bottom))
+    (lsp-ui-peek-always-show t)
+    (lsp-ui-sideline-show-hover t)
+    (lsp-ui-doc-position 'bottom)
+    (lsp-ui-doc-enable nil))
+
+(use-package tree-sitter
+  :config
+  (global-tree-sitter-mode)
+  :hook
+  (tree-sitter-mode . tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs)
 
   (use-package company
     :after lsp-mode
@@ -421,6 +535,7 @@
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
 
+;; Adds colors and icons to company-mode
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
@@ -456,13 +571,13 @@
       "TAB k" '(persp-kill :which-key "Kill workspace")
       "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
       "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
-      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 3")
-      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 4")
-      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 5")
-      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 6")
-      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 7")
-      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 8")
-      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 9")))
+      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
+      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
+      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
+      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
+      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
+      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
+      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
 
 (use-package smartparens
   :hook
@@ -484,10 +599,25 @@
   :config
   (setq typescript-indent-level 4))
 
-(use-package rustic)
+(use-package rustic
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)))
+  ;; :config
+  ;; uncomment for less flashiness
+  ;; (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-signature-auto-activate nil)
+
+  ;; comment to disable rustfmt on save
+  ;; (setq rustic-format-on-save t))
 
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
+
+(use-package meghanada
+  :hook
+  (java-mode . meghanada-mode))
 
 (use-package glsl-mode
   :mode "\\.glsl\\'")
