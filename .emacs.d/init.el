@@ -46,7 +46,11 @@
 
   (use-package ivy-posframe
     :init
-    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+    (setq ivy-posframe-display-functions-alist
+          '((counsel-M-x . ivy-display-function-fallback)
+            (counsel-find-file . ivy-display-function-fallback)
+            (swiper . ivy-display-function-fallback)
+            (t . ivy-posframe-display)))
     :config
     (ivy-posframe-mode 1))
 
@@ -95,8 +99,10 @@
 ;; Better commenting
 (use-package smart-comment)
 
-(set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
-(set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+(set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 140)
 
 ;; NOTE: The first time you run this on a new machine, you'll need to run this
@@ -330,16 +336,19 @@
    ;; (variable-pitch-mode 1)
    (visual-line-mode 1))
 
- (defun ns/org-font-setup ()
-   ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
-   (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-   (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-   (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
-   ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+(defun ns/org-font-setup ()
+  ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit
+                        'fixed-pitch)
+    (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+    ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit
+                    '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit
+                        '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 ;; Got this from https://stackoverflow.com/questions/10969617/hiding-markup-elements-in-org-mode
 (defun ns/org-toggle-emphasis ()
@@ -424,6 +433,35 @@
     "n r i" '(org-roam-node-insert :which-key "Insert Node")
     "n r o" '(org-roam-node-open :which-key "Open Node")
     "n r g" '(org-roam-graph :which-key "Graph")))
+
+(use-package hide-mode-line)
+
+(defun ns/presentation-setup ()
+    (setq text-scale-mode-amount 2)
+    (org-display-inline-images)
+    (text-scale-mode 1)
+    (hide-mode-line-mode 1))
+
+(defun ns/presentation-end ()
+    (text-scale-mode 0)
+    (hide-mode-line-mode 0))
+
+(use-package org-tree-slide
+    :hook ((org-tree-slide-play . ns/presentation-setup)
+           (org-tree-slide-stop . ns/presentation-end))
+    :custom
+    (org-tree-slide-slide-in-effect nil)
+    (org-tree-slide-activate-message "Presentation started!")
+    (org-tree-slide-deactivate-message "Presentation finished!")
+    (org-tree-slide-header t)
+    (org-image-actual-width nil)
+    :bind
+    (:map org-mode-map
+            ("<f8>" . org-tree-slide-mode)
+        :map org-tree-slide-mode-map
+            ("<f9>" . org-tree-slide-move-previous-tree)
+            ("<f10>" . org-tree-slide-move-next-tree)
+        ))
 
 (use-package olivetti
   :init
