@@ -22,44 +22,44 @@
   :config
   (exec-path-from-shell-initialize))
 
-  (use-package ivy
+(use-package ivy
     :diminish
     :bind (("C-s" . swiper)
-       :map ivy-minibuffer-map
-       ("TAB" . ivy-alt-done)
-       ("C-l" . ivy-alt-done)
-       ("C-j" . ivy-next-line)
-       ("C-k" . ivy-previous-line)
-       :map ivy-switch-buffer-map
-       ("C-k" . ivy-previous-line)
-       ("C-l" . ivy-done)
-       ("C-d" . ivy-switch-buffer-kill)
-       :map ivy-reverse-i-search-map
-       ("C-k" . ivy-previous-line)
-       ("C-d" . ivy-reverse-i-search-kill))
+    :map ivy-minibuffer-map
+    ("TAB" . ivy-alt-done)
+    ("C-l" . ivy-alt-done)
+    ("C-j" . ivy-next-line)
+    ("C-k" . ivy-previous-line)
+    :map ivy-switch-buffer-map
+    ("C-k" . ivy-previous-line)
+    ("C-l" . ivy-done)
+    ("C-d" . ivy-switch-buffer-kill)
+    :map ivy-reverse-i-search-map
+    ("C-k" . ivy-previous-line)
+    ("C-d" . ivy-reverse-i-search-kill))
     :init
     (ivy-mode 1))
 
-  (use-package ivy-rich
+(use-package ivy-rich
     :init
     (ivy-rich-mode 1))
 
-  (use-package ivy-posframe
+(use-package ivy-posframe
     :init
     (setq ivy-posframe-display-functions-alist
-          '((counsel-M-x . ivy-display-function-fallback)
-            (counsel-find-file . ivy-display-function-fallback)
-            (swiper . ivy-display-function-fallback)
-            (t . ivy-posframe-display)))
+        '((counsel-M-x . ivy-display-function-fallback)
+        (counsel-find-file . ivy-display-function-fallback)
+        (swiper . ivy-display-function-fallback)
+        (t . ivy-posframe-display)))
     :config
     (ivy-posframe-mode 1))
 
-  (use-package counsel
+(use-package counsel
     :bind (("M-x" . counsel-M-x)
-       ("C-x b" . counsel-ibuffer)
-       ("C-x C-f" . counsel-find-file)
-       :map minibuffer-local-map
-       ("C-r" . 'counsel-minibuffer-history)))
+    ("C-x b" . counsel-ibuffer)
+    ("C-x C-f" . counsel-find-file)
+    :map minibuffer-local-map
+    ("C-r" . 'counsel-minibuffer-history)))
 
 (use-package which-key
   :init (which-key-mode)
@@ -99,8 +99,6 @@
 ;; Better commenting
 (use-package smart-comment)
 
-;; (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
-;; (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 140)
@@ -110,6 +108,11 @@
 ;;
 ;; M-x all-the-icons-install-fonts
 (use-package all-the-icons)
+
+;; (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'default nil :font "Rec Mono Semi Casual" :height 120)
+;; (set-face-attribute 'fixed-pitch nil :font "Rec Mono Semi Casual" :height 120)
 
 ;; Enable global visual line mode to wrap lines properly.
 (global-visual-line-mode 1)
@@ -130,11 +133,11 @@
   :init
   (load-theme 'doom-moonlight t))
 
-    ;(use-package page-break-lines)
+;(use-package page-break-lines)
 
-        ;(use-package dashboard
-        ;:config
-  ;(dashboard-setup-startup-hook))
+(use-package dashboard
+    :config
+    (dashboard-setup-startup-hook))
 
 (use-package doom-modeline
   :custom ((doom-modeline-height 35))
@@ -659,5 +662,8 @@
 
 (use-package glsl-mode
   :mode "\\.glsl\\'")
+
+(use-package ca65-mode
+  :mode "\\.s\\'")
 
 

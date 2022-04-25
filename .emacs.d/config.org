@@ -33,48 +33,68 @@
 #+end_src
 
 * Ivy and Counsel
-** Basic Config
+** Ivy
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp
 
-  (use-package ivy
+(use-package ivy
     :diminish
     :bind (("C-s" . swiper)
-       :map ivy-minibuffer-map
-       ("TAB" . ivy-alt-done)
-       ("C-l" . ivy-alt-done)
-       ("C-j" . ivy-next-line)
-       ("C-k" . ivy-previous-line)
-       :map ivy-switch-buffer-map
-       ("C-k" . ivy-previous-line)
-       ("C-l" . ivy-done)
-       ("C-d" . ivy-switch-buffer-kill)
-       :map ivy-reverse-i-search-map
-       ("C-k" . ivy-previous-line)
-       ("C-d" . ivy-reverse-i-search-kill))
+    :map ivy-minibuffer-map
+    ("TAB" . ivy-alt-done)
+    ("C-l" . ivy-alt-done)
+    ("C-j" . ivy-next-line)
+    ("C-k" . ivy-previous-line)
+    :map ivy-switch-buffer-map
+    ("C-k" . ivy-previous-line)
+    ("C-l" . ivy-done)
+    ("C-d" . ivy-switch-buffer-kill)
+    :map ivy-reverse-i-search-map
+    ("C-k" . ivy-previous-line)
+    ("C-d" . ivy-reverse-i-search-kill))
     :init
     (ivy-mode 1))
 
-  (use-package ivy-rich
+#+END_SRC 
+
+** ivy-rich
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package ivy-rich
     :init
     (ivy-rich-mode 1))
 
-  (use-package ivy-posframe
+#+END_SRC 
+** ivy-posframe
+Display specific completion dialogs in a box overlayed over the screen instead of at the bottom of the window.
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package ivy-posframe
     :init
     (setq ivy-posframe-display-functions-alist
-          '((counsel-M-x . ivy-display-function-fallback)
-            (counsel-find-file . ivy-display-function-fallback)
-            (swiper . ivy-display-function-fallback)
-            (t . ivy-posframe-display)))
+        '((counsel-M-x . ivy-display-function-fallback)
+        (counsel-find-file . ivy-display-function-fallback)
+        (swiper . ivy-display-function-fallback)
+        (t . ivy-posframe-display)))
     :config
     (ivy-posframe-mode 1))
 
-  (use-package counsel
+#+END_SRC 
+
+** Counsel
+Replace many of the standard Emacs commands with more powerful versions capable of fuzzy-search.
+
+#+begin_src emacs-lisp
+
+(use-package counsel
     :bind (("M-x" . counsel-M-x)
-       ("C-x b" . counsel-ibuffer)
-       ("C-x C-f" . counsel-find-file)
-       :map minibuffer-local-map
-       ("C-r" . 'counsel-minibuffer-history)))
+    ("C-x b" . counsel-ibuffer)
+    ("C-x C-f" . counsel-find-file)
+    :map minibuffer-local-map
+    ("C-r" . 'counsel-minibuffer-history)))
+
 #+end_src
 
 #+RESULTS:
@@ -135,12 +155,11 @@ These are the very basic configuration settings for the base Emacs appearance.
 #+RESULTS:
 
 ** Fonts
+
 These are my font settings.
 
 #+begin_src emacs-lisp
 
-;; (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
-;; (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 140)
@@ -157,6 +176,19 @@ Also install helpful icons
 (use-package all-the-icons)
 
 #+end_src
+
+*** Old Font Settings
+These are other font settings that I like
+
+#+BEGIN_SRC emacs-lisp
+
+;; (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'default nil :font "Rec Mono Semi Casual" :height 120)
+;; (set-face-attribute 'fixed-pitch nil :font "Rec Mono Semi Casual" :height 120)
+
+
+#+END_SRC 
 
 ** Line Settings
 
@@ -206,11 +238,12 @@ Also install helpful icons
 ** Dashboard
 
 #+begin_src emacs-lisp
-    ;(use-package page-break-lines)
 
-        ;(use-package dashboard
-        ;:config
-  ;(dashboard-setup-startup-hook))
+;(use-package page-break-lines)
+
+(use-package dashboard
+    :config
+    (dashboard-setup-startup-hook))
 
 #+end_src
 
@@ -1119,6 +1152,18 @@ Most Rustic keybindings begin with =C-c C-c=
 
 (use-package glsl-mode
   :mode "\\.glsl\\'")
+
+#+END_SRC 
+** Retro Assembly
+My configurations for various retro assembly architectures.
+
+*** 6502
+Programming for the C64 and NES.
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package ca65-mode
+  :mode "\\.s\\'")
 
 #+END_SRC 
 * Temp
