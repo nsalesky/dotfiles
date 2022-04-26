@@ -133,9 +133,20 @@
   :init
   (load-theme 'doom-moonlight t))
 
-;(use-package page-break-lines)
+(use-package page-break-lines)
 
 (use-package dashboard
+    :init
+    (setq
+        dashboard-image-banner-max-width 256
+        dashboard-startup-banner "~/.dotfiles/.emacs.d/Emacs_Square.png"
+        dashboard-center-content t
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-projects-switch-function 'projectile-switch-project
+        dashboard-items '((recents . 5)
+                          (projects . 5)
+                          (agenda . 5)))
     :config
     (dashboard-setup-startup-hook))
 
