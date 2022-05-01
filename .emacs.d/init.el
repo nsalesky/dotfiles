@@ -44,15 +44,16 @@
     :init
     (ivy-rich-mode 1))
 
-(use-package ivy-posframe
-    :init
-    (setq ivy-posframe-display-functions-alist
-        '((counsel-M-x . ivy-display-function-fallback)
-        (counsel-find-file . ivy-display-function-fallback)
-        (swiper . ivy-display-function-fallback)
-        (t . ivy-posframe-display)))
-    :config
-    (ivy-posframe-mode 1))
+;; (use-package ivy-posframe
+;;     :init
+;;     (setq ivy-posframe-display-functions-alist
+;;         '((counsel-M-x . ivy-display-function-fallback)
+;;         (counsel-find-file . ivy-display-function-fallback)
+;;         (swiper . ivy-display-function-fallback)
+;;         (counsel-switch-buffer . ivy-display-function-fallback)
+;;         (t . ivy-posframe-display)))
+;;     :config
+;;     (ivy-posframe-mode 1))
 
 (use-package counsel
     :bind (("M-x" . counsel-M-x)
@@ -143,7 +144,7 @@
         dashboard-center-content t
         dashboard-set-heading-icons t
         dashboard-set-file-icons t
-        dashboard-projects-switch-function 'projectile-switch-project
+        ;; dashboard-projects-switch-function 'projectile-switch-project
         dashboard-items '((recents . 5)
                           (projects . 5)
                           (agenda . 5)))
@@ -174,8 +175,8 @@
     (general-evil-setup t)
     (general-create-definer my-leader
         :keymaps '(normal visual emacs)
-            :prefix "SPC"
-            :non-normal-prefix "C-SPC")
+            :prefix "C-SPC")
+            ;; :non-normal-prefix "C-SPC")
     (general-create-definer my-local-leader
         :keymaps '(normal insert visual emacs)
         :which-key "local-leader"
@@ -678,3 +679,16 @@
   :mode "\\.s\\'")
 
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(dap-java dap-mode lsp-java yaml which-key wakatime-mode visual-fill-column visual-fill use-package typescript-mode treepy treemacs-projectile treemacs-magit treemacs-icons-dired treemacs-evil treemacs-all-the-icons tree-sitter-langs smooth-scrolling smart-comment rustic rainbow-delimiters perspective page-break-lines org-tree-slide org-roam org-modern org-contrib olivetti multiple-cursors meghanada lsp-ui lsp-treemacs lsp-pyright lsp-ivy ivy-rich ivy-posframe hl-todo hide-mode-line helpful glsl-mode general format-all exec-path-from-shell evil-smartparens evil-mc evil-collection emojify doom-themes doom-modeline dashboard counsel-projectile company-box ca65-mode blamer ag)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
