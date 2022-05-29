@@ -1,4 +1,19 @@
-;; Initialize package sources
+(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+
+(scroll-bar-mode -1)
+
+(tooltip-mode -1)
+
+(setq ring-bell-function 'ignore)
+
+(set-fringe-mode 10)
+
+(setq inhibit-startup-message t)
+
+(setq use-short-answers t)
+
+(setq confirm-nonexistent-file-or-buffer nil)
+
 (require 'package)
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
@@ -15,12 +30,119 @@
   (package-install 'use-package))
 
 (require 'use-package)
-(setq use-package-always-ensure t) ;; Installs packages that you use if they're not already installed
+(setq use-package-always-ensure t) ;; Always installs packages that you use if they're not already installed
 
 ;; Make sure PATH is correct
 (use-package exec-path-from-shell
   :config
   (exec-path-from-shell-initialize))
+
+(setq user-full-name "Nick Salesky"
+      user-mail-address "nicksalesky@gmail.com")
+
+(use-package saveplace
+  :unless noninteractive
+  :config
+  (setq save-place-limit 1000)
+  (save-place-mode))
+
+(use-package savehist
+  :unless noninteractive
+  :defer 1
+  :config
+  (setq savehist-additional-variables '(compile-command kill-ring regexp-search-ring))
+  (savehist-mode 1))
+
+;; (use-package time
+;;   :defer t
+;;   :config
+;;   (setq display-time-24hr-format nil))
+
+;; TODO look into displaying the current time in the modeline
+
+(setq-default frame-title-format '("%b [%m]"))
+
+(global-visual-line-mode 1)
+
+;; Enable line numbers
+(column-number-mode)
+(global-display-line-numbers-mode t)
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+        term-mode-hook
+        shell-mode-hook
+        eshell-mode-hook
+        treemacs-mode-hook
+        pdf-view-mode-hook
+        ))
+(add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+(use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+;; (add-hook 'prog-mode-hook 'hl-line-mode)
+
+(use-package hl-todo
+  :config
+  (global-hl-todo-mode))
+
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+(set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
+(set-face-attribute 'variable-pitch nil :font "SourceSans3" :height 140)
+
+;; (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'default nil :font "Rec Mono Semi Casual" :height 120)
+;; (set-face-attribute 'fixed-pitch nil :font "Rec Mono Semi Casual" :height 120)
+
+(use-package all-the-icons)
+
+(use-package emojify
+  :config
+  (global-emojify-mode))
+
+(use-package doom-themes
+  :init
+  (load-theme 'doom-moonlight t))
+
+(use-package doom-modeline
+  :custom ((doom-modeline-height 35))
+  :init (doom-modeline-mode 1))
+
+;; Necessary for dashboard in order to get nice seperators between sections
+(use-package page-break-lines)
+
+(use-package dashboard
+    :init
+    (setq
+        dashboard-image-banner-max-width 256
+        dashboard-startup-banner "~/.dotfiles/.emacs.d/emacs.png"
+        dashboard-center-content t
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        ;; dashboard-projects-switch-function 'projectile-switch-project
+        dashboard-items '((recents . 5)
+                          (projects . 5)
+                          (agenda . 5)))
+    :config
+    (dashboard-setup-startup-hook))
+
+(use-package smooth-scrolling
+  :init
+  (setq smooth-scroll-margin 5)
+  :config
+  (smooth-scrolling-mode))
+
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
 
 (use-package ivy
     :diminish
@@ -68,121 +190,22 @@
   :config
   (setq which-key-idle-delay 0.3))
 
-(setq inhibit-startup-message t)
-(scroll-bar-mode -1) ; Disable visible scrollbar
-(tool-bar-mode -1)   ; Disable the toolbar
-(tooltip-mode -1)    ; Disable tooltips
-(set-fringe-mode 10) ; Give some breathing room
-(menu-bar-mode -1)   ; Disable the menu bar
-(setq ring-bell-function 'ignore) ; Disable alarms
-
-;; Window title
-(setq-default frame-title-format '("%b [%m]"))
-
-;; Enable line numbers
-(column-number-mode)
-(global-display-line-numbers-mode t)
-
-;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-        term-mode-hook
-        shell-mode-hook
-        eshell-mode-hook
-        treemacs-mode-hook
-        ))
-(add-hook mode (lambda () (display-line-numbers-mode 0))))
-
-
-;; Rainbox delimiters for all programming modes
-(use-package rainbow-delimiters
-:hook (prog-mode . rainbow-delimiters-mode))
-
-;; Better commenting
-(use-package smart-comment)
-
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
-(set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
-(set-face-attribute 'variable-pitch nil :font "Source Sans Pro" :height 140)
-
-;; NOTE: The first time you run this on a new machine, you'll need to run this
-;; command interactively
-;;
-;; M-x all-the-icons-install-fonts
-(use-package all-the-icons)
-
-;; (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
-;; (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
-;; (set-face-attribute 'default nil :font "Rec Mono Semi Casual" :height 120)
-;; (set-face-attribute 'fixed-pitch nil :font "Rec Mono Semi Casual" :height 120)
-
-;; Enable global visual line mode to wrap lines properly.
-(global-visual-line-mode 1)
-;; Highlight the current line in prog mode
-(add-hook 'prog-mode-hook 'hl-line-mode)
-
-(use-package hl-todo
-  :config
-  (global-hl-todo-mode))
-
-(use-package smooth-scrolling
-  :init
-  (setq smooth-scroll-margin 5)
-  :config
-  (smooth-scrolling-mode))
-
-(use-package doom-themes
-  :init
-  (load-theme 'doom-moonlight t))
-
-(use-package page-break-lines)
-
-(use-package dashboard
-    :init
-    (setq
-        dashboard-image-banner-max-width 256
-        dashboard-startup-banner "~/.dotfiles/.emacs.d/Emacs_Square.png"
-        dashboard-center-content t
-        dashboard-set-heading-icons t
-        dashboard-set-file-icons t
-        ;; dashboard-projects-switch-function 'projectile-switch-project
-        dashboard-items '((recents . 5)
-                          (projects . 5)
-                          (agenda . 5)))
-    :config
-    (dashboard-setup-startup-hook))
-
-(use-package doom-modeline
-  :custom ((doom-modeline-height 35))
-  :init (doom-modeline-mode 1))
-
-(use-package helpful
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
-
-(use-package emojify
-  :config
-  (global-emojify-mode))
-
 (use-package general
     :config
     (general-override-mode)
     (general-evil-setup t)
     (general-create-definer my-leader
         :keymaps '(normal visual emacs)
-            :prefix "C-SPC")
-            ;; :non-normal-prefix "C-SPC")
+            :prefix "SPC")
     (general-create-definer my-local-leader
         :keymaps '(normal insert visual emacs)
         :which-key "local-leader"
-        :global-prefix "C-q"))
+        :prefix "C-q"))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; Insert newlines when you C-n at the end of the buffer
+(setq next-line-add-newlines t)
 
 (use-package hydra)
 
@@ -206,7 +229,7 @@
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
   (define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop)
-  
+
   ;; use visual line motions even outside of visual-line-mode buffers
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
@@ -387,7 +410,7 @@
         org-ellipsis " ▾"
         org-pretty-entities t
 
-        org-directory "~/org"
+        org-directory "~/notes"
 
         org-src-tab-acts-natively t
         org-src-preserve-indentation t
@@ -429,14 +452,25 @@
 ;; (use-package visual-fill-column
 ;;     :hook (org-mode . ns/org-mode-visual-fill))
 
-(use-package org-modern
-    :config
-    (add-hook 'org-mode-hook #'org-modern-mode)
-    (add-hook 'org-agenda-finalize #'org-modern-agenda))
+(use-package toc-org
+  :hook
+  (org-mode . toc-org-mode))
+
+;; (use-package org-modern
+;;     :config
+;;     (add-hook 'org-mode-hook #'org-modern-mode)
+;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
+
+(use-package imenu-list
+  :init
+  (setq imenu-list-position 'left)
+  :general
+  (my-leader
+   "t i" '(imenu-list-smart-toggle :which-key "Imenu")))
 
 (use-package org-roam
   :custom
-  (org-roam-directory "~/org/roam/")
+  (org-roam-directory "~/notes/roam/")
   :config
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode)
@@ -537,7 +571,9 @@
 (use-package lsp-mode
     :commands (lsp lsp-deferred)
     :init
-    (setq lsp-keymap-prefix "C-l")
+    (setq lsp-keymap-prefix "C-l"
+          lsp-lens-enable t
+          lsp-signature-auto-activate nil)
     :config
     (lsp-enable-which-key-integration t)
     ;; :general
@@ -568,6 +604,12 @@
     (lsp-ui-sideline-show-hover t)
     (lsp-ui-doc-position 'bottom)
     (lsp-ui-doc-enable nil))
+
+(use-package dap-mode
+  :config
+  (dap-auto-configure-mode))
+
+(use-package flycheck)
 
 (use-package tree-sitter
   :config
@@ -606,8 +648,9 @@
 
 (use-package perspective
     :init
-    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state")
-    
+    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
+          persp-mode-prefix-key (kbd "C-c M-p"))
+
     :config
     (persp-mode)
 
@@ -652,6 +695,17 @@
   :config
   (setq typescript-indent-level 4))
 
+(use-package web-mode
+    :commands (web-mode)
+    :mode (("\\.html" . web-mode)
+            ("\\.htm" . web-mode)
+;           ("\\.tsx$" . web-mode)
+            ("\\.mustache\\'" . web-mode)
+            ("\\.phtml\\'" . web-mode)
+            ("\\.as[cp]x\\'" . web-mode)
+            ("\\.erb\\'" . web-mode)
+            ("\\.sgml\\'" . web-mode)))
+
 (use-package rustic
   :bind (:map rustic-mode-map
               ("M-j" . lsp-ui-imenu)
@@ -668,9 +722,26 @@
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
 
-(use-package meghanada
+;; (use-package meghanada
+;;   :hook
+;;   (java-mode . meghanada-mode)
+;;   (java-mode . flycheck-mode))
+
+;; (setq meghanada-java-path "java"
+;;       meghanada-maven-path "mvn")
+
+(use-package lsp-java
   :hook
-  (java-mode . meghanada-mode))
+  (java-mode . lsp))
+
+(use-package clojure-mode
+  :mode "\\.clj\\'"
+  :hook ((clojure-mode . lsp-deferred)
+         (clojurescript-mode . lsp-deferred)
+         (clojurec-mode . lsp-deferred)))
+
+
+(use-package cider)
 
 (use-package glsl-mode
   :mode "\\.glsl\\'")
@@ -678,17 +749,13 @@
 (use-package ca65-mode
   :mode "\\.s\\'")
 
+(use-package tablist)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(dap-java dap-mode lsp-java yaml which-key wakatime-mode visual-fill-column visual-fill use-package typescript-mode treepy treemacs-projectile treemacs-magit treemacs-icons-dired treemacs-evil treemacs-all-the-icons tree-sitter-langs smooth-scrolling smart-comment rustic rainbow-delimiters perspective page-break-lines org-tree-slide org-roam org-modern org-contrib olivetti multiple-cursors meghanada lsp-ui lsp-treemacs lsp-pyright lsp-ivy ivy-rich ivy-posframe hl-todo hide-mode-line helpful glsl-mode general format-all exec-path-from-shell evil-smartparens evil-mc evil-collection emojify doom-themes doom-modeline dashboard counsel-projectile company-box ca65-mode blamer ag)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(use-package pdf-tools
+  :config
+  (pdf-loader-install))
+
+(use-package nov
+  :mode "\\.epub\\'")
+
+(use-package smart-comment)
