@@ -60,6 +60,18 @@
 
 ;; TODO look into displaying the current time in the modeline
 
+(use-package general
+    :config
+    (general-override-mode)
+    (general-evil-setup t)
+    (general-create-definer my-leader
+        :keymaps '(normal visual emacs)
+            :prefix "SPC")
+    (general-create-definer my-local-leader
+        :keymaps '(normal insert visual emacs)
+        :which-key "local-leader"
+        :prefix "C-q"))
+
 (setq-default frame-title-format '("%b [%m]"))
 
 (global-visual-line-mode 1)
@@ -77,15 +89,6 @@
         pdf-view-mode-hook
         ))
 (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
-(use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
-
-;; (add-hook 'prog-mode-hook 'hl-line-mode)
-
-(use-package hl-todo
-  :config
-  (global-hl-todo-mode))
 
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
@@ -144,9 +147,99 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
+(use-package hl-todo
+  :config
+  (global-hl-todo-mode))
+
+;; (add-hook 'prog-mode-hook 'hl-line-mode)
+
+; TODO
+
+(use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package smartparens
+  :hook
+  (prog-mode . smartparens-mode))
+
+(use-package evil-smartparens
+  :hook
+  (smartparens-enabled . evil-smartparens-mode))
+
+(use-package yasnippet
+  :config
+  (yas-global-mode))
+
+(use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+        ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+        ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+;; Adds colors and icons to company-mode
+(use-package company-box
+    :hook (company-mode . company-box-mode))
+
+(use-package which-key
+  :after (ivy)
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3))
+
+(use-package flyspell
+  :hook ((prog-mode . flyspell-prog-mode)
+        ((org-mode markdown-mode) . flyspell-mode)))
+
+;; (use-package flyspell-correct
+;;   :after (flyspell)
+;;   :config
+;;   (setq flyspell-correct-interface #'flyspell-correct-ivy))
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  ;(when (file-directory-p "~/Documents")
+    ;(setq projectile-project-search-path '("~/Documents")))
+  (setq projectile-switch-project-action #'projectile-dired)
+
+  :general
+  (my-leader
+      "SPC" '(projectile-find-file :which-key "Find file in project")
+      "p" '(:ignore t :which-key "projects")
+      "p p" '(projectile-switch-project :which-key "Switch project")))
+
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
+
+(use-package treemacs)
+(use-package treemacs-evil
+    :after (treemacs evil))
+(use-package treemacs-projectile
+    :after (treemacs projectile))
+(use-package treemacs-icons-dired
+    :hook (dired-mode . treemacs-icons-dired-enable-once))
+(use-package treemacs-magit
+    :after (treemacs magit))
+(use-package lsp-treemacs
+    :after (treemacs lsp-mode)
+    :config (lsp-treemacs-sync-mode 1))
+(use-package treemacs-all-the-icons
+  :config
+  (treemacs-load-theme "all-the-icons"))
+
 (use-package ivy
     :diminish
-    :bind (("C-s" . swiper)
+    :bind (
     :map ivy-minibuffer-map
     ("TAB" . ivy-alt-done)
     ("C-l" . ivy-alt-done)
@@ -166,6 +259,9 @@
     :init
     (ivy-rich-mode 1))
 
+(use-package swiper
+  :bind (("C-s" . swiper)))
+
 ;; (use-package ivy-posframe
 ;;     :init
 ;;     (setq ivy-posframe-display-functions-alist
@@ -178,29 +274,15 @@
 ;;     (ivy-posframe-mode 1))
 
 (use-package counsel
-    :bind (("M-x" . counsel-M-x)
-    ("C-x b" . counsel-ibuffer)
-    ("C-x C-f" . counsel-find-file)
-    :map minibuffer-local-map
-    ("C-r" . 'counsel-minibuffer-history)))
-
-(use-package which-key
-  :init (which-key-mode)
-  :diminish which-key-mode
-  :config
-  (setq which-key-idle-delay 0.3))
-
-(use-package general
-    :config
-    (general-override-mode)
-    (general-evil-setup t)
-    (general-create-definer my-leader
-        :keymaps '(normal visual emacs)
-            :prefix "SPC")
-    (general-create-definer my-local-leader
-        :keymaps '(normal insert visual emacs)
-        :which-key "local-leader"
-        :prefix "C-q"))
+    :bind
+    (("M-x" . counsel-M-x)
+     ("M-y" . counsel-yank-pop-selection)
+     ("M-i" . counsel-imenu)
+     ("C-s" . counsel-grep-or-swiper)
+     ("C-x b" . counsel-ibuffer)
+     ("C-x C-f" . counsel-find-file)
+     :map minibuffer-local-map
+     ("C-r" . 'counsel-minibuffer-history)))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -369,6 +451,144 @@
    :keymaps 'mc/keymap
     "C-n" 'mc/mark-more-like-this-extended))
 
+(use-package magit
+  :general
+  (my-leader
+    "g" '(:ignore t :which-key "git")
+    "g g" '(magit-status :which-key "Magit Status")))
+
+;(use-package forge)
+
+(use-package blamer
+  :general
+  (my-leader
+    "g b" '(global-blamer-mode :which-key "Toggle blamer mode")))
+
+(use-package format-all)
+  ;:hook
+  ;(prog-mode . format-all-mode)
+
+(use-package flycheck)
+
+(use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "C-l"
+          lsp-lens-enable t
+          lsp-signature-auto-activate nil)
+    :config
+    (lsp-enable-which-key-integration t)
+    ;; :general
+    ;; TODO figure this out
+    ;; (my-leader
+    ;;   "c" '(:ignore t :which-key "code")))
+    ;; (add-hook 'lsp-after-open-hook
+    ;;     (lambda ()
+    ;;       (when (lsp-find-workspace 'rust-analyzer nil)
+    ;;         (lsp-rust-analyzer-inlay-hints-mode))))
+    :custom
+
+    ;; Enable/disable type hints as you type for Rust
+    (lsp-rust-analyzer-server-display-inlay-hints t)
+    (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+    (lsp-rust-analyzer-display-chaining-hints nil)
+    (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+    (lsp-rust-analyzer-display-closure-return-type-hints t)
+    (lsp-rust-analyzer-display-parameter-hints t)
+    (lsp-rust-analyzer-display-reborrow-hints nil))
+
+(use-package lsp-ivy)
+
+(use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-peek-always-show t)
+    (lsp-ui-sideline-show-hover t)
+    (lsp-ui-doc-position 'bottom)
+    (lsp-ui-doc-enable nil))
+
+(use-package dap-mode
+  :config
+  (dap-auto-configure-mode))
+
+(use-package tree-sitter
+  :config
+  (global-tree-sitter-mode)
+  :hook
+  (tree-sitter-mode . tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs)
+
+(use-package wakatime-mode
+  :config
+  (global-wakatime-mode))
+
+(use-package lsp-pyright
+  :hook
+  (python-mode . (lambda ()
+                   (require 'lsp-pyright)
+                   (lsp-deferred))))
+
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 4))
+
+(use-package web-mode
+    :commands (web-mode)
+    :mode (("\\.html" . web-mode)
+            ("\\.htm" . web-mode)
+;           ("\\.tsx$" . web-mode)
+            ("\\.mustache\\'" . web-mode)
+            ("\\.phtml\\'" . web-mode)
+            ("\\.as[cp]x\\'" . web-mode)
+            ("\\.erb\\'" . web-mode)
+            ("\\.sgml\\'" . web-mode)))
+
+(use-package rustic
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)))
+  ;; :config
+  ;; uncomment for less flashiness
+  ;; (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-signature-auto-activate nil)
+
+  ;; comment to disable rustfmt on save
+  ;; (setq rustic-format-on-save t))
+
+(add-hook 'c-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'lsp)
+
+;; (use-package meghanada
+;;   :hook
+;;   (java-mode . meghanada-mode)
+;;   (java-mode . flycheck-mode))
+
+;; (setq meghanada-java-path "java"
+;;       meghanada-maven-path "mvn")
+
+(use-package lsp-java
+  :hook
+  (java-mode . lsp))
+
+(use-package clojure-mode
+  :mode "\\.clj\\'"
+  :hook ((clojure-mode . lsp-deferred)
+         (clojurescript-mode . lsp-deferred)
+         (clojurec-mode . lsp-deferred)))
+
+
+(use-package cider)
+
+(use-package glsl-mode
+  :mode "\\.glsl\\'")
+
+(use-package ca65-mode
+  :mode "\\.s\\'")
+
  (defun ns/org-mode-setup ()
    (org-indent-mode)
    ;; (variable-pitch-mode 1)
@@ -519,133 +739,6 @@
   :hook
   (org-mode . olivetti-mode))
 
-(use-package magit
-  :general
-  (my-leader
-    "g" '(:ignore t :which-key "git")
-    "g g" '(magit-status :which-key "Magit Status")))
-
-;(use-package forge)
-
-(use-package blamer
-  :general
-  (my-leader
-    "g b" '(global-blamer-mode :which-key "Toggle blamer mode")))
-
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  ;(when (file-directory-p "~/Documents")
-    ;(setq projectile-project-search-path '("~/Documents")))
-  (setq projectile-switch-project-action #'projectile-dired)
-
-  :general
-  (my-leader
-      "SPC" '(projectile-find-file :which-key "Find file in project")
-      "p" '(:ignore t :which-key "projects")
-      "p p" '(projectile-switch-project :which-key "Switch project")))
-
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
-
-(use-package treemacs)
-(use-package treemacs-evil
-    :after (treemacs evil))
-(use-package treemacs-projectile
-    :after (treemacs projectile))
-(use-package treemacs-icons-dired
-    :hook (dired-mode . treemacs-icons-dired-enable-once))
-(use-package treemacs-magit
-    :after (treemacs magit))
-(use-package lsp-treemacs
-    :after (treemacs lsp-mode)
-    :config (lsp-treemacs-sync-mode 1))
-(use-package treemacs-all-the-icons
-  :config
-  (treemacs-load-theme "all-the-icons"))
-
-(use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :init
-    (setq lsp-keymap-prefix "C-l"
-          lsp-lens-enable t
-          lsp-signature-auto-activate nil)
-    :config
-    (lsp-enable-which-key-integration t)
-    ;; :general
-    ;; TODO figure this out
-    ;; (my-leader
-    ;;   "c" '(:ignore t :which-key "code")))
-    ;; (add-hook 'lsp-after-open-hook
-    ;;     (lambda ()
-    ;;       (when (lsp-find-workspace 'rust-analyzer nil)
-    ;;         (lsp-rust-analyzer-inlay-hints-mode))))
-    :custom
-
-    ;; Enable/disable type hints as you type for Rust
-    (lsp-rust-analyzer-server-display-inlay-hints t)
-    (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-    (lsp-rust-analyzer-display-chaining-hints nil)
-    (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-    (lsp-rust-analyzer-display-closure-return-type-hints t)
-    (lsp-rust-analyzer-display-parameter-hints t)
-    (lsp-rust-analyzer-display-reborrow-hints nil))
-
-(use-package lsp-ivy)
-
-(use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
-    :custom
-    (lsp-ui-peek-always-show t)
-    (lsp-ui-sideline-show-hover t)
-    (lsp-ui-doc-position 'bottom)
-    (lsp-ui-doc-enable nil))
-
-(use-package dap-mode
-  :config
-  (dap-auto-configure-mode))
-
-(use-package flycheck)
-
-(use-package tree-sitter
-  :config
-  (global-tree-sitter-mode)
-  :hook
-  (tree-sitter-mode . tree-sitter-hl-mode))
-
-(use-package tree-sitter-langs)
-
-  (use-package company
-    :after lsp-mode
-    :hook (lsp-mode . company-mode)
-    :bind (:map company-active-map
-            ("<tab>" . company-complete-selection))
-           (:map lsp-mode-map
-            ("<tab>" . company-indent-or-complete-common))
-    :custom
-    (company-minimum-prefix-length 1)
-    (company-idle-delay 0.0))
-
-;; Adds colors and icons to company-mode
-(use-package company-box
-  :hook (company-mode . company-box-mode))
-
-(use-package format-all)
-  ;:hook
-  ;(prog-mode . format-all-mode)
-
-(use-package yasnippet
-  :config
-  (yas-global-mode))
-
-(use-package wakatime-mode
-  :config
-  (global-wakatime-mode))
-
 (use-package perspective
     :init
     (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
@@ -674,80 +767,6 @@
       "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
       "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
       "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
-
-(use-package smartparens
-  :hook
-  (prog-mode . smartparens-mode))
-
-(use-package evil-smartparens
-  :hook
-  (smartparens-enabled . evil-smartparens-mode))
-
-(use-package lsp-pyright
-  :hook
-  (python-mode . (lambda ()
-                   (require 'lsp-pyright)
-                   (lsp-deferred))))
-
-(use-package typescript-mode
-  :mode "\\.ts\\'"
-  :hook (typescript-mode . lsp-deferred)
-  :config
-  (setq typescript-indent-level 4))
-
-(use-package web-mode
-    :commands (web-mode)
-    :mode (("\\.html" . web-mode)
-            ("\\.htm" . web-mode)
-;           ("\\.tsx$" . web-mode)
-            ("\\.mustache\\'" . web-mode)
-            ("\\.phtml\\'" . web-mode)
-            ("\\.as[cp]x\\'" . web-mode)
-            ("\\.erb\\'" . web-mode)
-            ("\\.sgml\\'" . web-mode)))
-
-(use-package rustic
-  :bind (:map rustic-mode-map
-              ("M-j" . lsp-ui-imenu)
-              ("M-?" . lsp-find-references)))
-  ;; :config
-  ;; uncomment for less flashiness
-  ;; (setq lsp-eldoc-hook nil)
-  ;; (setq lsp-enable-symbol-highlighting nil)
-  ;; (setq lsp-signature-auto-activate nil)
-
-  ;; comment to disable rustfmt on save
-  ;; (setq rustic-format-on-save t))
-
-(add-hook 'c-mode-hook 'lsp)
-(add-hook 'c++-mode-hook 'lsp)
-
-;; (use-package meghanada
-;;   :hook
-;;   (java-mode . meghanada-mode)
-;;   (java-mode . flycheck-mode))
-
-;; (setq meghanada-java-path "java"
-;;       meghanada-maven-path "mvn")
-
-(use-package lsp-java
-  :hook
-  (java-mode . lsp))
-
-(use-package clojure-mode
-  :mode "\\.clj\\'"
-  :hook ((clojure-mode . lsp-deferred)
-         (clojurescript-mode . lsp-deferred)
-         (clojurec-mode . lsp-deferred)))
-
-
-(use-package cider)
-
-(use-package glsl-mode
-  :mode "\\.glsl\\'")
-
-(use-package ca65-mode
-  :mode "\\.s\\'")
 
 (use-package tablist)
 
