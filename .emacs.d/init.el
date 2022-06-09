@@ -161,7 +161,12 @@
 
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
-; TODO
+(use-package aggressive-indent
+  :config
+  (global-aggressive-indent-mode)
+
+  ;; For example
+  (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
 
 (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))

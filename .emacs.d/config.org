@@ -31,14 +31,14 @@
   - [[#hl-todo-highlight-and-navigate-todo-keywords][Hl-todo: Highlight and navigate TODO keywords]]
   - [[#hl-line-highlight-the-current-line][Hl-line: Highlight the current line]]
 - [[#editor][Editor]]
-  - [[#aggressive-indent][Aggressive-indent]]
+  - [[#aggressive-indent-always-keep-code-properly-indented][Aggressive-indent: Always keep code properly indented]]
   - [[#rainbow-delimiters-different-color-for-each-parenthesis-level][Rainbow-delimiters: Different color for each parenthesis level]]
   - [[#smartparens-match-grouping-characters][SmartParens: Match grouping characters]]
   - [[#yasnippet-create-common-snippets][YASnippet: Create common snippets]]
   - [[#company-auto-completion][Company: Auto completion]]
-  - [[#which-key-list-commands-for-current-prefix][Which-key: list commands for current prefix]]
-  - [[#olivetti-centered-document-editing][Olivetti: centered document editing]]
-  - [[#perspective][Perspective]]
+  - [[#which-key-list-commands-for-current-prefix][Which-key: List commands for current prefix]]
+  - [[#olivetti-centered-document-editing][Olivetti: Centered document editing]]
+  - [[#perspective-give-projects-their-own-named-workspaces][Perspective: Give projects their own named workspaces]]
 - [[#spell-checker][Spell checker]]
   - [[#flyspell][Flyspell]]
   - [[#flyspell-correct-show-list-of-correct-spelling-suggestions][Flyspell-correct: Show list of correct spelling suggestions]]
@@ -449,10 +449,15 @@ Highlight the current line where point is present. I have this disabled for now 
 #+END_SRC 
 
 * Editor
-** Aggressive-indent
+** Aggressive-indent: Always keep code properly indented
 #+BEGIN_SRC emacs-lisp
 
-; TODO
+(use-package aggressive-indent
+  :config
+  (global-aggressive-indent-mode)
+
+  ;; For example
+  (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
 
 #+END_SRC 
 
@@ -511,7 +516,7 @@ A good code-completion package. I might consider switching to Corfu at some poin
 
 #+end_src
 
-** Which-key: list commands for current prefix
+** Which-key: List commands for current prefix
 
 #+begin_src emacs-lisp
 
@@ -524,7 +529,7 @@ A good code-completion package. I might consider switching to Corfu at some poin
 
 #+end_src
 
-** Olivetti: centered document editing
+** Olivetti: Centered document editing
 
 #+BEGIN_SRC emacs-lisp
 
@@ -537,7 +542,7 @@ A good code-completion package. I might consider switching to Corfu at some poin
 
 #+END_SRC
 
-** Perspective
+** Perspective: Give projects their own named workspaces 
 Add named workspaces to Emacs with their own buffers.
 
 #+BEGIN_SRC emacs-lisp
