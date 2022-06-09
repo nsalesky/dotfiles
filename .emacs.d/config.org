@@ -45,11 +45,9 @@
 - [[#project-management][Project Management]]
   - [[#projectile][Projectile]]
   - [[#treemacs-a-tree-layout-file-explorer][Treemacs: A tree layout file explorer]]
-- [[#ivy][Ivy]]
-  - [[#ivy-itself][Ivy itself]]
-  - [[#swiper-search-file-with-ivy][Swiper: search file with ivy]]
-  - [[#ivy-posframe][Ivy-posframe]]
-  - [[#counsel][Counsel]]
+- [[#minibuffer-completion][Minibuffer Completion]]
+  - [[#ivy][Ivy]]
+  - [[#vertico][Vertico]]
 - [[#keybindings][Keybindings]]
   - [[#esc-quits-prompts][ESC quits prompts]]
   - [[#movement][Movement]]
@@ -416,14 +414,21 @@ Make the Emacs help pages more "helpful".
 #+begin_src emacs-lisp
 
 (use-package helpful
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
   :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
+  (("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)))
+
+
+  
+  ;; :custom
+  ;; (counsel-describe-function-function #'helpful-callable)
+  ;; (counsel-describe-variable-function #'helpful-variable)
+  ;; :bind
+  ;; ([remap describe-function] . counsel-describe-function)
+  ;; ([remap describe-command] . helpful-command)
+  ;; ([remap describe-variable] . counsel-describe-variable)
+  ;; ([remap describe-key] . helpful-key))
 
 #+end_src
 
@@ -511,7 +516,7 @@ A good code-completion package. I might consider switching to Corfu at some poin
 #+begin_src emacs-lisp
 
 (use-package which-key
-  :after (ivy)
+  ;; :after (ivy)
   :init (which-key-mode)
   :diminish which-key-mode
   :config
@@ -545,9 +550,13 @@ Add named workspaces to Emacs with their own buffers.
     :config
     (persp-mode)
 
+    ;; set up for Consult
+    (consult-customize consult--source-buffer :hidden t :default nil)
+    (add-to-list 'consult-buffer-sources persp-consult-source)
+
     :general
     (my-leader
-      "," '(persp-ivy-switch-buffer :which-key "Switch buffer")
+      ;; "," '(persp-switch-buffer :which-key "Switch buffer")
       "b k" '(persp-remove-buffer :which-key "Remove buffer")
 
       "TAB" '(:ignore t :which-key "workspace")
@@ -598,7 +607,7 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
+  ;; :custom ((projectile-completion-system 'ivy))
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
@@ -612,8 +621,8 @@ Tools to distinguish projects and quickly navigate inside projects and between t
       "p" '(:ignore t :which-key "projects")
       "p p" '(projectile-switch-project :which-key "Switch project")))
 
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
+;; (use-package counsel-projectile
+;;   :config (counsel-projectile-mode))
 
 #+end_src
 
@@ -638,48 +647,51 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 
 #+end_src
 
-* Ivy
+* Minibuffer Completion
+Different systems to enhance/replace the Emacs minibuffer completion systems. I'm currently experimenting with Vertico.
+
+** Ivy
 I use ivy to improve searching capabilities of Emacs.
 
-** Ivy itself
+*** Ivy itself
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package ivy
-    :diminish
-    :bind (
-    :map ivy-minibuffer-map
-    ("TAB" . ivy-alt-done)
-    ("C-l" . ivy-alt-done)
-    ("C-j" . ivy-next-line)
-    ("C-k" . ivy-previous-line)
-    :map ivy-switch-buffer-map
-    ("C-k" . ivy-previous-line)
-    ("C-l" . ivy-done)
-    ("C-d" . ivy-switch-buffer-kill)
-    :map ivy-reverse-i-search-map
-    ("C-k" . ivy-previous-line)
-    ("C-d" . ivy-reverse-i-search-kill))
-    :init
-    (ivy-mode 1))
+;; (use-package ivy
+;;     :diminish
+;;     :bind (
+;;     :map ivy-minibuffer-map
+;;     ("TAB" . ivy-alt-done)
+;;     ("C-l" . ivy-alt-done)
+;;     ("C-j" . ivy-next-line)
+;;     ("C-k" . ivy-previous-line)
+;;     :map ivy-switch-buffer-map
+;;     ("C-k" . ivy-previous-line)
+;;     ("C-l" . ivy-done)
+;;     ("C-d" . ivy-switch-buffer-kill)
+;;     :map ivy-reverse-i-search-map
+;;     ("C-k" . ivy-previous-line)
+;;     ("C-d" . ivy-reverse-i-search-kill))
+;;     :init
+;;     (ivy-mode 1))
 
-(use-package ivy-rich
-    :init
-    (ivy-rich-mode 1))
+;; (use-package ivy-rich
+;;     :init
+;;     (ivy-rich-mode 1))
 
 #+END_SRC 
 
-** Swiper: search file with ivy
+*** Swiper: search file with ivy
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package swiper
-  :bind (("C-s" . swiper)))
+;; (use-package swiper
+;;   :bind (("C-s" . swiper)))
 
 
 #+END_SRC 
 
-** Ivy-posframe
+*** Ivy-posframe
 Display specific completion dialogs in a box overlayed over the screen instead of at the bottom of the window.
 
 #+BEGIN_SRC emacs-lisp
@@ -697,24 +709,61 @@ Display specific completion dialogs in a box overlayed over the screen instead o
 
 #+END_SRC
 
-** Counsel
+*** Counsel
 Replace many of the standard Emacs commands with more powerful versions capable of fuzzy-search.
 
 #+begin_src emacs-lisp
 
-(use-package counsel
-    :bind
-    (("M-x" . counsel-M-x)
-     ("M-y" . counsel-yank-pop-selection)
-     ("M-i" . counsel-imenu)
-     ("C-s" . counsel-grep-or-swiper)
-     ("C-x b" . counsel-ibuffer)
-     ("C-x C-f" . counsel-find-file)
-     :map minibuffer-local-map
-     ("C-r" . 'counsel-minibuffer-history)))
+;; (use-package counsel
+;;     :bind
+;;     (("M-x" . counsel-M-x)
+;;      ("M-y" . counsel-yank-pop-selection)
+;;      ("M-i" . counsel-imenu)
+;;      ("C-s" . counsel-grep-or-swiper)
+;;      ("C-x b" . counsel-ibuffer)
+;;      ("C-x C-f" . counsel-find-file)
+;;      :map minibuffer-local-map
+;;      ("C-r" . 'counsel-minibuffer-history)))
 
 #+end_src
 
+** Vertico
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package vertico
+  :init
+  (vertico-mode))
+
+#+END_SRC 
+
+*** Consult
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package consult)
+
+#+END_SRC 
+
+*** Orderless: make searches more fuzzy
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+#+END_SRC 
+*** All-the-icons-completion: add icons to completion candidates
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package all-the-icons-completion
+  :config
+  (all-the-icons-completion-mode))
+
+#+END_SRC 
 * Keybindings
 ** ESC quits prompts
 Make ESC quit prompts.
@@ -894,10 +943,10 @@ Keybindings for working with files.
 (setq recentf-max-saved-items 25)
 
 (my-leader
-    "." '(counsel-find-file :which-key "Find file")
+    "." '(find-file :which-key "Find file")
 
     "f" '(:ignore t :which-key "files")
-    "f r" '(counsel-recentf :which-key "Open Recent Files")
+    "f r" '(consult-recent-file :which-key "Open Recent Files")
     "f c" '((lambda () (interactive)(find-file "~/.dotfiles/.emacs.d/config.org")) :which-key "Open config.org"))
 #+END_SRC
 
@@ -951,7 +1000,7 @@ Some useful keybindings for working with buffers.
 #+BEGIN_SRC emacs-lisp
 
 (my-leader
-      ;"," '(counsel-switch-buffer :which-key "Switch buffer")
+      "," '(consult-buffer :which-key "Switch buffer")
 
       "b" '(:ignore t :which-key "buffers")
       "b k" '(kill-buffer :which-key "Kill buffer"))
@@ -975,9 +1024,13 @@ Keybindings for searching within different contexts.
  "s" 'avy-goto-char-timer
  "S" 'avy-pop-mark)
 
+(general-define-key
+ :states '(normal emacs)
+ "C-s" 'consult-line)
+
 (my-leader
   "s" '(:ignore t :which-key "search")
-  "s b" '(swiper :which-key "Search buffer"))
+  "s b" '(consult-line :which-key "Search buffer"))
 
 (use-package ag
   :general
@@ -1082,7 +1135,7 @@ A simple code formatting system for a ton of languages.
     (lsp-rust-analyzer-display-parameter-hints t)
     (lsp-rust-analyzer-display-reborrow-hints nil))
 
-(use-package lsp-ivy)
+;; (use-package lsp-ivy)
 
 (use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode)

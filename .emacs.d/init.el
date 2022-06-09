@@ -139,14 +139,21 @@
   (smooth-scrolling-mode))
 
 (use-package helpful
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
   :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
+  (("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)))
+
+
+  
+  ;; :custom
+  ;; (counsel-describe-function-function #'helpful-callable)
+  ;; (counsel-describe-variable-function #'helpful-variable)
+  ;; :bind
+  ;; ([remap describe-function] . counsel-describe-function)
+  ;; ([remap describe-command] . helpful-command)
+  ;; ([remap describe-variable] . counsel-describe-variable)
+  ;; ([remap describe-key] . helpful-key))
 
 (use-package hl-todo
   :config
@@ -187,7 +194,7 @@
     :hook (company-mode . company-box-mode))
 
 (use-package which-key
-  :after (ivy)
+  ;; :after (ivy)
   :init (which-key-mode)
   :diminish which-key-mode
   :config
@@ -208,9 +215,13 @@
     :config
     (persp-mode)
 
+    ;; set up for Consult
+    (consult-customize consult--source-buffer :hidden t :default nil)
+    (add-to-list 'consult-buffer-sources persp-consult-source)
+
     :general
     (my-leader
-      "," '(persp-ivy-switch-buffer :which-key "Switch buffer")
+      ;; "," '(persp-switch-buffer :which-key "Switch buffer")
       "b k" '(persp-remove-buffer :which-key "Remove buffer")
 
       "TAB" '(:ignore t :which-key "workspace")
@@ -241,7 +252,7 @@
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
+  ;; :custom ((projectile-completion-system 'ivy))
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
@@ -255,8 +266,8 @@
       "p" '(:ignore t :which-key "projects")
       "p p" '(projectile-switch-project :which-key "Switch project")))
 
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
+;; (use-package counsel-projectile
+;;   :config (counsel-projectile-mode))
 
 (use-package treemacs)
 (use-package treemacs-evil
@@ -274,30 +285,30 @@
   :config
   (treemacs-load-theme "all-the-icons"))
 
-(use-package ivy
-    :diminish
-    :bind (
-    :map ivy-minibuffer-map
-    ("TAB" . ivy-alt-done)
-    ("C-l" . ivy-alt-done)
-    ("C-j" . ivy-next-line)
-    ("C-k" . ivy-previous-line)
-    :map ivy-switch-buffer-map
-    ("C-k" . ivy-previous-line)
-    ("C-l" . ivy-done)
-    ("C-d" . ivy-switch-buffer-kill)
-    :map ivy-reverse-i-search-map
-    ("C-k" . ivy-previous-line)
-    ("C-d" . ivy-reverse-i-search-kill))
-    :init
-    (ivy-mode 1))
+;; (use-package ivy
+;;     :diminish
+;;     :bind (
+;;     :map ivy-minibuffer-map
+;;     ("TAB" . ivy-alt-done)
+;;     ("C-l" . ivy-alt-done)
+;;     ("C-j" . ivy-next-line)
+;;     ("C-k" . ivy-previous-line)
+;;     :map ivy-switch-buffer-map
+;;     ("C-k" . ivy-previous-line)
+;;     ("C-l" . ivy-done)
+;;     ("C-d" . ivy-switch-buffer-kill)
+;;     :map ivy-reverse-i-search-map
+;;     ("C-k" . ivy-previous-line)
+;;     ("C-d" . ivy-reverse-i-search-kill))
+;;     :init
+;;     (ivy-mode 1))
 
-(use-package ivy-rich
-    :init
-    (ivy-rich-mode 1))
+;; (use-package ivy-rich
+;;     :init
+;;     (ivy-rich-mode 1))
 
-(use-package swiper
-  :bind (("C-s" . swiper)))
+;; (use-package swiper
+;;   :bind (("C-s" . swiper)))
 
 ;; (use-package ivy-posframe
 ;;     :init
@@ -310,16 +321,31 @@
 ;;     :config
 ;;     (ivy-posframe-mode 1))
 
-(use-package counsel
-    :bind
-    (("M-x" . counsel-M-x)
-     ("M-y" . counsel-yank-pop-selection)
-     ("M-i" . counsel-imenu)
-     ("C-s" . counsel-grep-or-swiper)
-     ("C-x b" . counsel-ibuffer)
-     ("C-x C-f" . counsel-find-file)
-     :map minibuffer-local-map
-     ("C-r" . 'counsel-minibuffer-history)))
+;; (use-package counsel
+;;     :bind
+;;     (("M-x" . counsel-M-x)
+;;      ("M-y" . counsel-yank-pop-selection)
+;;      ("M-i" . counsel-imenu)
+;;      ("C-s" . counsel-grep-or-swiper)
+;;      ("C-x b" . counsel-ibuffer)
+;;      ("C-x C-f" . counsel-find-file)
+;;      :map minibuffer-local-map
+;;      ("C-r" . 'counsel-minibuffer-history)))
+
+(use-package vertico
+  :init
+  (vertico-mode))
+
+(use-package consult)
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+(use-package all-the-icons-completion
+  :config
+  (all-the-icons-completion-mode))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -429,10 +455,10 @@
 (setq recentf-max-saved-items 25)
 
 (my-leader
-    "." '(counsel-find-file :which-key "Find file")
+    "." '(find-file :which-key "Find file")
 
     "f" '(:ignore t :which-key "files")
-    "f r" '(counsel-recentf :which-key "Open Recent Files")
+    "f r" '(consult-recent-file :which-key "Open Recent Files")
     "f c" '((lambda () (interactive)(find-file "~/.dotfiles/.emacs.d/config.org")) :which-key "Open config.org"))
 
 (my-leader
@@ -457,7 +483,7 @@
      "wl" '(windmove-right :which-key "Select right window"))
 
 (my-leader
-      ;"," '(counsel-switch-buffer :which-key "Switch buffer")
+      "," '(consult-buffer :which-key "Switch buffer")
 
       "b" '(:ignore t :which-key "buffers")
       "b k" '(kill-buffer :which-key "Kill buffer"))
@@ -467,9 +493,13 @@
  "s" 'avy-goto-char-timer
  "S" 'avy-pop-mark)
 
+(general-define-key
+ :states '(normal emacs)
+ "C-s" 'consult-line)
+
 (my-leader
   "s" '(:ignore t :which-key "search")
-  "s b" '(swiper :which-key "Search buffer"))
+  "s b" '(consult-line :which-key "Search buffer"))
 
 (use-package ag
   :general
@@ -511,7 +541,8 @@
     :commands (lsp lsp-deferred)
     :init
     (setq lsp-lens-enable t
-          lsp-signature-auto-activate nil)
+          lsp-signature-auto-activate nil
+          lsp-ui-doc-mode t)
     :general
     (evil-define-key 'normal lsp-mode-map (kbd "/") lsp-command-map)
     :config
@@ -527,7 +558,7 @@
     (lsp-rust-analyzer-display-parameter-hints t)
     (lsp-rust-analyzer-display-reborrow-hints nil))
 
-(use-package lsp-ivy)
+;; (use-package lsp-ivy)
 
 (use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode)
