@@ -37,6 +37,8 @@
   - [[#yasnippet-create-common-snippets][YASnippet: Create common snippets]]
   - [[#company-auto-completion][Company: Auto completion]]
   - [[#which-key-list-commands-for-current-prefix][Which-key: list commands for current prefix]]
+  - [[#olivetti-centered-document-editing][Olivetti: centered document editing]]
+  - [[#perspective][Perspective]]
 - [[#spell-checker][Spell checker]]
   - [[#flyspell][Flyspell]]
   - [[#flyspell-correct-show-list-of-correct-spelling-suggestions][Flyspell-correct: Show list of correct spelling suggestions]]
@@ -80,7 +82,7 @@
   - [[#cc][C/C++]]
   - [[#java][Java]]
   - [[#clojure][Clojure]]
-  - [[#glsl][GLSL]]
+  - [[#glsl-opengl-shaders][GLSL: OpenGL shaders]]
   - [[#retro-assembly][Retro Assembly]]
 - [[#org-mode][Org Mode]]
   - [[#basic-config][Basic config]]
@@ -92,10 +94,6 @@
   - [[#imenu-list][Imenu-list]]
   - [[#org-roam][Org-roam]]
   - [[#org-tree-slide][Org-tree-slide]]
-- [[#editor-1][Editor]]
-  - [[#olivetti][Olivetti]]
-- [[#development-tools][Development Tools]]
-  - [[#perspective][Perspective]]
 - [[#documents][Documents]]
   - [[#pdfs][PDFs]]
   - [[#ebooks][Ebooks]]
@@ -119,7 +117,10 @@ Installation should be fairly straightforward. The first time Emacs runs this co
 Disable certain byte compiler warnings to cut down on the noise for (usually unnecessary) errors.
 
 #+BEGIN_SRC emacs-lisp
-(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
+      native-comp-async-report-warnings-errors nil)
+
+
 #+END_SRC 
 
 ** Set some early UI settings
@@ -283,6 +284,7 @@ Set up =general.el= to control all of my custom keybindings.
         :prefix "C-q"))
 
 #+end_src
+
 * UI
 Set up all the fancy user-interface elements to make Emacs modern.
 
@@ -440,6 +442,7 @@ Highlight the current line where point is present. I have this disabled for now 
 #+BEGIN_SRC emacs-lisp
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 #+END_SRC 
+
 * Editor
 ** Aggressive-indent
 #+BEGIN_SRC emacs-lisp
@@ -456,8 +459,6 @@ Give parenthases rainbow coloring depending on their nested level in all program
 (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC 
-
-
 
 ** SmartParens: Match grouping characters
 
@@ -482,6 +483,7 @@ Add various templates to Emacs.
   (yas-global-mode))
 
 #+END_SRC
+
 ** Company: Auto completion
 A good code-completion package. I might consider switching to Corfu at some point.
 
@@ -503,6 +505,7 @@ A good code-completion package. I might consider switching to Corfu at some poin
     :hook (company-mode . company-box-mode))
 
 #+end_src
+
 ** Which-key: list commands for current prefix
 
 #+begin_src emacs-lisp
@@ -515,6 +518,56 @@ A good code-completion package. I might consider switching to Corfu at some poin
   (setq which-key-idle-delay 0.3))
 
 #+end_src
+
+** Olivetti: centered document editing
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package olivetti
+  :init
+  (setq olivetti-body-width 80
+        olivetti-style t)
+  :hook
+  (org-mode . olivetti-mode))
+
+#+END_SRC
+
+** Perspective
+Add named workspaces to Emacs with their own buffers.
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package perspective
+    :init
+    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
+          persp-mode-prefix-key (kbd "C-c M-p"))
+
+    :config
+    (persp-mode)
+
+    :general
+    (my-leader
+      "," '(persp-ivy-switch-buffer :which-key "Switch buffer")
+      "b k" '(persp-remove-buffer :which-key "Remove buffer")
+
+      "TAB" '(:ignore t :which-key "workspace")
+      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
+      "TAB r" '(persp-rename :which-key "Rename workspace")
+      "TAB s" '(persp-state-save :which-key "Save workspaces")
+      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
+      "TAB k" '(persp-kill :which-key "Kill workspace")
+      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
+      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
+      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
+      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
+      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
+      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
+      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
+      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
+      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
+
+#+END_SRC
+
 * Spell checker
 ** Flyspell
 #+BEGIN_SRC emacs-lisp
@@ -584,6 +637,7 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   (treemacs-load-theme "all-the-icons"))
 
 #+end_src
+
 * Ivy
 I use ivy to improve searching capabilities of Emacs.
 
@@ -642,6 +696,7 @@ Display specific completion dialogs in a box overlayed over the screen instead o
 ;;     (ivy-posframe-mode 1))
 
 #+END_SRC
+
 ** Counsel
 Replace many of the standard Emacs commands with more powerful versions capable of fuzzy-search.
 
@@ -659,6 +714,7 @@ Replace many of the standard Emacs commands with more powerful versions capable 
      ("C-r" . 'counsel-minibuffer-history)))
 
 #+end_src
+
 * Keybindings
 ** ESC quits prompts
 Make ESC quit prompts.
@@ -681,6 +737,7 @@ Fundamental movement through text files
 (setq next-line-add-newlines t)
 
 #+END_SRC 
+
 ** Hydra
 *** Basic Config
 Install the base Hydra package.
@@ -983,7 +1040,6 @@ Keybindings for searching within different contexts.
 #+END_SRC 
 
 * Programming
-
 ** Format All The Code: Simple code formatting
 A simple code formatting system for a ton of languages.
 
@@ -994,7 +1050,6 @@ A simple code formatting system for a ton of languages.
   ;(prog-mode . format-all-mode)
 
 #+end_src
-
 
 ** Flycheck
 #+BEGIN_SRC emacs-lisp
@@ -1009,19 +1064,13 @@ A simple code formatting system for a ton of languages.
 (use-package lsp-mode
     :commands (lsp lsp-deferred)
     :init
-    (setq lsp-keymap-prefix "C-l"
-          lsp-lens-enable t
-          lsp-signature-auto-activate nil)
+    (setq lsp-lens-enable t
+          lsp-signature-auto-activate nil
+          lsp-ui-doc-mode t)
+    :general
+    (evil-define-key 'normal lsp-mode-map (kbd "/") lsp-command-map)
     :config
     (lsp-enable-which-key-integration t)
-    ;; :general
-    ;; TODO figure this out
-    ;; (my-leader
-    ;;   "c" '(:ignore t :which-key "code")))
-    ;; (add-hook 'lsp-after-open-hook
-    ;;     (lambda ()
-    ;;       (when (lsp-find-workspace 'rust-analyzer nil)
-    ;;         (lsp-rust-analyzer-inlay-hints-mode))))
     :custom
 
     ;; Enable/disable type hints as you type for Rust
@@ -1189,14 +1238,25 @@ Most Rustic keybindings begin with =C-c C-c=
 (use-package cider)
 
 #+END_SRC 
-** GLSL
+
+** GLSL: OpenGL shaders
 
 #+BEGIN_SRC emacs-lisp
 
 (use-package glsl-mode
-  :mode "\\.glsl\\'")
+  :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
 
 #+END_SRC
+
+The company backend needs the ~glslang~ package installed for ~glslangValidator~.
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package company-glsl
+  :after glsl-mode
+  :config (add-to-list 'company-backends 'company-glsl))
+
+#+END_SRC 
 
 ** Retro Assembly
 My configurations for various retro assembly architectures.
@@ -1432,65 +1492,6 @@ Make presentations in org-mode!
 #+RESULTS:
 : org-tree-slide-move-next-tree
 
-* Editor
-This section is a little vague, but I'm planning to put general packages/configuration settings here that don't fit elsewhere and help make Emacs a better editor in general.
-
-** Olivetti
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package olivetti
-  :init
-  (setq olivetti-body-width 80
-        olivetti-style t)
-  :hook
-  (org-mode . olivetti-mode))
-
-#+END_SRC
-
-#+RESULTS:
-| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | olivetti-mode | org-modern-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | ns/org-mode-setup | (lambda nil (display-line-numbers-mode 0)) | org-eldoc-load |
-
-* Development Tools
-** Perspective
-Add named workspaces to Emacs with their own buffers.
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package perspective
-    :init
-    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
-          persp-mode-prefix-key (kbd "C-c M-p"))
-
-    :config
-    (persp-mode)
-
-    :general
-    (my-leader
-      "," '(persp-ivy-switch-buffer :which-key "Switch buffer")
-      "b k" '(persp-remove-buffer :which-key "Remove buffer")
-
-      "TAB" '(:ignore t :which-key "workspace")
-      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
-      "TAB r" '(persp-rename :which-key "Rename workspace")
-      "TAB s" '(persp-state-save :which-key "Save workspaces")
-      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
-      "TAB k" '(persp-kill :which-key "Kill workspace")
-      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
-      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
-      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
-      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
-      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
-      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
-      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
-      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
-      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
-
-#+END_SRC
-
-#+RESULTS:
-
-
 * Documents
 ** PDFs
 
@@ -1501,6 +1502,13 @@ Add named workspaces to Emacs with their own buffers.
 (use-package pdf-tools
   :config
   (pdf-loader-install))
+
+#+END_SRC
+
+Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
+#+BEGIN_SRC emacs-lisp
+
+(use-package saveplace-pdf-view)
 
 #+END_SRC 
 
@@ -1520,6 +1528,17 @@ Add named workspaces to Emacs with their own buffers.
 (use-package smart-comment)
 
 #+end_src
+
+
+
+
+
+
+
+
+
+
+
 
 
 

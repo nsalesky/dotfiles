@@ -55,7 +55,7 @@
 (package! dired-open)
 (package! dired-subtree)
 (package! emojify)
-(package! ivy-posframe)
+;; (package! ivy-posframe)
 (package! peep-dired)
 (package! resize-window)
 (package! tldr)

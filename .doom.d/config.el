@@ -1,6 +1,9 @@
-(setq doom-font (font-spec :family "Iosevka Nerd Font" :size 16)
-      doom-variable-pitch-font (font-spec :family "Source Sans Pro" :size 15)
-      doom-big-font (font-spec :family "Iosevka Nerd Font" :size 24))
+(setq user-full-name "Nick Salesky"
+      user-mail-address "nicksalesky@gmail.com")
+
+(setq doom-font (font-spec :family "JetBrainsMono" :size 16)
+      doom-variable-pitch-font (font-spec :family "SourceSans3" :size 15)
+      doom-big-font (font-spec :family "JetBrainsMono" :size 24))
 (after! doom-themes
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t))
@@ -8,15 +11,15 @@
   '(font-lock-comment-face :slant italic)
   '(font-lock-keyword-face :slant italic))
 
-(set-face-attribute 'mode-line nil :font "Ubuntu Mono-13")
+(setq doom-theme 'doom-moonlight)
+(map! :leader
+      :desc "Load new theme" "h t" #'counsel-load-theme)
+
+(set-face-attribute 'mode-line nil :font "JetBrainsMono")
 (setq doom-modeline-height 30     ;; sets modeline height
       doom-modeline-bar-width 5   ;; sets right bar width
       doom-modeline-persp-name t  ;; adds perspective name to the modeline
       doom-modeline-persp-icon t) ;; adds a folder icon next to the perspective name
-
-(setq doom-theme 'doom-moonlight)
-(map! :leader
-      :desc "Load new theme" "h t" #'counsel-load-theme)
 
 (setq frame-title-format
       '(""
@@ -35,34 +38,22 @@
 ;;     (toggle-frame-maximized)
 ;;   (toggle-frame-fullscreen))
 
-
+(defun ns/toggle-window-transparency ()
+  "Toggle transparency."
+  (interactive)
+  (let ((alpha-transparency 75))
+    (if (equal alpha-transparency (frame-parameter nil 'alpha-background))
+        (set-frame-parameter nil 'alpha-background 100)
+      (set-frame-parameter nil 'alpha-background alpha-transparency))))
 
 (evil-global-set-key 'motion "j" 'evil-next-visual-line)
 (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-(setq ivy-posframe-display-functions-alist
-      '((swiper                     . ivy-posframe-display-at-point)
-        (complete-symbol            . ivy-posframe-display-at-point)
-        (counsel-M-x                . ivy-display-function-fallback)
-        (counsel-esh-history        . ivy-posframe-display-at-window-center)
-        (counsel-describe-function  . ivy-display-function-fallback)
-        (counsel-describe-variable  . ivy-display-function-fallback)
-        (counsel-find-file          . ivy-display-function-fallback)
-        (counsel-recentf            . ivy-display-function-fallback)
-        (counsel-register           . ivy-posframe-display-at-frame-bottom-window-center)
-        (dmenu                      . ivy-posframe-display-at-frame-top-center)
-        (nil                        . ivy-posframe-display))
-      ivy-posframe-height-alist
-      '((swiper . 20)
-        (dmenu . 20)
-        (t . 10)))
-(ivy-posframe-mode 1) ; 1 enables posframe-mode, 0 disables it.
-
 (map! :leader
       :desc "Org babel tangle" "m B" #'org-babel-tangle)
 (after! org
-  (setq org-directory "~/org"
-        org-agenda-files '("~/org/agenda.org")
+  (setq org-directory "~/notes"
+        org-agenda-files '("~/notes/agenda.org")
         org-default-notes-file (expand-file-name "notes.org" org-directory)
         org-return-follows-link t  ;; pressing RET follows links
         org-ellipsis " ▼ "
@@ -72,7 +63,7 @@
         ;; org-todo-keywords ; This overwrites the default Doom org-todo-keywords
         ;; '((sequence
         ;;    "TODO(t)" ; A task that is ready to be tackled
-        ;;    "WAIT(w)" ; Something that is holding up this task
+        ;;    "WAIT(w)" ; Some thing that is holding up this task
         ;;    "HOLD(h)" ; Something that has been put on hold
         ;;    "|" ; Seperator between "active" and "inactive" states
         ;;    "DONE(d)" ; Task has been completed
@@ -83,13 +74,13 @@
   (org-mode . org-modern-mode)
   (org-agenda-finalize . org-modern-agenda))
 
-(defun ns/org-mode-visual-fill ()
-  (setq visual-fill-column-width 200
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
+;; (defun ns/org-mode-visual-fill ()
+;;   (setq visual-fill-column-width 200
+;;         visual-fill-column-center-text t)
+;;   (visual-fill-column-mode 1))
 
-(use-package visual-fill-column
-  :hook (org-mode . ns/org-mode-visual-fill))
+;; (use-package visual-fill-column
+;;   :hook (org-mode . ns/org-mode-visual-fill))
 
 (custom-set-faces
   '(org-level-1 ((t (:inherit outline-1 :height 1.4))))
@@ -101,17 +92,15 @@
 
 ;(add-hook 'org-mode 'variable-pitch-mode)
 
-;(use-package ox-man)
-;(use-package ox-gemini)
-
 (setq org-journal-dir "~/org/journal/"
       org-journal-date-prefix "* "
       org-journal-time-prefix "** "
       org-journal-date-format "%B %d, %Y (%A) "
-      org-journal-file-format "%Y-%m-%d.org")
+      org-journal-file-format "%Y-%m-%d.org"
+      org-journal-enable-agenda-integration t)
 
 (after! org-roam
-  (setq org-roam-directory "~/org/roam"))
+  (setq org-roam-directory "~/notes/roam"))
 
 (after! org-roam
   (setq org-roam-capture-templates
@@ -124,13 +113,13 @@
 
          ;; A capture template for a programming language
          ("l" "programming language" plain
-          (file "~/org/roam/templates/programming-language-template.org")
+          (file "~/notes/roam/templates/programming-language-template.org")
           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
           :unnarrowed t)
 
          ;; A capture template for a project I'm working on
          ("p" "project" plain
-          (file "~/org/roam/templates/project-template.org")
+          (file "~/notes/roam/templates/project-template.org")
           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
           :unnarrowed t)
                         )))
@@ -243,10 +232,3 @@
   :ensure t
   :config
   (global-wakatime-mode))
-
-;; (setq +latex-viewers '(pdf-tools))
-
-(setq lsp-tex-server 'digestif)
-
-(setq user-full-name "Nick Salesky"
-      user-mail-address "nicksalesky@gmail.com")

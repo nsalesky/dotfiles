@@ -1,4 +1,5 @@
-(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
+      native-comp-async-report-warnings-errors nil)
 
 (scroll-bar-mode -1)
 
@@ -191,6 +192,42 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.3))
+
+(use-package olivetti
+  :init
+  (setq olivetti-body-width 80
+        olivetti-style t)
+  :hook
+  (org-mode . olivetti-mode))
+
+(use-package perspective
+    :init
+    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
+          persp-mode-prefix-key (kbd "C-c M-p"))
+
+    :config
+    (persp-mode)
+
+    :general
+    (my-leader
+      "," '(persp-ivy-switch-buffer :which-key "Switch buffer")
+      "b k" '(persp-remove-buffer :which-key "Remove buffer")
+
+      "TAB" '(:ignore t :which-key "workspace")
+      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
+      "TAB r" '(persp-rename :which-key "Rename workspace")
+      "TAB s" '(persp-state-save :which-key "Save workspaces")
+      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
+      "TAB k" '(persp-kill :which-key "Kill workspace")
+      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
+      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
+      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
+      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
+      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
+      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
+      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
+      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
+      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
 
 (use-package flyspell
   :hook ((prog-mode . flyspell-prog-mode)
@@ -473,19 +510,12 @@
 (use-package lsp-mode
     :commands (lsp lsp-deferred)
     :init
-    (setq lsp-keymap-prefix "C-l"
-          lsp-lens-enable t
+    (setq lsp-lens-enable t
           lsp-signature-auto-activate nil)
+    :general
+    (evil-define-key 'normal lsp-mode-map (kbd "/") lsp-command-map)
     :config
     (lsp-enable-which-key-integration t)
-    ;; :general
-    ;; TODO figure this out
-    ;; (my-leader
-    ;;   "c" '(:ignore t :which-key "code")))
-    ;; (add-hook 'lsp-after-open-hook
-    ;;     (lambda ()
-    ;;       (when (lsp-find-workspace 'rust-analyzer nil)
-    ;;         (lsp-rust-analyzer-inlay-hints-mode))))
     :custom
 
     ;; Enable/disable type hints as you type for Rust
@@ -584,7 +614,11 @@
 (use-package cider)
 
 (use-package glsl-mode
-  :mode "\\.glsl\\'")
+  :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
+
+(use-package company-glsl
+  :after glsl-mode
+  :config (add-to-list 'company-backends 'company-glsl))
 
 (use-package ca65-mode
   :mode "\\.s\\'")
@@ -732,47 +766,13 @@
             ("<f10>" . org-tree-slide-move-next-tree)
         ))
 
-(use-package olivetti
-  :init
-  (setq olivetti-body-width 80
-        olivetti-style t)
-  :hook
-  (org-mode . olivetti-mode))
-
-(use-package perspective
-    :init
-    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
-          persp-mode-prefix-key (kbd "C-c M-p"))
-
-    :config
-    (persp-mode)
-
-    :general
-    (my-leader
-      "," '(persp-ivy-switch-buffer :which-key "Switch buffer")
-      "b k" '(persp-remove-buffer :which-key "Remove buffer")
-
-      "TAB" '(:ignore t :which-key "workspace")
-      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
-      "TAB r" '(persp-rename :which-key "Rename workspace")
-      "TAB s" '(persp-state-save :which-key "Save workspaces")
-      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
-      "TAB k" '(persp-kill :which-key "Kill workspace")
-      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
-      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
-      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
-      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
-      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
-      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
-      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
-      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
-      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
-
 (use-package tablist)
 
 (use-package pdf-tools
   :config
   (pdf-loader-install))
+
+(use-package saveplace-pdf-view)
 
 (use-package nov
   :mode "\\.epub\\'")
