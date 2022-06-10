@@ -30,12 +30,17 @@
   - [[#helpful][Helpful]]
   - [[#hl-todo-highlight-and-navigate-todo-keywords][Hl-todo: Highlight and navigate TODO keywords]]
   - [[#hl-line-highlight-the-current-line][Hl-line: Highlight the current line]]
+  - [[#transparent-frame][Transparent Frame]]
+- [[#minibuffer-completion][Minibuffer Completion]]
+  - [[#ivy][Ivy]]
+  - [[#vertico][Vertico]]
 - [[#editor][Editor]]
   - [[#aggressive-indent-always-keep-code-properly-indented][Aggressive-indent: Always keep code properly indented]]
   - [[#rainbow-delimiters-different-color-for-each-parenthesis-level][Rainbow-delimiters: Different color for each parenthesis level]]
   - [[#smartparens-match-grouping-characters][SmartParens: Match grouping characters]]
   - [[#yasnippet-create-common-snippets][YASnippet: Create common snippets]]
   - [[#company-auto-completion][Company: Auto completion]]
+  - [[#corfu-completion-at-point][Corfu: Completion at point]]
   - [[#which-key-list-commands-for-current-prefix][Which-key: List commands for current prefix]]
   - [[#olivetti-centered-document-editing][Olivetti: Centered document editing]]
   - [[#perspective-give-projects-their-own-named-workspaces][Perspective: Give projects their own named workspaces]]
@@ -45,9 +50,6 @@
 - [[#project-management][Project Management]]
   - [[#projectile][Projectile]]
   - [[#treemacs-a-tree-layout-file-explorer][Treemacs: A tree layout file explorer]]
-- [[#minibuffer-completion][Minibuffer Completion]]
-  - [[#ivy][Ivy]]
-  - [[#vertico][Vertico]]
 - [[#keybindings][Keybindings]]
   - [[#esc-quits-prompts][ESC quits prompts]]
   - [[#movement][Movement]]
@@ -70,18 +72,20 @@
   - [[#format-all-the-code-simple-code-formatting][Format All The Code: Simple code formatting]]
   - [[#flycheck][Flycheck]]
   - [[#lsp-language-server-protocols][LSP: Language-server protocols]]
+  - [[#eglot-language-server-protocols][Eglot: Language-server protocols]]
   - [[#dap-debugging-support][DAP: Debugging support]]
   - [[#tree-sitter][Tree-Sitter]]
   - [[#wakatime][Wakatime]]
-  - [[#python][Python]]
-  - [[#typescript][Typescript]]
-  - [[#web][Web]]
-  - [[#rust][Rust]]
   - [[#cc][C/C++]]
-  - [[#java][Java]]
   - [[#clojure][Clojure]]
   - [[#glsl-opengl-shaders][GLSL: OpenGL shaders]]
+  - [[#go][Go]]
+  - [[#java][Java]]
+  - [[#python][Python]]
+  - [[#typescript][Typescript]]
   - [[#retro-assembly][Retro Assembly]]
+  - [[#rust][Rust]]
+  - [[#web][Web]]
 - [[#org-mode][Org Mode]]
   - [[#basic-config][Basic config]]
   - [[#configure-babel][Configure Babel]]
@@ -118,6 +122,15 @@ Disable certain byte compiler warnings to cut down on the noise for (usually unn
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
       native-comp-async-report-warnings-errors nil)
 
+
+#+END_SRC 
+
+Increase the garbage collection threshold and process data chunking for performance.
+
+#+BEGIN_SRC emacs-lisp
+
+(setq gc-cons-threshold 100000000
+      read-process-output-max (* 1024 1024))
 
 #+END_SRC 
 
@@ -448,16 +461,149 @@ Highlight the current line where point is present. I have this disabled for now 
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 #+END_SRC 
 
+** Transparent Frame
+Creates a handy little function to toggle a semi-transparent window frame either for aeshetics or to view another window underneath Emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+(defun ns/toggle-window-transparency ()
+  "Toggle transparency."
+  (interactive)
+  (let ((alpha-transparency 75))
+    (if (equal alpha-transparency (frame-parameter nil 'alpha-background))
+        (set-frame-parameter nil 'alpha-background 100)
+      (set-frame-parameter nil 'alpha-background alpha-transparency))))
+
+#+END_SRC
+
+* Minibuffer Completion
+Different systems to enhance/replace the Emacs minibuffer completion systems. I'm currently experimenting with Vertico.
+
+** Ivy
+I use ivy to improve searching capabilities of Emacs.
+
+*** Ivy itself
+
+#+BEGIN_SRC emacs-lisp
+
+;; (use-package ivy
+;;     :diminish
+;;     :bind (
+;;     :map ivy-minibuffer-map
+;;     ("TAB" . ivy-alt-done)
+;;     ("C-l" . ivy-alt-done)
+;;     ("C-j" . ivy-next-line)
+;;     ("C-k" . ivy-previous-line)
+;;     :map ivy-switch-buffer-map
+;;     ("C-k" . ivy-previous-line)
+;;     ("C-l" . ivy-done)
+;;     ("C-d" . ivy-switch-buffer-kill)
+;;     :map ivy-reverse-i-search-map
+;;     ("C-k" . ivy-previous-line)
+;;     ("C-d" . ivy-reverse-i-search-kill))
+;;     :init
+;;     (ivy-mode 1))
+
+;; (use-package ivy-rich
+;;     :init
+;;     (ivy-rich-mode 1))
+
+#+END_SRC 
+
+*** Swiper: search file with ivy
+
+#+BEGIN_SRC emacs-lisp
+
+;; (use-package swiper
+;;   :bind (("C-s" . swiper)))
+
+
+#+END_SRC 
+
+*** Ivy-posframe
+Display specific completion dialogs in a box overlayed over the screen instead of at the bottom of the window.
+
+#+BEGIN_SRC emacs-lisp
+
+;; (use-package ivy-posframe
+;;     :init
+;;     (setq ivy-posframe-display-functions-alist
+;;         '((counsel-M-x . ivy-display-function-fallback)
+;;         (counsel-find-file . ivy-display-function-fallback)
+;;         (swiper . ivy-display-function-fallback)
+;;         (counsel-switch-buffer . ivy-display-function-fallback)
+;;         (t . ivy-posframe-display)))
+;;     :config
+;;     (ivy-posframe-mode 1))
+
+#+END_SRC
+
+*** Counsel
+Replace many of the standard Emacs commands with more powerful versions capable of fuzzy-search.
+
+#+begin_src emacs-lisp
+
+;; (use-package counsel
+;;     :bind
+;;     (("M-x" . counsel-M-x)
+;;      ("M-y" . counsel-yank-pop-selection)
+;;      ("M-i" . counsel-imenu)
+;;      ("C-s" . counsel-grep-or-swiper)
+;;      ("C-x b" . counsel-ibuffer)
+;;      ("C-x C-f" . counsel-find-file)
+;;      :map minibuffer-local-map
+;;      ("C-r" . 'counsel-minibuffer-history)))
+
+#+end_src
+
+** Vertico
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package vertico
+  :init
+  (vertico-mode))
+
+#+END_SRC 
+
+*** Consult
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package consult)
+
+#+END_SRC 
+
+*** Orderless: make searches more fuzzy
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '(
+                                   (file (styles basic partial-completion))
+                                   (eglot (styles orderless)))))
+
+#+END_SRC 
+
+*** All-the-icons-completion: add icons to completion candidates
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package all-the-icons-completion
+  :config
+  (all-the-icons-completion-mode))
+
+#+END_SRC 
 * Editor
 ** Aggressive-indent: Always keep code properly indented
 #+BEGIN_SRC emacs-lisp
 
 (use-package aggressive-indent
-  :config
-  (global-aggressive-indent-mode)
+  :hook
+  (emacs-lisp-mode-hook . aggressive-indent-mode))
 
-  ;; For example
-  (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
 
 #+END_SRC 
 
@@ -499,22 +645,81 @@ A good code-completion package. I might consider switching to Corfu at some poin
 
 #+begin_src emacs-lisp
 
-(use-package company
-    :after lsp-mode
-    :hook (lsp-mode . company-mode)
-    :bind (:map company-active-map
-        ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-        ("<tab>" . company-indent-or-complete-common))
-    :custom
-    (company-minimum-prefix-length 1)
-    (company-idle-delay 0.0))
+;; (use-package company
+;;     :after lsp-mode
+;;     :hook (lsp-mode . company-mode)
+;;     :bind (:map company-active-map
+;;         ("<tab>" . company-complete-selection))
+;;         (:map lsp-mode-map
+;;         ("<tab>" . company-indent-or-complete-common))
+;;     :custom
+;;     (company-minimum-prefix-length 1)
+;;     (company-idle-delay 0.0))
 
-;; Adds colors and icons to company-mode
-(use-package company-box
-    :hook (company-mode . company-box-mode))
+;; ;; Adds colors and icons to company-mode
+;; (use-package company-box
+;;     :hook (company-mode . company-box-mode))
 
 #+end_src
+
+** Corfu: Completion at point
+Configure the ~corfu~ completion-at-point package. This configuration was inspired by the official documentation and [[https://kristofferbalintona.me/posts/202202270056/][here]].
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package corfu
+  :general
+  (:keymaps 'corfu-map
+            :states 'insert
+            "C-n" #'corfu-next
+            "C-p" #'corfu-previous
+            "<escape>" #'corfu-quit
+            "<return>" #'corfu-insert
+            "M-d" #'corfu-show-documentation
+            "M-l" #'corfu-show-location)
+  
+  :custom
+  (corfu-auto t) ; Only use 'corfu' when calling 'completion-at-point' or 'indent-for-tab-command'
+
+  (corfu-auto-prefix 3)             ; Minimum length of prefix for auto-complete
+  (corfu-auto-delay 0.25)
+
+  (corfu-min-width 80)
+  (corfu-max-width corfu-min-width) ; Always have the same width
+  (corfu-count 14) ; Max number of candidates to show
+  (corfu-scroll-margin 4)
+  (corfu-cycle nil)
+
+  (corfu-quit-at-boundary nil)
+  (corfu-seperator ?\s)            ; Use space
+  (corfu-quit-no-match 'seperator) ; Don't quit if there is 'corfu-seperator' inserted
+  (corfu-preview-current 'insert)  ; Preview first candidate. Insert on input if only one candidate
+  (corfu-preselect-first t)        ; Preselect first candidate?
+
+  (corfu-echo-documentation nil) ; Use 'corfu-doc' instead
+
+  ;; Enable indentation+completion using the TAB key instead of M-TAB
+  (tab-always-indent 'complete)
+  (completion-cycle-threshold nil)
+
+  :init
+  (global-corfu-mode))
+
+  ;; :config
+  ;; (general-add-advice '(corfu--setup corfu--teardown) :after 'evil-normalize-keymaps)
+  ;; (evil-make-overriding-map corfu-map))
+
+
+(use-package kind-icon
+  :custom
+  (kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(use-package corfu-doc
+  :hook (corfu-mode . corfu-doc-mode))
+
+#+END_SRC 
 
 ** Which-key: List commands for current prefix
 
@@ -643,132 +848,15 @@ Tools to distinguish projects and quickly navigate inside projects and between t
     :hook (dired-mode . treemacs-icons-dired-enable-once))
 (use-package treemacs-magit
     :after (treemacs magit))
-(use-package lsp-treemacs
-    :after (treemacs lsp-mode)
-    :config (lsp-treemacs-sync-mode 1))
+;; (use-package lsp-treemacs
+;;     :after (treemacs lsp-mode)
+;;     :config (lsp-treemacs-sync-mode 1))
 (use-package treemacs-all-the-icons
   :config
   (treemacs-load-theme "all-the-icons"))
 
 #+end_src
 
-* Minibuffer Completion
-Different systems to enhance/replace the Emacs minibuffer completion systems. I'm currently experimenting with Vertico.
-
-** Ivy
-I use ivy to improve searching capabilities of Emacs.
-
-*** Ivy itself
-
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package ivy
-;;     :diminish
-;;     :bind (
-;;     :map ivy-minibuffer-map
-;;     ("TAB" . ivy-alt-done)
-;;     ("C-l" . ivy-alt-done)
-;;     ("C-j" . ivy-next-line)
-;;     ("C-k" . ivy-previous-line)
-;;     :map ivy-switch-buffer-map
-;;     ("C-k" . ivy-previous-line)
-;;     ("C-l" . ivy-done)
-;;     ("C-d" . ivy-switch-buffer-kill)
-;;     :map ivy-reverse-i-search-map
-;;     ("C-k" . ivy-previous-line)
-;;     ("C-d" . ivy-reverse-i-search-kill))
-;;     :init
-;;     (ivy-mode 1))
-
-;; (use-package ivy-rich
-;;     :init
-;;     (ivy-rich-mode 1))
-
-#+END_SRC 
-
-*** Swiper: search file with ivy
-
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package swiper
-;;   :bind (("C-s" . swiper)))
-
-
-#+END_SRC 
-
-*** Ivy-posframe
-Display specific completion dialogs in a box overlayed over the screen instead of at the bottom of the window.
-
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package ivy-posframe
-;;     :init
-;;     (setq ivy-posframe-display-functions-alist
-;;         '((counsel-M-x . ivy-display-function-fallback)
-;;         (counsel-find-file . ivy-display-function-fallback)
-;;         (swiper . ivy-display-function-fallback)
-;;         (counsel-switch-buffer . ivy-display-function-fallback)
-;;         (t . ivy-posframe-display)))
-;;     :config
-;;     (ivy-posframe-mode 1))
-
-#+END_SRC
-
-*** Counsel
-Replace many of the standard Emacs commands with more powerful versions capable of fuzzy-search.
-
-#+begin_src emacs-lisp
-
-;; (use-package counsel
-;;     :bind
-;;     (("M-x" . counsel-M-x)
-;;      ("M-y" . counsel-yank-pop-selection)
-;;      ("M-i" . counsel-imenu)
-;;      ("C-s" . counsel-grep-or-swiper)
-;;      ("C-x b" . counsel-ibuffer)
-;;      ("C-x C-f" . counsel-find-file)
-;;      :map minibuffer-local-map
-;;      ("C-r" . 'counsel-minibuffer-history)))
-
-#+end_src
-
-** Vertico
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package vertico
-  :init
-  (vertico-mode))
-
-#+END_SRC 
-
-*** Consult
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package consult)
-
-#+END_SRC 
-
-*** Orderless: make searches more fuzzy
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package orderless
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
-
-#+END_SRC 
-*** All-the-icons-completion: add icons to completion candidates
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package all-the-icons-completion
-  :config
-  (all-the-icons-completion-mode))
-
-#+END_SRC 
 * Keybindings
 ** ESC quits prompts
 Make ESC quit prompts.
@@ -966,8 +1054,8 @@ Some keybindings for toggling different functionalities on/off.
      "t"  '(:ignore t :which-key "toggle")
      "t s" '(counsel-load-theme :which-key "Choose theme")
 
-     "t t" '(treemacs :which-key "Treemacs")
-     "t y" '(lsp-treemacs-symbols :which-key "Treemacs Symbols"))
+     "t t" '(treemacs :which-key "Treemacs"))
+     ;; "t y" '(lsp-treemacs-symbols :which-key "Treemacs Symbols"))
 
 #+END_SRC
 
@@ -1119,39 +1207,46 @@ A simple code formatting system for a ton of languages.
 ** LSP: Language-server protocols
 #+begin_src emacs-lisp
 
-(use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :init
-    (setq lsp-lens-enable t
-          lsp-signature-auto-activate nil
-          lsp-ui-doc-mode t)
-    :general
-    (evil-define-key 'normal lsp-mode-map (kbd "/") lsp-command-map)
-    :config
-    (lsp-enable-which-key-integration t)
-    :custom
+;; (use-package lsp-mode
+;;     :commands (lsp lsp-deferred)
+;;     :init
+;;     (setq lsp-lens-enable t
+;;           lsp-signature-auto-activate nil
+;;           lsp-ui-doc-mode t)
+;;     :general
+;;     (evil-define-key 'normal lsp-mode-map (kbd "/") lsp-command-map)
+;;     :config
+;;     (lsp-enable-which-key-integration t)
+;;     :custom
 
-    ;; Enable/disable type hints as you type for Rust
-    (lsp-rust-analyzer-server-display-inlay-hints t)
-    (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-    (lsp-rust-analyzer-display-chaining-hints nil)
-    (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-    (lsp-rust-analyzer-display-closure-return-type-hints t)
-    (lsp-rust-analyzer-display-parameter-hints t)
-    (lsp-rust-analyzer-display-reborrow-hints nil))
+;;     ;; Enable/disable type hints as you type for Rust
+;;     (lsp-rust-analyzer-server-display-inlay-hints t)
+;;     (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+;;     (lsp-rust-analyzer-display-chaining-hints nil)
+;;     (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+;;     (lsp-rust-analyzer-display-closure-return-type-hints t)
+;;     (lsp-rust-analyzer-display-parameter-hints t)
+;;     (lsp-rust-analyzer-display-reborrow-hints nil))
 
-;; (use-package lsp-ivy)
+;; ;; (use-package lsp-ivy)
 
-(use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
-    :custom
-    (lsp-ui-peek-always-show t)
-    (lsp-ui-sideline-show-hover t)
-    (lsp-ui-doc-position 'bottom)
-    (lsp-ui-doc-enable nil))
+;; (use-package lsp-ui
+;;     :hook (lsp-mode . lsp-ui-mode)
+;;     :custom
+;;     (lsp-ui-peek-always-show t)
+;;     (lsp-ui-sideline-show-hover t)
+;;     (lsp-ui-doc-position 'bottom)
+;;     (lsp-ui-doc-enable nil))
 
 #+end_src
 
+** Eglot: Language-server protocols
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package eglot)
+
+#+END_SRC 
 ** DAP: Debugging support
 
 #+BEGIN_SRC emacs-lisp
@@ -1185,15 +1280,88 @@ Wakatime makes it easy for me to keep track of how much time I'm spending on var
 
 #+END_SRC
 
+
+** C/C++
+
+#+begin_src emacs-lisp
+
+;; (add-hook 'c-mode-hook 'lsp)
+;; (add-hook 'c++-mode-hook 'lsp)
+(add-hook 'c-mode-hook 'eglot-ensure)
+(add-hook 'c++-mode-hook 'eglot-ensure)
+
+#+end_src
+
+** Clojure
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package clojure-mode
+  :mode "\\.clj\\'"
+  :hook ((clojure-mode . eglot-ensure)
+         (clojurescript-mode . eglot-ensure)
+         (clojurec-mode . eglot-ensure)))
+
+(use-package cider)
+
+#+END_SRC 
+
+** GLSL: OpenGL shaders
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package glsl-mode
+  :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
+
+#+END_SRC
+
+The company backend needs the ~glslang~ package installed for ~glslangValidator~.
+
+#+BEGIN_SRC emacs-lisp
+
+;; (use-package company-glsl
+;;   :after glsl-mode
+;;   :config (add-to-list 'company-backends 'company-glsl))
+
+#+END_SRC 
+
+** Go
+#+BEGIN_SRC emacs-lisp
+
+(use-package go-mode
+  :mode "\\.go\\'"
+  :hook (go-mode . eglot-ensure))
+
+#+END_SRC 
+
+** Java
+
+#+BEGIN_SRC emacs-lisp
+
+;; (use-package meghanada
+;;   :hook
+;;   (java-mode . meghanada-mode)
+;;   (java-mode . flycheck-mode))
+
+;; (setq meghanada-java-path "java"
+;;       meghanada-maven-path "mvn")
+
+;; (use-package lsp-java
+;;   :hook
+;;   (java-mode . lsp))
+  
+
+#+END_SRC
+
 ** Python
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package lsp-pyright
-  :hook
-  (python-mode . (lambda ()
-                   (require 'lsp-pyright)
-                   (lsp-deferred))))
+;; (use-package lsp-pyright
+;;   :hook
+;;   (python-mode . (lambda ()
+;;                    (require 'lsp-pyright)
+;;                    (lsp-deferred))))
 
 #+END_SRC
 
@@ -1203,7 +1371,7 @@ Wakatime makes it easy for me to keep track of how much time I'm spending on var
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
-  :hook (typescript-mode . lsp-deferred)
+  ;; :hook (typescript-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 4))
 
@@ -1211,23 +1379,18 @@ Wakatime makes it easy for me to keep track of how much time I'm spending on var
 
 #+RESULTS:
 
-** Web
-Editing in a mixed-language web format.
+** Retro Assembly
+My configurations for various retro assembly architectures.
+
+*** 6502
+Programming for the C64 and NES.
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package web-mode
-    :commands (web-mode)
-    :mode (("\\.html" . web-mode)
-            ("\\.htm" . web-mode)
-;           ("\\.tsx$" . web-mode)
-            ("\\.mustache\\'" . web-mode)
-            ("\\.phtml\\'" . web-mode)
-            ("\\.as[cp]x\\'" . web-mode)
-            ("\\.erb\\'" . web-mode)
-            ("\\.sgml\\'" . web-mode)))
+(use-package ca65-mode
+  :mode "\\.s\\'")
 
-#+END_SRC 
+#+END_SRC
 
 ** Rust
 Inspired by https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/
@@ -1254,80 +1417,23 @@ Most Rustic keybindings begin with =C-c C-c=
 
 #+RESULTS:
 
-** C/C++
-
-#+begin_src emacs-lisp
-
-(add-hook 'c-mode-hook 'lsp)
-(add-hook 'c++-mode-hook 'lsp)
-
-#+end_src
-
-** Java
+** Web
+Editing in a mixed-language web format.
 
 #+BEGIN_SRC emacs-lisp
 
-;; (use-package meghanada
-;;   :hook
-;;   (java-mode . meghanada-mode)
-;;   (java-mode . flycheck-mode))
-
-;; (setq meghanada-java-path "java"
-;;       meghanada-maven-path "mvn")
-
-(use-package lsp-java
-  :hook
-  (java-mode . lsp))
-  
-
-#+END_SRC
-
-** Clojure
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package clojure-mode
-  :mode "\\.clj\\'"
-  :hook ((clojure-mode . lsp-deferred)
-         (clojurescript-mode . lsp-deferred)
-         (clojurec-mode . lsp-deferred)))
-
-
-(use-package cider)
+(use-package web-mode
+    :commands (web-mode)
+    :mode (("\\.html" . web-mode)
+            ("\\.htm" . web-mode)
+;           ("\\.tsx$" . web-mode)
+            ("\\.mustache\\'" . web-mode)
+            ("\\.phtml\\'" . web-mode)
+            ("\\.as[cp]x\\'" . web-mode)
+            ("\\.erb\\'" . web-mode)
+            ("\\.sgml\\'" . web-mode)))
 
 #+END_SRC 
-
-** GLSL: OpenGL shaders
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package glsl-mode
-  :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
-
-#+END_SRC
-
-The company backend needs the ~glslang~ package installed for ~glslangValidator~.
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package company-glsl
-  :after glsl-mode
-  :config (add-to-list 'company-backends 'company-glsl))
-
-#+END_SRC 
-
-** Retro Assembly
-My configurations for various retro assembly architectures.
-
-*** 6502
-Programming for the C64 and NES.
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package ca65-mode
-  :mode "\\.s\\'")
-
-#+END_SRC
 
 * Org Mode
 ** Basic config
@@ -1586,6 +1692,23 @@ Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
 (use-package smart-comment)
 
 #+end_src
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

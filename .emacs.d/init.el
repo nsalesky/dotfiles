@@ -1,6 +1,9 @@
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
       native-comp-async-report-warnings-errors nil)
 
+(setq gc-cons-threshold 100000000
+      read-process-output-max (* 1024 1024))
+
 (scroll-bar-mode -1)
 
 (tooltip-mode -1)
@@ -161,12 +164,81 @@
 
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
-(use-package aggressive-indent
-  :config
-  (global-aggressive-indent-mode)
+(defun ns/toggle-window-transparency ()
+  "Toggle transparency."
+  (interactive)
+  (let ((alpha-transparency 75))
+    (if (equal alpha-transparency (frame-parameter nil 'alpha-background))
+        (set-frame-parameter nil 'alpha-background 100)
+      (set-frame-parameter nil 'alpha-background alpha-transparency))))
 
-  ;; For example
-  (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
+;; (use-package ivy
+;;     :diminish
+;;     :bind (
+;;     :map ivy-minibuffer-map
+;;     ("TAB" . ivy-alt-done)
+;;     ("C-l" . ivy-alt-done)
+;;     ("C-j" . ivy-next-line)
+;;     ("C-k" . ivy-previous-line)
+;;     :map ivy-switch-buffer-map
+;;     ("C-k" . ivy-previous-line)
+;;     ("C-l" . ivy-done)
+;;     ("C-d" . ivy-switch-buffer-kill)
+;;     :map ivy-reverse-i-search-map
+;;     ("C-k" . ivy-previous-line)
+;;     ("C-d" . ivy-reverse-i-search-kill))
+;;     :init
+;;     (ivy-mode 1))
+
+;; (use-package ivy-rich
+;;     :init
+;;     (ivy-rich-mode 1))
+
+;; (use-package swiper
+;;   :bind (("C-s" . swiper)))
+
+;; (use-package ivy-posframe
+;;     :init
+;;     (setq ivy-posframe-display-functions-alist
+;;         '((counsel-M-x . ivy-display-function-fallback)
+;;         (counsel-find-file . ivy-display-function-fallback)
+;;         (swiper . ivy-display-function-fallback)
+;;         (counsel-switch-buffer . ivy-display-function-fallback)
+;;         (t . ivy-posframe-display)))
+;;     :config
+;;     (ivy-posframe-mode 1))
+
+;; (use-package counsel
+;;     :bind
+;;     (("M-x" . counsel-M-x)
+;;      ("M-y" . counsel-yank-pop-selection)
+;;      ("M-i" . counsel-imenu)
+;;      ("C-s" . counsel-grep-or-swiper)
+;;      ("C-x b" . counsel-ibuffer)
+;;      ("C-x C-f" . counsel-find-file)
+;;      :map minibuffer-local-map
+;;      ("C-r" . 'counsel-minibuffer-history)))
+
+(use-package vertico
+  :init
+  (vertico-mode))
+
+(use-package consult)
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '(
+                                   (file (styles basic partial-completion))
+                                   (eglot (styles orderless)))))
+
+(use-package all-the-icons-completion
+  :config
+  (all-the-icons-completion-mode))
+
+(use-package aggressive-indent
+  :hook
+  (emacs-lisp-mode-hook . aggressive-indent-mode))
 
 (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
@@ -183,20 +255,72 @@
   :config
   (yas-global-mode))
 
-(use-package company
-    :after lsp-mode
-    :hook (lsp-mode . company-mode)
-    :bind (:map company-active-map
-        ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-        ("<tab>" . company-indent-or-complete-common))
-    :custom
-    (company-minimum-prefix-length 1)
-    (company-idle-delay 0.0))
+;; (use-package company
+;;     :after lsp-mode
+;;     :hook (lsp-mode . company-mode)
+;;     :bind (:map company-active-map
+;;         ("<tab>" . company-complete-selection))
+;;         (:map lsp-mode-map
+;;         ("<tab>" . company-indent-or-complete-common))
+;;     :custom
+;;     (company-minimum-prefix-length 1)
+;;     (company-idle-delay 0.0))
 
-;; Adds colors and icons to company-mode
-(use-package company-box
-    :hook (company-mode . company-box-mode))
+;; ;; Adds colors and icons to company-mode
+;; (use-package company-box
+;;     :hook (company-mode . company-box-mode))
+
+(use-package corfu
+  :general
+  (:keymaps 'corfu-map
+            :states 'insert
+            "C-n" #'corfu-next
+            "C-p" #'corfu-previous
+            "<escape>" #'corfu-quit
+            "<return>" #'corfu-insert
+            "M-d" #'corfu-show-documentation
+            "M-l" #'corfu-show-location)
+  
+  :custom
+  (corfu-auto t) ; Only use 'corfu' when calling 'completion-at-point' or 'indent-for-tab-command'
+
+  (corfu-auto-prefix 3)             ; Minimum length of prefix for auto-complete
+  (corfu-auto-delay 0.25)
+
+  (corfu-min-width 80)
+  (corfu-max-width corfu-min-width) ; Always have the same width
+  (corfu-count 14) ; Max number of candidates to show
+  (corfu-scroll-margin 4)
+  (corfu-cycle nil)
+
+  (corfu-quit-at-boundary nil)
+  (corfu-seperator ?\s)            ; Use space
+  (corfu-quit-no-match 'seperator) ; Don't quit if there is 'corfu-seperator' inserted
+  (corfu-preview-current 'insert)  ; Preview first candidate. Insert on input if only one candidate
+  (corfu-preselect-first t)        ; Preselect first candidate?
+
+  (corfu-echo-documentation nil) ; Use 'corfu-doc' instead
+
+  ;; Enable indentation+completion using the TAB key instead of M-TAB
+  (tab-always-indent 'complete)
+  (completion-cycle-threshold nil)
+
+  :init
+  (global-corfu-mode))
+
+  ;; :config
+  ;; (general-add-advice '(corfu--setup corfu--teardown) :after 'evil-normalize-keymaps)
+  ;; (evil-make-overriding-map corfu-map))
+
+
+(use-package kind-icon
+  :custom
+  (kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(use-package corfu-doc
+  :hook (corfu-mode . corfu-doc-mode))
 
 (use-package which-key
   ;; :after (ivy)
@@ -283,74 +407,12 @@
     :hook (dired-mode . treemacs-icons-dired-enable-once))
 (use-package treemacs-magit
     :after (treemacs magit))
-(use-package lsp-treemacs
-    :after (treemacs lsp-mode)
-    :config (lsp-treemacs-sync-mode 1))
+;; (use-package lsp-treemacs
+;;     :after (treemacs lsp-mode)
+;;     :config (lsp-treemacs-sync-mode 1))
 (use-package treemacs-all-the-icons
   :config
   (treemacs-load-theme "all-the-icons"))
-
-;; (use-package ivy
-;;     :diminish
-;;     :bind (
-;;     :map ivy-minibuffer-map
-;;     ("TAB" . ivy-alt-done)
-;;     ("C-l" . ivy-alt-done)
-;;     ("C-j" . ivy-next-line)
-;;     ("C-k" . ivy-previous-line)
-;;     :map ivy-switch-buffer-map
-;;     ("C-k" . ivy-previous-line)
-;;     ("C-l" . ivy-done)
-;;     ("C-d" . ivy-switch-buffer-kill)
-;;     :map ivy-reverse-i-search-map
-;;     ("C-k" . ivy-previous-line)
-;;     ("C-d" . ivy-reverse-i-search-kill))
-;;     :init
-;;     (ivy-mode 1))
-
-;; (use-package ivy-rich
-;;     :init
-;;     (ivy-rich-mode 1))
-
-;; (use-package swiper
-;;   :bind (("C-s" . swiper)))
-
-;; (use-package ivy-posframe
-;;     :init
-;;     (setq ivy-posframe-display-functions-alist
-;;         '((counsel-M-x . ivy-display-function-fallback)
-;;         (counsel-find-file . ivy-display-function-fallback)
-;;         (swiper . ivy-display-function-fallback)
-;;         (counsel-switch-buffer . ivy-display-function-fallback)
-;;         (t . ivy-posframe-display)))
-;;     :config
-;;     (ivy-posframe-mode 1))
-
-;; (use-package counsel
-;;     :bind
-;;     (("M-x" . counsel-M-x)
-;;      ("M-y" . counsel-yank-pop-selection)
-;;      ("M-i" . counsel-imenu)
-;;      ("C-s" . counsel-grep-or-swiper)
-;;      ("C-x b" . counsel-ibuffer)
-;;      ("C-x C-f" . counsel-find-file)
-;;      :map minibuffer-local-map
-;;      ("C-r" . 'counsel-minibuffer-history)))
-
-(use-package vertico
-  :init
-  (vertico-mode))
-
-(use-package consult)
-
-(use-package orderless
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
-
-(use-package all-the-icons-completion
-  :config
-  (all-the-icons-completion-mode))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -470,8 +532,8 @@
      "t"  '(:ignore t :which-key "toggle")
      "t s" '(counsel-load-theme :which-key "Choose theme")
 
-     "t t" '(treemacs :which-key "Treemacs")
-     "t y" '(lsp-treemacs-symbols :which-key "Treemacs Symbols"))
+     "t t" '(treemacs :which-key "Treemacs"))
+     ;; "t y" '(lsp-treemacs-symbols :which-key "Treemacs Symbols"))
 
 (my-leader
     "o" '(:ignore t :which-key "open")
@@ -542,36 +604,38 @@
 
 (use-package flycheck)
 
-(use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :init
-    (setq lsp-lens-enable t
-          lsp-signature-auto-activate nil
-          lsp-ui-doc-mode t)
-    :general
-    (evil-define-key 'normal lsp-mode-map (kbd "/") lsp-command-map)
-    :config
-    (lsp-enable-which-key-integration t)
-    :custom
+;; (use-package lsp-mode
+;;     :commands (lsp lsp-deferred)
+;;     :init
+;;     (setq lsp-lens-enable t
+;;           lsp-signature-auto-activate nil
+;;           lsp-ui-doc-mode t)
+;;     :general
+;;     (evil-define-key 'normal lsp-mode-map (kbd "/") lsp-command-map)
+;;     :config
+;;     (lsp-enable-which-key-integration t)
+;;     :custom
 
-    ;; Enable/disable type hints as you type for Rust
-    (lsp-rust-analyzer-server-display-inlay-hints t)
-    (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-    (lsp-rust-analyzer-display-chaining-hints nil)
-    (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-    (lsp-rust-analyzer-display-closure-return-type-hints t)
-    (lsp-rust-analyzer-display-parameter-hints t)
-    (lsp-rust-analyzer-display-reborrow-hints nil))
+;;     ;; Enable/disable type hints as you type for Rust
+;;     (lsp-rust-analyzer-server-display-inlay-hints t)
+;;     (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+;;     (lsp-rust-analyzer-display-chaining-hints nil)
+;;     (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+;;     (lsp-rust-analyzer-display-closure-return-type-hints t)
+;;     (lsp-rust-analyzer-display-parameter-hints t)
+;;     (lsp-rust-analyzer-display-reborrow-hints nil))
 
-;; (use-package lsp-ivy)
+;; ;; (use-package lsp-ivy)
 
-(use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
-    :custom
-    (lsp-ui-peek-always-show t)
-    (lsp-ui-sideline-show-hover t)
-    (lsp-ui-doc-position 'bottom)
-    (lsp-ui-doc-enable nil))
+;; (use-package lsp-ui
+;;     :hook (lsp-mode . lsp-ui-mode)
+;;     :custom
+;;     (lsp-ui-peek-always-show t)
+;;     (lsp-ui-sideline-show-hover t)
+;;     (lsp-ui-doc-position 'bottom)
+;;     (lsp-ui-doc-enable nil))
+
+(use-package eglot)
 
 (use-package dap-mode
   :config
@@ -589,28 +653,56 @@
   :config
   (global-wakatime-mode))
 
-(use-package lsp-pyright
-  :hook
-  (python-mode . (lambda ()
-                   (require 'lsp-pyright)
-                   (lsp-deferred))))
+;; (add-hook 'c-mode-hook 'lsp)
+;; (add-hook 'c++-mode-hook 'lsp)
+(add-hook 'c-mode-hook 'eglot-ensure)
+(add-hook 'c++-mode-hook 'eglot-ensure)
+
+(use-package clojure-mode
+  :mode "\\.clj\\'"
+  :hook ((clojure-mode . eglot-ensure)
+         (clojurescript-mode . eglot-ensure)
+         (clojurec-mode . eglot-ensure)))
+
+(use-package cider)
+
+(use-package glsl-mode
+  :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
+
+;; (use-package company-glsl
+;;   :after glsl-mode
+;;   :config (add-to-list 'company-backends 'company-glsl))
+
+(use-package go-mode
+  :mode "\\.go\\'"
+  :hook (go-mode . eglot-ensure))
+
+;; (use-package meghanada
+;;   :hook
+;;   (java-mode . meghanada-mode)
+;;   (java-mode . flycheck-mode))
+
+;; (setq meghanada-java-path "java"
+;;       meghanada-maven-path "mvn")
+
+;; (use-package lsp-java
+;;   :hook
+;;   (java-mode . lsp))
+
+;; (use-package lsp-pyright
+;;   :hook
+;;   (python-mode . (lambda ()
+;;                    (require 'lsp-pyright)
+;;                    (lsp-deferred))))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
-  :hook (typescript-mode . lsp-deferred)
+  ;; :hook (typescript-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 4))
 
-(use-package web-mode
-    :commands (web-mode)
-    :mode (("\\.html" . web-mode)
-            ("\\.htm" . web-mode)
-;           ("\\.tsx$" . web-mode)
-            ("\\.mustache\\'" . web-mode)
-            ("\\.phtml\\'" . web-mode)
-            ("\\.as[cp]x\\'" . web-mode)
-            ("\\.erb\\'" . web-mode)
-            ("\\.sgml\\'" . web-mode)))
+(use-package ca65-mode
+  :mode "\\.s\\'")
 
 (use-package rustic
   :bind (:map rustic-mode-map
@@ -625,39 +717,16 @@
   ;; comment to disable rustfmt on save
   ;; (setq rustic-format-on-save t))
 
-(add-hook 'c-mode-hook 'lsp)
-(add-hook 'c++-mode-hook 'lsp)
-
-;; (use-package meghanada
-;;   :hook
-;;   (java-mode . meghanada-mode)
-;;   (java-mode . flycheck-mode))
-
-;; (setq meghanada-java-path "java"
-;;       meghanada-maven-path "mvn")
-
-(use-package lsp-java
-  :hook
-  (java-mode . lsp))
-
-(use-package clojure-mode
-  :mode "\\.clj\\'"
-  :hook ((clojure-mode . lsp-deferred)
-         (clojurescript-mode . lsp-deferred)
-         (clojurec-mode . lsp-deferred)))
-
-
-(use-package cider)
-
-(use-package glsl-mode
-  :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
-
-(use-package company-glsl
-  :after glsl-mode
-  :config (add-to-list 'company-backends 'company-glsl))
-
-(use-package ca65-mode
-  :mode "\\.s\\'")
+(use-package web-mode
+    :commands (web-mode)
+    :mode (("\\.html" . web-mode)
+            ("\\.htm" . web-mode)
+;           ("\\.tsx$" . web-mode)
+            ("\\.mustache\\'" . web-mode)
+            ("\\.phtml\\'" . web-mode)
+            ("\\.as[cp]x\\'" . web-mode)
+            ("\\.erb\\'" . web-mode)
+            ("\\.sgml\\'" . web-mode)))
 
  (defun ns/org-mode-setup ()
    (org-indent-mode)
