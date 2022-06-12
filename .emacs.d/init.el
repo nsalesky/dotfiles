@@ -69,12 +69,9 @@
     (general-override-mode)
     (general-evil-setup t)
     (general-create-definer my-leader
-        :keymaps '(normal visual emacs)
-            :prefix "SPC")
-    (general-create-definer my-local-leader
-        :keymaps '(normal insert visual emacs)
-        :which-key "local-leader"
-        :prefix "C-q"))
+      :states '(normal visual emacs)
+      :keymaps 'override
+      :prefix "SPC"))
 
 (setq-default frame-title-format '("%b [%m]"))
 
@@ -496,9 +493,11 @@
 ;;     :prefix "g"
 ;;     "z" 'my-mc-hydra/body))
 
+;; Set the default tab settings
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq-default c-basic-offset 4)
+(setq-default python-indent-offset 4)
 (setq-default evil-shift-width 4)
 
 ;; (setq-default electric-indent-inhibit t)
@@ -573,6 +572,12 @@
   (my-leader
     "s p" '(projectile-ag :which-key "Search project")))
 
+(my-leader
+  "h" '(:ignore t :which-key "help")
+  "h v" '(helpful-variable :which-key "Describe variable")
+  "h f" '(helpful-callable :which-key "Describe function")
+  "h k" '(helpful-key :which-key "Describe key"))
+
 (use-package multiple-cursors
   :general
   (general-define-key
@@ -597,6 +602,207 @@
   :general
   (my-leader
     "g b" '(global-blamer-mode :which-key "Toggle blamer mode")))
+
+ (defun ns/org-mode-setup ()
+   (org-indent-mode)
+   ;; (variable-pitch-mode 1)
+   (visual-line-mode 1))
+
+(defun ns/org-font-setup ()
+  ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit
+                        'fixed-pitch)
+    (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+    ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit
+                    '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit
+                        '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+;; Got this from https://stackoverflow.com/questions/10969617/hiding-markup-elements-in-org-mode
+(defun ns/org-toggle-emphasis ()
+  "Toggle hiding/showing of org emphasis markers"
+  (interactive)
+  (if org-hide-emphasis-markers
+      (set-variable 'org-hide-emphasis-markers nil)
+    (set-variable 'org-hide-emphasis-markers t)))
+
+
+(use-package org-contrib :pin nongnu)
+
+;; Org Mode
+(use-package org
+    :pin elpa
+    :hook (org-mode . ns/org-mode-setup)
+    :config
+    ;; (ns/org-font-setup)
+    (setq
+     ;; org-hide-emphasis-markers nil
+        org-ellipsis " ▾"
+        org-pretty-entities t
+
+        org-directory "~/notes"
+
+        org-src-tab-acts-natively t
+        org-src-preserve-indentation t
+
+        org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
+            (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
+                "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+    :general
+    (my-leader
+      "n" '(:ignore t :which-key "notes")))
+
+    ;; local-leader stuff
+    ;; (my-local-leader
+    ;;   :keymaps 'org-mode-map
+    ;;   "b" '(org-babel-tangle :which-key "Org babel tangle")
+    ;;   "t" '(
+
+(org-babel-do-load-languages 'org-babel-load-languages
+    '((emacs-lisp . t)
+    (python . t)))
+
+(setq org-confirm-babel-evaluate nil)
+
+(defun ns/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "~/.dotfiles/.emacs.d/config.org"))
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
+
+(setq org-agenda-files (list "inbox.org" "agenda.org" "projects.org") ; add any files to be pulled from
+      org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
+      org-log-done 'time             ; log the time when a task is *DONE*
+      )
+
+(setq org-capture-templates
+       `(("i" "Inbox" entry  (file "inbox.org")
+        ,(concat "* TODO %?\n"
+                 "/Entered on/ %U"))
+         ("m" "Meeting entry" entry (file+headline "agenda.org" "Future")
+          ,(concat "* %? :meeting:\n"
+                   "<%<%Y-%m-%d %a %H:00>>"))
+         ("n" "Note" entry (file "notes.org")
+          ,(concat "* Note (%a)\n"
+                   "/Entered on/ %U\n" "\n" "%?"))))
+
+(defun log-todo-next-creation-date (&rest ignore)
+  "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
+  (when (and (string= (org-get-todo-state) "NEXT")
+             (not (org-entry-get nil "ACTIVATED")))
+    (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
+(add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
+
+(setq org-agenda-custom-commands
+      '(("g" "Get Things Done (GTD)"
+         ((agenda ""
+                  ((org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'deadline))
+                   (org-deadline-warning-days 0)))
+          (todo "NEXT"
+                ((org-agenda-skip-function
+                  '(org-agenda-skip-entry-if 'deadline))
+                 (org-agenda-prefix-format "  %i %-12:c [%e] ")
+                 (org-agenda-overriding-header "\nTasks\n")))
+          (agenda nil
+                  ((org-agenda-entry-types '(:deadline))
+                   (org-agenda-format-date "")
+                   (org-deadline-warning-days 7)
+                   (org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
+                   (org-agenda-overriding-header "\nDeadlines")))
+          (tags-todo "inbox"
+                     ((org-agenda-prefix-format "  %?-12t% s")
+                      (org-agenda-overriding-header "\nInbox\n")))
+          (tags "CLOSED>=\"<today>\""
+                ((org-agenda-overriding-header "\nCompleted today\n")))))))
+
+(my-leader
+  "c" '(org-capture :which-key "Capture")
+  "a" '(org-agenda :which-key "Agenda"))
+
+(use-package org-roam
+  :custom
+  (org-roam-directory "~/notes/roam/")
+  :config
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  :general
+  (my-leader
+    "n r" '(:ignore t :which-key "roam")
+    ;;"n r" '(:keymap org-roam-mode-map :which-key "roam")
+    "n r f" '(org-roam-node-find :which-key "Find Node")
+    "n r i" '(org-roam-node-insert :which-key "Insert Node")
+    "n r o" '(org-roam-node-open :which-key "Open Node")
+    "n r g" '(org-roam-graph :which-key "Graph")))
+
+(use-package org-journal
+  :general
+  (my-leader
+    "n j" '(:ignore t :which-key "journal")
+    "n j j" '(org-journal-new-entry :which-key "New entry")
+    "n j r" '(org-journal-read-entry :which-key "Read entry")
+    "n j s" '(org-journal-search :which-key "Search journal"))
+  
+  :custom
+  (org-journal-dir "~/notes/journal")
+  (org-journal-file-format "%Y-%m-%d.org")
+  (org-journal-date-format "%B %d, %Y (%A) ")
+  (org-journal-date-prefix "* ")
+  (org-journal-time-prefix "** "))
+
+(use-package hide-mode-line)
+
+(defun ns/presentation-setup ()
+    (setq text-scale-mode-amount 2)
+    (org-display-inline-images)
+    (text-scale-mode 1)
+    (hide-mode-line-mode 1))
+
+(defun ns/presentation-end ()
+    (text-scale-mode 0)
+    (hide-mode-line-mode 0))
+
+(use-package org-tree-slide
+    :hook ((org-tree-slide-play . ns/presentation-setup)
+           (org-tree-slide-stop . ns/presentation-end))
+    :custom
+    (org-tree-slide-slide-in-effect nil)
+    (org-tree-slide-activate-message "Presentation started!")
+    (org-tree-slide-deactivate-message "Presentation finished!")
+    (org-tree-slide-header t)
+    (org-image-actual-width nil)
+    :bind
+    (:map org-mode-map
+            ("<f8>" . org-tree-slide-mode)
+        :map org-tree-slide-mode-map
+            ("<f9>" . org-tree-slide-move-previous-tree)
+            ("<f10>" . org-tree-slide-move-next-tree)
+        ))
+
+;; (use-package org-modern
+;;     :config
+;;     (add-hook 'org-mode-hook #'org-modern-mode)
+;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
+
+(use-package toc-org
+  :hook
+  (org-mode . toc-org-mode))
+
+(use-package imenu-list
+  :init
+  (setq imenu-list-position 'left)
+  :general
+  (my-leader
+   "t i" '(imenu-list-smart-toggle :which-key "Imenu")))
 
 (use-package format-all)
   ;:hook
@@ -640,6 +846,8 @@
 (use-package dap-mode
   :config
   (dap-auto-configure-mode))
+
+(use-package realgud)
 
 (use-package tree-sitter
   :config
@@ -689,11 +897,19 @@
 ;;   :hook
 ;;   (java-mode . lsp))
 
-;; (use-package lsp-pyright
-;;   :hook
-;;   (python-mode . (lambda ()
-;;                    (require 'lsp-pyright)
-;;                    (lsp-deferred))))
+(use-package lsp-pyright)
+
+(use-package python-mode
+  :hook (python-mode . (lambda ()
+                         (eglot-ensure)
+                         (setq tab-width 4)))
+  :custom
+  (python-shell-interpreter "python3")
+  (dap-python-debugger 'debugpy)
+
+  :config
+  (require 'lsp-pyright)
+  (require 'dap-python))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -727,149 +943,6 @@
             ("\\.as[cp]x\\'" . web-mode)
             ("\\.erb\\'" . web-mode)
             ("\\.sgml\\'" . web-mode)))
-
- (defun ns/org-mode-setup ()
-   (org-indent-mode)
-   ;; (variable-pitch-mode 1)
-   (visual-line-mode 1))
-
-(defun ns/org-font-setup ()
-  ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
-    (set-face-attribute 'org-block nil :foreground nil :inherit
-                        'fixed-pitch)
-    (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
-    ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit
-                    '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit
-                        '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
-
-;; Got this from https://stackoverflow.com/questions/10969617/hiding-markup-elements-in-org-mode
-(defun ns/org-toggle-emphasis ()
-  "Toggle hiding/showing of org emphasis markers"
-  (interactive)
-  (if org-hide-emphasis-markers
-      (set-variable 'org-hide-emphasis-markers nil)
-    (set-variable 'org-hide-emphasis-markers t)))
-
-
-(use-package org-contrib :pin nongnu)
-
-;; Org Mode
-(use-package org
-    :pin elpa
-    :hook (org-mode . ns/org-mode-setup)
-    :config
-    ;; (ns/org-font-setup)
-    (setq
-     ;; org-hide-emphasis-markers nil
-        org-ellipsis " ▾"
-        org-pretty-entities t
-
-        org-directory "~/notes"
-
-        org-src-tab-acts-natively t
-        org-src-preserve-indentation t
-
-        org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-            (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-                "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
-
-    :general
-    (my-leader
-      "n" '(:ignore t :which-key "notes")))
-
-    ;; local-leader stuff
-    ;; (my-local-leader
-    ;;   :keymaps 'org-mode-map
-    ;;   "b" '(org-babel-tangle :which-key "Org babel tangle")
-    ;;   "t" '(
-
-(org-babel-do-load-languages 'org-babel-load-languages
-    '((emacs-lisp . t)
-    (python . t)))
-
-(setq org-confirm-babel-evaluate nil)
-
-(defun ns/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/.dotfiles/.emacs.d/config.org"))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
-
-;; (defun ns/org-mode-visual-fill ()
-;;     (setq visual-fill-column-width 120
-;;     visual-fill-column-center-text t)
-;;     (visual-fill-column-mode 1))
-
-;; (use-package visual-fill-column
-;;     :hook (org-mode . ns/org-mode-visual-fill))
-
-(use-package toc-org
-  :hook
-  (org-mode . toc-org-mode))
-
-;; (use-package org-modern
-;;     :config
-;;     (add-hook 'org-mode-hook #'org-modern-mode)
-;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
-
-(use-package imenu-list
-  :init
-  (setq imenu-list-position 'left)
-  :general
-  (my-leader
-   "t i" '(imenu-list-smart-toggle :which-key "Imenu")))
-
-(use-package org-roam
-  :custom
-  (org-roam-directory "~/notes/roam/")
-  :config
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  :general
-  (my-leader
-    "n r" '(:ignore t :which-key "roam")
-    ;;"n r" '(:keymap org-roam-mode-map :which-key "roam")
-    "n r f" '(org-roam-node-find :which-key "Find Node")
-    "n r i" '(org-roam-node-insert :which-key "Insert Node")
-    "n r o" '(org-roam-node-open :which-key "Open Node")
-    "n r g" '(org-roam-graph :which-key "Graph")))
-
-(use-package hide-mode-line)
-
-(defun ns/presentation-setup ()
-    (setq text-scale-mode-amount 2)
-    (org-display-inline-images)
-    (text-scale-mode 1)
-    (hide-mode-line-mode 1))
-
-(defun ns/presentation-end ()
-    (text-scale-mode 0)
-    (hide-mode-line-mode 0))
-
-(use-package org-tree-slide
-    :hook ((org-tree-slide-play . ns/presentation-setup)
-           (org-tree-slide-stop . ns/presentation-end))
-    :custom
-    (org-tree-slide-slide-in-effect nil)
-    (org-tree-slide-activate-message "Presentation started!")
-    (org-tree-slide-deactivate-message "Presentation finished!")
-    (org-tree-slide-header t)
-    (org-image-actual-width nil)
-    :bind
-    (:map org-mode-map
-            ("<f8>" . org-tree-slide-mode)
-        :map org-tree-slide-mode-map
-            ("<f9>" . org-tree-slide-move-previous-tree)
-            ("<f10>" . org-tree-slide-move-next-tree)
-        ))
 
 (use-package tablist)
 

@@ -63,17 +63,30 @@
   - [[#windows][Windows]]
   - [[#buffers][Buffers]]
   - [[#search][Search]]
+  - [[#help][Help]]
   - [[#multiple-cursors][Multiple Cursors]]
 - [[#version-control][Version Control]]
   - [[#magit][Magit]]
   - [[#forge-issue-github-pull-requests-and-more][Forge: issue GitHub pull requests and more]]
   - [[#blamer-git-blame-the-current-line][Blamer: Git blame the current line]]
+- [[#org-mode][Org Mode]]
+  - [[#basic-config][Basic config]]
+  - [[#configure-babel][Configure Babel]]
+  - [[#auto-tangle-configuration-files][Auto-tangle configuration files]]
+  - [[#org-agenda-and-org-capture][Org-agenda and org-capture]]
+  - [[#org-roam][Org-roam]]
+  - [[#org-journal][Org-journal]]
+  - [[#org-tree-slide][Org-tree-slide]]
+  - [[#org-modern][Org-modern]]
+  - [[#table-of-contents][Table of Contents]]
+  - [[#imenu-list][Imenu-list]]
 - [[#programming][Programming]]
   - [[#format-all-the-code-simple-code-formatting][Format All The Code: Simple code formatting]]
   - [[#flycheck][Flycheck]]
   - [[#lsp-language-server-protocols][LSP: Language-server protocols]]
   - [[#eglot-language-server-protocols][Eglot: Language-server protocols]]
   - [[#dap-debugging-support][DAP: Debugging support]]
+  - [[#realgud][Realgud]]
   - [[#tree-sitter][Tree-Sitter]]
   - [[#wakatime][Wakatime]]
   - [[#cc][C/C++]]
@@ -86,16 +99,6 @@
   - [[#retro-assembly][Retro Assembly]]
   - [[#rust][Rust]]
   - [[#web][Web]]
-- [[#org-mode][Org Mode]]
-  - [[#basic-config][Basic config]]
-  - [[#configure-babel][Configure Babel]]
-  - [[#auto-tangle-configuration-files][Auto-tangle configuration files]]
-  - [[#visual-fill][Visual fill]]
-  - [[#table-of-contents][Table of Contents]]
-  - [[#org-modern][Org-modern]]
-  - [[#imenu-list][Imenu-list]]
-  - [[#org-roam][Org-roam]]
-  - [[#org-tree-slide][Org-tree-slide]]
 - [[#documents][Documents]]
   - [[#pdfs][PDFs]]
   - [[#ebooks][Ebooks]]
@@ -287,12 +290,9 @@ Set up =general.el= to control all of my custom keybindings.
     (general-override-mode)
     (general-evil-setup t)
     (general-create-definer my-leader
-        :keymaps '(normal visual emacs)
-            :prefix "SPC")
-    (general-create-definer my-local-leader
-        :keymaps '(normal insert visual emacs)
-        :which-key "local-leader"
-        :prefix "C-q"))
+      :states '(normal visual emacs)
+      :keymaps 'override
+      :prefix "SPC"))
 
 #+end_src
 
@@ -993,9 +993,11 @@ I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
 
 #+begin_src emacs-lisp
 
+;; Set the default tab settings
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq-default c-basic-offset 4)
+(setq-default python-indent-offset 4)
 (setq-default evil-shift-width 4)
 
 ;; (setq-default electric-indent-inhibit t)
@@ -1010,9 +1012,6 @@ I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
     "<backspace>" 'backward-delete-char-untabify)
 
 #+end_src
-
-#+RESULTS:
-: hungry
 
 ** Line Formatting
 Keybindings for formatting lines of text/code.
@@ -1133,6 +1132,17 @@ Keybindings for searching within different contexts.
 
 #+RESULTS:
 
+** Help
+
+#+BEGIN_SRC emacs-lisp
+
+(my-leader
+  "h" '(:ignore t :which-key "help")
+  "h v" '(helpful-variable :which-key "Describe variable")
+  "h f" '(helpful-callable :which-key "Describe function")
+  "h k" '(helpful-key :which-key "Describe key"))
+
+#+END_SRC 
 ** Multiple Cursors
 
 | Command               | Keybinding | Description                          |
@@ -1183,6 +1193,312 @@ Keybindings for searching within different contexts.
   :general
   (my-leader
     "g b" '(global-blamer-mode :which-key "Toggle blamer mode")))
+#+END_SRC 
+
+* Org Mode
+** Basic config
+The very basics for Org-mode, setting up fonts and basic visual features.
+
+#+begin_src emacs-lisp
+
+ (defun ns/org-mode-setup ()
+   (org-indent-mode)
+   ;; (variable-pitch-mode 1)
+   (visual-line-mode 1))
+
+(defun ns/org-font-setup ()
+  ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
+    (set-face-attribute 'org-block nil :foreground nil :inherit
+                        'fixed-pitch)
+    (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+    ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit
+                    '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit
+                        '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+;; Got this from https://stackoverflow.com/questions/10969617/hiding-markup-elements-in-org-mode
+(defun ns/org-toggle-emphasis ()
+  "Toggle hiding/showing of org emphasis markers"
+  (interactive)
+  (if org-hide-emphasis-markers
+      (set-variable 'org-hide-emphasis-markers nil)
+    (set-variable 'org-hide-emphasis-markers t)))
+
+
+(use-package org-contrib :pin nongnu)
+
+;; Org Mode
+(use-package org
+    :pin elpa
+    :hook (org-mode . ns/org-mode-setup)
+    :config
+    ;; (ns/org-font-setup)
+    (setq
+     ;; org-hide-emphasis-markers nil
+        org-ellipsis " ▾"
+        org-pretty-entities t
+
+        org-directory "~/notes"
+
+        org-src-tab-acts-natively t
+        org-src-preserve-indentation t
+
+        org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
+            (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
+                "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+    :general
+    (my-leader
+      "n" '(:ignore t :which-key "notes")))
+
+    ;; local-leader stuff
+    ;; (my-local-leader
+    ;;   :keymaps 'org-mode-map
+    ;;   "b" '(org-babel-tangle :which-key "Org babel tangle")
+    ;;   "t" '(
+
+
+#+end_src
+
+** Configure Babel
+#+begin_src emacs-lisp
+
+(org-babel-do-load-languages 'org-babel-load-languages
+    '((emacs-lisp . t)
+    (python . t)))
+
+(setq org-confirm-babel-evaluate nil)
+
+
+#+end_src
+
+#+RESULTS:
+: ((py . src python) (el . src emacs-lisp) (sh . src shell) (a . export ascii) (c . center) (C . comment) (e . example) (E . export) (h . export html) (l . export latex) (q . quote) (s . src) (v . verse))
+
+** Auto-tangle configuration files
+Automatically tangle the =config.org= file whenever it is saved. I currently have this turned off because I prefer to be safe and run =(org-babel-tangle)= manually whenever I'm done editing this file.
+
+#+begin_src emacs-lisp
+
+(defun ns/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "~/.dotfiles/.emacs.d/config.org"))
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
+
+#+end_src
+
+** Org-agenda and org-capture
+Here's where I set up my agenda system. I like to keep an inbox file where I can quickly capture new items without thinking about them and then organize them into my main agenda file later when I have time. My agenda system was directly inspired by [[https://www.labri.fr/perso/nrougier/GTD/index.html][nrougier]].
+
+#+BEGIN_SRC emacs-lisp
+
+(setq org-agenda-files (list "inbox.org" "agenda.org" "projects.org") ; add any files to be pulled from
+      org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
+      org-log-done 'time             ; log the time when a task is *DONE*
+      org-agenda-compact-blocks nil
+      org-agenda-block-separator nil
+      )
+
+#+END_SRC 
+
+Now, I need to set up some capture templates to quickly add items to the agenda.
+
+#+BEGIN_SRC emacs-lisp
+
+(setq org-capture-templates
+       `(("i" "Inbox" entry  (file "inbox.org")
+        ,(concat "* TODO %?\n"
+                 "/Entered on/ %U"))
+         ("m" "Meeting entry" entry (file+headline "agenda.org" "Future")
+          ,(concat "* %? :meeting:\n"
+                   "<%<%Y-%m-%d %a %H:00>>"))
+         ("n" "Note" entry (file "notes.org")
+          ,(concat "* Note (%a)\n"
+                   "/Entered on/ %U\n" "\n" "%?"))))
+#+END_SRC 
+
+Log when tasks are activated (first moved to *NEXT*) courtesy of [[https://emacs.stackexchange.com/questions/35751][Erik Anderson]]. 
+
+#+BEGIN_SRC emacs-lisp
+
+(defun log-todo-next-creation-date (&rest ignore)
+  "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
+  (when (and (string= (org-get-todo-state) "NEXT")
+             (not (org-entry-get nil "ACTIVATED")))
+    (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
+(add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
+
+#+END_SRC 
+
+Set up a custom agenda command (*g*)
+
+#+BEGIN_SRC emacs-lisp
+
+(setq org-agenda-custom-commands
+      '(("g" "Get Things Done (GTD)"
+         ((agenda ""
+                  ((org-agenda-span 1) ; limit display to a single day
+                   (org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'deadline))
+                   (org-deadline-warning-days 0)))
+          (todo "NEXT"
+                ((org-agenda-skip-function
+                  '(org-agenda-skip-entry-if 'deadline))
+                 (org-agenda-prefix-format "  %i %-12:c [%e] ")
+                 (org-agenda-overriding-header "\nTasks\n")))
+          (agenda nil
+                  ((org-agenda-entry-types '(:deadline))
+                   (org-agenda-span 1)
+                   (org-agenda-format-date "")
+                   (org-deadline-warning-days 7)
+                   (org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
+                   (org-agenda-overriding-header "\nDeadlines")))
+          (tags-todo "inbox"
+                     ((org-agenda-prefix-format "  %?-12t% s")
+                      (org-agenda-overriding-header "\nInbox\n")))
+          (tags "CLOSED>=\"<today>\""
+                ((org-agenda-overriding-header "\nCompleted today\n")))))))
+
+#+END_SRC 
+
+Finally, define a keybinding for =org-capture= and opening up the =org-agenda=
+
+#+BEGIN_SRC emacs-lisp
+
+(my-leader
+  "c" '(org-capture :which-key "Capture")
+  "a" '(org-agenda :which-key "Agenda"))
+
+#+END_SRC 
+
+** Org-roam
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package org-roam
+  :custom
+  (org-roam-directory "~/notes/roam/")
+  :config
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  :general
+  (my-leader
+    "n r" '(:ignore t :which-key "roam")
+    ;;"n r" '(:keymap org-roam-mode-map :which-key "roam")
+    "n r f" '(org-roam-node-find :which-key "Find Node")
+    "n r i" '(org-roam-node-insert :which-key "Insert Node")
+    "n r o" '(org-roam-node-open :which-key "Open Node")
+    "n r g" '(org-roam-graph :which-key "Graph")))
+
+#+END_SRC
+
+#+RESULTS:
+
+** Org-journal
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package org-journal
+  :general
+  (my-leader
+    "n j" '(:ignore t :which-key "journal")
+    "n j j" '(org-journal-new-entry :which-key "New entry")
+    "n j r" '(org-journal-read-entry :which-key "Read entry")
+    "n j s" '(org-journal-search :which-key "Search journal"))
+  
+  :custom
+  (org-journal-dir "~/notes/journal")
+  (org-journal-file-format "%Y-%m-%d.org")
+  (org-journal-date-format "%B %d, %Y (%A) ")
+  (org-journal-date-prefix "* ")
+  (org-journal-time-prefix "** "))
+
+#+END_SRC 
+** Org-tree-slide
+Make presentations in org-mode!
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package hide-mode-line)
+
+(defun ns/presentation-setup ()
+    (setq text-scale-mode-amount 2)
+    (org-display-inline-images)
+    (text-scale-mode 1)
+    (hide-mode-line-mode 1))
+
+(defun ns/presentation-end ()
+    (text-scale-mode 0)
+    (hide-mode-line-mode 0))
+
+(use-package org-tree-slide
+    :hook ((org-tree-slide-play . ns/presentation-setup)
+           (org-tree-slide-stop . ns/presentation-end))
+    :custom
+    (org-tree-slide-slide-in-effect nil)
+    (org-tree-slide-activate-message "Presentation started!")
+    (org-tree-slide-deactivate-message "Presentation finished!")
+    (org-tree-slide-header t)
+    (org-image-actual-width nil)
+    :bind
+    (:map org-mode-map
+            ("<f8>" . org-tree-slide-mode)
+        :map org-tree-slide-mode-map
+            ("<f9>" . org-tree-slide-move-previous-tree)
+            ("<f10>" . org-tree-slide-move-next-tree)
+        ))
+
+#+END_SRC
+
+#+RESULTS:
+: org-tree-slide-move-next-tree
+
+** Org-modern
+Give Org-mode documents some extra visual polish.
+
+#+BEGIN_SRC emacs-lisp
+
+;; (use-package org-modern
+;;     :config
+;;     (add-hook 'org-mode-hook #'org-modern-mode)
+;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
+
+#+END_SRC
+
+** Table of Contents
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package toc-org
+  :hook
+  (org-mode . toc-org-mode))
+
+#+END_SRC 
+
+#+RESULTS:
+| toc-org-mode | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | olivetti-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | ns/org-mode-setup | (lambda nil (display-line-numbers-mode 0)) | org-eldoc-load |
+
+** Imenu-list
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package imenu-list
+  :init
+  (setq imenu-list-position 'left)
+  :general
+  (my-leader
+   "t i" '(imenu-list-smart-toggle :which-key "Imenu")))
+  
+
 #+END_SRC 
 
 * Programming
@@ -1250,11 +1566,19 @@ A simple code formatting system for a ton of languages.
 ** DAP: Debugging support
 
 #+BEGIN_SRC emacs-lisp
+
 (use-package dap-mode
   :config
   (dap-auto-configure-mode))
 #+END_SRC 
 
+** Realgud
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package realgud)
+
+#+END_SRC 
 ** Tree-Sitter
 
 #+BEGIN_SRC emacs-lisp
@@ -1357,11 +1681,20 @@ The company backend needs the ~glslang~ package installed for ~glslangValidator~
 
 #+BEGIN_SRC emacs-lisp
 
-;; (use-package lsp-pyright
-;;   :hook
-;;   (python-mode . (lambda ()
-;;                    (require 'lsp-pyright)
-;;                    (lsp-deferred))))
+(use-package lsp-pyright)
+
+(use-package python-mode
+  :hook (python-mode . (lambda ()
+                         (eglot-ensure)
+                         (setq tab-width 4)))
+  :custom
+  (python-shell-interpreter "python3")
+  (dap-python-debugger 'debugpy)
+
+  :config
+  (require 'lsp-pyright)
+  (require 'dap-python))
+
 
 #+END_SRC
 
@@ -1435,227 +1768,6 @@ Editing in a mixed-language web format.
 
 #+END_SRC 
 
-* Org Mode
-** Basic config
-The very basics for Org-mode, setting up fonts and basic visual features.
-
-#+begin_src emacs-lisp
-
- (defun ns/org-mode-setup ()
-   (org-indent-mode)
-   ;; (variable-pitch-mode 1)
-   (visual-line-mode 1))
-
-(defun ns/org-font-setup ()
-  ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
-    (set-face-attribute 'org-block nil :foreground nil :inherit
-                        'fixed-pitch)
-    (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
-    ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit
-                    '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit
-                        '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
-
-;; Got this from https://stackoverflow.com/questions/10969617/hiding-markup-elements-in-org-mode
-(defun ns/org-toggle-emphasis ()
-  "Toggle hiding/showing of org emphasis markers"
-  (interactive)
-  (if org-hide-emphasis-markers
-      (set-variable 'org-hide-emphasis-markers nil)
-    (set-variable 'org-hide-emphasis-markers t)))
-
-
-(use-package org-contrib :pin nongnu)
-
-;; Org Mode
-(use-package org
-    :pin elpa
-    :hook (org-mode . ns/org-mode-setup)
-    :config
-    ;; (ns/org-font-setup)
-    (setq
-     ;; org-hide-emphasis-markers nil
-        org-ellipsis " ▾"
-        org-pretty-entities t
-
-        org-directory "~/notes"
-
-        org-src-tab-acts-natively t
-        org-src-preserve-indentation t
-
-        org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-            (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-                "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
-
-    :general
-    (my-leader
-      "n" '(:ignore t :which-key "notes")))
-
-    ;; local-leader stuff
-    ;; (my-local-leader
-    ;;   :keymaps 'org-mode-map
-    ;;   "b" '(org-babel-tangle :which-key "Org babel tangle")
-    ;;   "t" '(
-
-
-#+end_src
-
-#+RESULTS:
-
-** Configure Babel
-#+begin_src emacs-lisp
-
-(org-babel-do-load-languages 'org-babel-load-languages
-    '((emacs-lisp . t)
-    (python . t)))
-
-(setq org-confirm-babel-evaluate nil)
-
-
-#+end_src
-
-#+RESULTS:
-: ((py . src python) (el . src emacs-lisp) (sh . src shell) (a . export ascii) (c . center) (C . comment) (e . example) (E . export) (h . export html) (l . export latex) (q . quote) (s . src) (v . verse))
-
-** Auto-tangle configuration files
-Automatically tangle the =config.org= file whenever it is saved. I currently have this turned off because I prefer to be safe and run =(org-babel-tangle)= manually whenever I'm done editing this file.
-
-#+begin_src emacs-lisp
-
-(defun ns/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/.dotfiles/.emacs.d/config.org"))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
-
-#+end_src
-
-** Visual fill
-View Org-mode documents in a centered document view. (I replaced this with Olivetti, just keeping this around until I verify that it works well)
-
-#+BEGIN_SRC emacs-lisp
-
-;; (defun ns/org-mode-visual-fill ()
-;;     (setq visual-fill-column-width 120
-;;     visual-fill-column-center-text t)
-;;     (visual-fill-column-mode 1))
-
-;; (use-package visual-fill-column
-;;     :hook (org-mode . ns/org-mode-visual-fill))
-
-#+END_SRC
-
-#+RESULTS:
-| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-modern-mode | ns/org-mode-visual-fill | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | ns/org-mode-setup | (lambda nil (display-line-numbers-mode 0)) | org-eldoc-load |
-
-** Table of Contents
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package toc-org
-  :hook
-  (org-mode . toc-org-mode))
-
-#+END_SRC 
-
-#+RESULTS:
-| toc-org-mode | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | olivetti-mode | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | ns/org-mode-setup | (lambda nil (display-line-numbers-mode 0)) | org-eldoc-load |
-
-** Org-modern
-Give Org-mode documents some extra visual polish.
-
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package org-modern
-;;     :config
-;;     (add-hook 'org-mode-hook #'org-modern-mode)
-;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
-
-#+END_SRC
-
-** Imenu-list
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package imenu-list
-  :init
-  (setq imenu-list-position 'left)
-  :general
-  (my-leader
-   "t i" '(imenu-list-smart-toggle :which-key "Imenu")))
-  
-
-#+END_SRC 
-
-** Org-roam
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package org-roam
-  :custom
-  (org-roam-directory "~/notes/roam/")
-  :config
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  :general
-  (my-leader
-    "n r" '(:ignore t :which-key "roam")
-    ;;"n r" '(:keymap org-roam-mode-map :which-key "roam")
-    "n r f" '(org-roam-node-find :which-key "Find Node")
-    "n r i" '(org-roam-node-insert :which-key "Insert Node")
-    "n r o" '(org-roam-node-open :which-key "Open Node")
-    "n r g" '(org-roam-graph :which-key "Graph")))
-
-#+END_SRC
-
-#+RESULTS:
-
-** Org-tree-slide
-Make presentations in org-mode!
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package hide-mode-line)
-
-(defun ns/presentation-setup ()
-    (setq text-scale-mode-amount 2)
-    (org-display-inline-images)
-    (text-scale-mode 1)
-    (hide-mode-line-mode 1))
-
-(defun ns/presentation-end ()
-    (text-scale-mode 0)
-    (hide-mode-line-mode 0))
-
-(use-package org-tree-slide
-    :hook ((org-tree-slide-play . ns/presentation-setup)
-           (org-tree-slide-stop . ns/presentation-end))
-    :custom
-    (org-tree-slide-slide-in-effect nil)
-    (org-tree-slide-activate-message "Presentation started!")
-    (org-tree-slide-deactivate-message "Presentation finished!")
-    (org-tree-slide-header t)
-    (org-image-actual-width nil)
-    :bind
-    (:map org-mode-map
-            ("<f8>" . org-tree-slide-mode)
-        :map org-tree-slide-mode-map
-            ("<f9>" . org-tree-slide-move-previous-tree)
-            ("<f10>" . org-tree-slide-move-next-tree)
-        ))
-
-#+END_SRC
-
-#+RESULTS:
-: org-tree-slide-move-next-tree
-
 * Documents
 ** PDFs
 
@@ -1692,6 +1804,21 @@ Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
 (use-package smart-comment)
 
 #+end_src
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
