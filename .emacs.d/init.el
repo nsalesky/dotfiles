@@ -18,28 +18,44 @@
 
 (setq confirm-nonexistent-file-or-buffer nil)
 
-(require 'package)
+;; (require 'package)
 
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ;("melpa-stable" . "https://stable.melpa.org/packages/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")
-             ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+;; (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+;; 			 ;("melpa-stable" . "https://stable.melpa.org/packages/")
+;; 			 ("elpa" . "https://elpa.gnu.org/packages/")
+;;              ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+;; (package-initialize)
+;; (unless package-archive-contents
+;;   (package-refresh-contents))
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 ;; Initalize use-package on non-Linux platforms
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+;; (unless (package-installed-p 'use-package)
+;;   (package-install 'use-package))
 
-(require 'use-package)
-(setq use-package-always-ensure t) ;; Always installs packages that you use if they're not already installed
+;; (require 'use-package)
+;; (setq use-package-always-ensure t) ;; Always installs packages that you use if they're not already installed
 
-;; Make sure PATH is correct
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize))
+;; ;; Make sure PATH is correct
+;; (use-package exec-path-from-shell
+;;   :config
+;;   (exec-path-from-shell-initialize))
+
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
 
 (setq user-full-name "Nick Salesky"
       user-mail-address "nicksalesky@gmail.com")
@@ -107,12 +123,39 @@
   (global-emojify-mode))
 
 (use-package doom-themes
-  :init
-  (load-theme 'doom-moonlight t))
+  :config
+  (load-theme 'doom-shades-of-purple t))
+
+;; (use-package nano-theme
+;;   :straight (nano-theme :type git :host github
+;;                         :repo "rougier/nano-theme")
+;;   :config
+;;   (nano-light))
+
+;; (use-package modus-themes
+;;   :init
+;;   (setq modus-themes-italic-constructs t     ; use italics for comments
+;;         modus-themes-bold-constructs t       ; use bold
+;;         modus-themes-syntax '()
+;;         modus-themes-mixed-fonts t           ; Enable fixed and variable pitched fonts
+;;         modus-themes-prompts '(italic)
+;;         ;; modus-themes-mode-line '(accented borderless)
+;;         modus-themes-mode-line '()
+;;         )
+;;   :config
+;;   (modus-themes-load-vivendi))
 
 (use-package doom-modeline
-  :custom ((doom-modeline-height 35))
-  :init (doom-modeline-mode 1))
+  :init
+  (setq doom-modeline-height 35
+        doom-modeline-support-imenu t)
+  (doom-modeline-mode 1))
+
+(use-package nano-modeline
+  :straight (nano-modeline :type git :host github
+                           :repo "rougier/nano-modeline"))
+  ;; :init
+  ;; (nano-modeline-mode 1))
 
 ;; Necessary for dashboard in order to get nice seperators between sections
 (use-package page-break-lines)
@@ -168,53 +211,6 @@
     (if (equal alpha-transparency (frame-parameter nil 'alpha-background))
         (set-frame-parameter nil 'alpha-background 100)
       (set-frame-parameter nil 'alpha-background alpha-transparency))))
-
-;; (use-package ivy
-;;     :diminish
-;;     :bind (
-;;     :map ivy-minibuffer-map
-;;     ("TAB" . ivy-alt-done)
-;;     ("C-l" . ivy-alt-done)
-;;     ("C-j" . ivy-next-line)
-;;     ("C-k" . ivy-previous-line)
-;;     :map ivy-switch-buffer-map
-;;     ("C-k" . ivy-previous-line)
-;;     ("C-l" . ivy-done)
-;;     ("C-d" . ivy-switch-buffer-kill)
-;;     :map ivy-reverse-i-search-map
-;;     ("C-k" . ivy-previous-line)
-;;     ("C-d" . ivy-reverse-i-search-kill))
-;;     :init
-;;     (ivy-mode 1))
-
-;; (use-package ivy-rich
-;;     :init
-;;     (ivy-rich-mode 1))
-
-;; (use-package swiper
-;;   :bind (("C-s" . swiper)))
-
-;; (use-package ivy-posframe
-;;     :init
-;;     (setq ivy-posframe-display-functions-alist
-;;         '((counsel-M-x . ivy-display-function-fallback)
-;;         (counsel-find-file . ivy-display-function-fallback)
-;;         (swiper . ivy-display-function-fallback)
-;;         (counsel-switch-buffer . ivy-display-function-fallback)
-;;         (t . ivy-posframe-display)))
-;;     :config
-;;     (ivy-posframe-mode 1))
-
-;; (use-package counsel
-;;     :bind
-;;     (("M-x" . counsel-M-x)
-;;      ("M-y" . counsel-yank-pop-selection)
-;;      ("M-i" . counsel-imenu)
-;;      ("C-s" . counsel-grep-or-swiper)
-;;      ("C-x b" . counsel-ibuffer)
-;;      ("C-x C-f" . counsel-find-file)
-;;      :map minibuffer-local-map
-;;      ("C-r" . 'counsel-minibuffer-history)))
 
 (use-package vertico
   :init
@@ -301,6 +297,8 @@
   ;; Enable indentation+completion using the TAB key instead of M-TAB
   (tab-always-indent 'complete)
   (completion-cycle-threshold nil)
+
+  (corfu-excluded-modes '(eshell-mode))
 
   :init
   (global-corfu-mode))
@@ -414,7 +412,7 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 ;; Insert newlines when you C-n at the end of the buffer
-(setq next-line-add-newlines t)
+;; (setq next-line-add-newlines t)
 
 (use-package hydra)
 
@@ -445,9 +443,9 @@
 
   ;; set the initial state for certain special modes
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
   ;; disable Evil-mode for certain buffers
-  (evil-set-initial-state 'eshell-mode 'emacs))
+  ;; (evil-set-initial-state 'eshell-mode 'emacs))
 
 ;; Gives us default Evil configurations for a lot of other modes
 (use-package evil-collection
@@ -529,14 +527,13 @@
 
 (my-leader
      "t"  '(:ignore t :which-key "toggle")
-     "t s" '(counsel-load-theme :which-key "Choose theme")
+     "t s" '(consult-theme :which-key "Choose theme")
 
      "t t" '(treemacs :which-key "Treemacs"))
      ;; "t y" '(lsp-treemacs-symbols :which-key "Treemacs Symbols"))
 
 (my-leader
-    "o" '(:ignore t :which-key "open")
-    "o e" '(eshell :which-key "Open EShell"))
+    "o" '(:ignore t :which-key "open"))
 
 (my-leader
      "w" '(:ignore t :which-key "window")
@@ -577,6 +574,16 @@
   "h v" '(helpful-variable :which-key "Describe variable")
   "h f" '(helpful-callable :which-key "Describe function")
   "h k" '(helpful-key :which-key "Describe key"))
+
+;; Simple keybinding to open dired if C-x d is too hard :)
+(my-leader "d" '(dired :which-key "Dired"))
+
+;; Set up some custom keybindings for Dired
+(general-define-key
+    :states 'normal
+    :keymaps 'dired-mode-map
+    "h" 'dired-up-directory
+    "l" 'dired-find-file)
 
 (use-package multiple-cursors
   :general
@@ -631,11 +638,11 @@
     (set-variable 'org-hide-emphasis-markers t)))
 
 
-(use-package org-contrib :pin nongnu)
+;; (use-package org-contrib :pin nongnu)
+(use-package org-contrib)
 
 ;; Org Mode
 (use-package org
-    :pin elpa
     :hook (org-mode . ns/org-mode-setup)
     :config
     ;; (ns/org-font-setup)
@@ -678,9 +685,13 @@
 
 ;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
 
-(setq org-agenda-files (list "inbox.org" "agenda.org" "projects.org") ; add any files to be pulled from
+(setq org-agenda-files (list "agenda/inbox.org"
+                             "agenda/agenda.org"
+                             "agenda/projects.org") ; add any files to be pulled from
       org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
       org-log-done 'time             ; log the time when a task is *DONE*
+      org-agenda-compact-blocks nil
+      org-agenda-block-separator nil
       )
 
 (setq org-capture-templates
@@ -694,6 +705,26 @@
           ,(concat "* Note (%a)\n"
                    "/Entered on/ %U\n" "\n" "%?"))))
 
+(setq org-refile-targets
+      '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
+      org-refile-use-outline-path 'file
+      org-outline-path-complete-in-steps nil)
+
+(defun ns/org-agenda-save-buffers ()
+  "Save `org-agenda-files` buffers without user confirmation."
+  (interactive)
+  (message "Saving org-agenda-files buffers...")
+  (save-some-buffers t
+                     (lambda ()
+                       (when (member (buffer-file-name) (org-agenda-files))
+                         t)))
+  (message "Saving org-agenda-files buffers... done"))
+
+;; Automatically save after refile
+(advice-add 'org-refile :after
+            (lambda (&rest _)
+              (ns/org-agenda-save-buffers)))
+
 (defun log-todo-next-creation-date (&rest ignore)
   "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
   (when (and (string= (org-get-todo-state) "NEXT")
@@ -704,7 +735,8 @@
 (setq org-agenda-custom-commands
       '(("g" "Get Things Done (GTD)"
          ((agenda ""
-                  ((org-agenda-skip-function
+                  ((org-agenda-span 1) ; limit display to a single day
+                   (org-agenda-skip-function
                     '(org-agenda-skip-entry-if 'deadline))
                    (org-deadline-warning-days 0)))
           (todo "NEXT"
@@ -714,6 +746,7 @@
                  (org-agenda-overriding-header "\nTasks\n")))
           (agenda nil
                   ((org-agenda-entry-types '(:deadline))
+                   (org-agenda-span 1)
                    (org-agenda-format-date "")
                    (org-deadline-warning-days 7)
                    (org-agenda-skip-function
@@ -729,35 +762,35 @@
   "c" '(org-capture :which-key "Capture")
   "a" '(org-agenda :which-key "Agenda"))
 
-(use-package org-roam
-  :custom
-  (org-roam-directory "~/notes/roam/")
-  :config
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  :general
-  (my-leader
-    "n r" '(:ignore t :which-key "roam")
-    ;;"n r" '(:keymap org-roam-mode-map :which-key "roam")
-    "n r f" '(org-roam-node-find :which-key "Find Node")
-    "n r i" '(org-roam-node-insert :which-key "Insert Node")
-    "n r o" '(org-roam-node-open :which-key "Open Node")
-    "n r g" '(org-roam-graph :which-key "Graph")))
+;; (use-package org-roam
+;;   :custom
+;;   (org-roam-directory "~/notes/roam/")
+;;   :config
+;;   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+;;   (org-roam-db-autosync-mode)
+;;   :general
+;;   (my-leader
+;;     "n r" '(:ignore t :which-key "roam")
+;;     ;;"n r" '(:keymap org-roam-mode-map :which-key "roam")
+;;     "n r f" '(org-roam-node-find :which-key "Find Node")
+;;     "n r i" '(org-roam-node-insert :which-key "Insert Node")
+;;     "n r o" '(org-roam-node-open :which-key "Open Node")
+;;     "n r g" '(org-roam-graph :which-key "Graph")))
 
-(use-package org-journal
-  :general
-  (my-leader
-    "n j" '(:ignore t :which-key "journal")
-    "n j j" '(org-journal-new-entry :which-key "New entry")
-    "n j r" '(org-journal-read-entry :which-key "Read entry")
-    "n j s" '(org-journal-search :which-key "Search journal"))
+;; (use-package org-journal
+;;   :general
+;;   (my-leader
+;;     "n j" '(:ignore t :which-key "journal")
+;;     "n j j" '(org-journal-new-entry :which-key "New entry")
+;;     "n j r" '(org-journal-read-entry :which-key "Read entry")
+;;     "n j s" '(org-journal-search :which-key "Search journal"))
   
-  :custom
-  (org-journal-dir "~/notes/journal")
-  (org-journal-file-format "%Y-%m-%d.org")
-  (org-journal-date-format "%B %d, %Y (%A) ")
-  (org-journal-date-prefix "* ")
-  (org-journal-time-prefix "** "))
+;;   :custom
+;;   (org-journal-dir "~/notes/journal")
+;;   (org-journal-file-format "%Y-%m-%d.org")
+;;   (org-journal-date-format "%B %d, %Y (%A) ")
+;;   (org-journal-date-prefix "* ")
+;;   (org-journal-time-prefix "** "))
 
 (use-package hide-mode-line)
 
@@ -804,6 +837,96 @@
   (my-leader
    "t i" '(imenu-list-smart-toggle :which-key "Imenu")))
 
+(use-package denote
+  :straight (denote :type git :host gitlab
+                    :repo "protesilaos/denote")
+  :custom
+  (denote-directory "~/notes")
+  (denote-known-keywords
+    '("emacs" "personal" "journal")))
+
+(use-package eshell-toggle
+  :straight (eshell-toggle :type git :host github
+                           :repo "4DA/eshell-toggle")
+  :custom
+  (eshell-toggle-size-fraction 3)         ; use 30% of the frame (?)
+  (eshell-toggle-use-projectile-root t)   ; use projectile root if it exists
+  (eshell-toggle-default-directory "~")   ; default to home directory
+  :general
+  (my-leader
+    "o e" '(eshell-toggle :which-key "Open Eshell")))
+
+(use-package eshell-git-prompt
+  :straight (eshell-git-prompt :type git :host github
+                               :repo "xuchunyang/eshell-git-prompt")
+  :config
+  (eshell-git-prompt-use-theme 'multiline2))
+
+;; (require 'dash)
+;; (require 's)
+;; (require 'magit)
+
+;; (defmacro with-face (STR &rest PROPS)
+;;   "Return STR propertized with PROPS."
+;;   `(propertize ,STR 'face (list ,@PROPS)))
+
+;; (defmacro esh-section (NAME ICON FORM &rest PROPS)
+;;   "Build eshell section NAME with ICON prepended to evaled FORM with PROPS."
+;;   `(setq ,NAME
+;;         (lambda () (when ,FORM
+;;                      (-> ,ICON
+;;                          (concat esh-section-delim ,FORM)
+;;                          (with-face ,@PROPS))))))
+
+;; (defun esh-acc (acc x)
+;;   "Accumulator for evaluating andd concatenating esh-sections."
+;;   (--if-let (funcall x)
+;;       (if (s-blank? acc)
+;;           it
+;;         (concat acc esh-sep it))
+;;     acc))
+
+;; (defun esh-prompt-func ()
+;;   "Build `eshell-prompt-function`."
+;;   (concat esh-header
+;;           (-reduce-from 'esh-acc "" eshell-funcs)
+;;           "\n"
+;;           eshell-prompt-string))
+
+;; ;; Seperator between esh-sections
+;; (setq esh-sep "  ")
+
+;; ;; Seperator between an esh-section icon and form
+;; (setq esh-section-delim " ")
+
+;; ;; Eshell prompt header
+;; (setq esh-header "\n┌─")
+
+;; ;; Eshell prompt regexp and string
+;; (setq eshell-prompt-regexp "└─> ")
+;; (setq eshell-prompt-string "└─> ")
+
+;; (esh-section esh-dir
+;;              (all-the-icons-faicon "folder-open")
+;;              (abbreviate-file-name (eshell/pwd))
+;;              '(:foreground "gold" :bold ultra-bold :underline t))
+
+;; (esh-section esh-git
+;;              (all-the-icons-all-the-icon "git")
+;;              (magit-get-current-branch)
+;;              '(:foreground "pink"))
+
+;; (esh-section esh-clock
+;;              (all-the-icons-octicon "clock")
+;;              (format-time-string "%H:%M" (current-time))
+;;              '(:foreground "forest green"))
+
+;; ;; Choose which eshell-funcs to enable
+;; (setq eshell-funcs (list esh-dir esh-git esh-clock))
+
+;; ;; Enable the new eshell prompt
+;; (setq eshell-prompt-function 'esh-prompt-func)
+
 (use-package format-all)
   ;:hook
   ;(prog-mode . format-all-mode)
@@ -841,7 +964,9 @@
 ;;     (lsp-ui-doc-position 'bottom)
 ;;     (lsp-ui-doc-enable nil))
 
-(use-package eglot)
+(use-package eglot
+  :custom
+  (eglot-events-buffer-size 0)) ;; Disable the events buffer for performance
 
 (use-package dap-mode
   :config
@@ -905,11 +1030,10 @@
                          (setq tab-width 4)))
   :custom
   (python-shell-interpreter "python3")
-  (dap-python-debugger 'debugpy)
+  (dap-python-debugger 'debugpy))
 
-  :config
-  (require 'lsp-pyright)
-  (require 'dap-python))
+(require 'lsp-pyright)
+(require 'dap-python)
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
