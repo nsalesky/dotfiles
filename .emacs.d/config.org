@@ -3,7 +3,7 @@
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el
 #+STARTUP: overview
 
-* Contents                                                              :TOC:
+* Contents :TOC:
 :PROPERTIES:
 :TOC:      :include all
 :END:
@@ -30,10 +30,11 @@
   - [[#hl-todo-highlight-and-navigate-todo-keywords][Hl-todo: Highlight and navigate TODO keywords]]
   - [[#hl-line-highlight-the-current-line][Hl-line: Highlight the current line]]
   - [[#transparent-frame][Transparent Frame]]
-- [[#vertico][Vertico]]
+- [[#vertico-minibuffer][Vertico: Minibuffer]]
   - [[#consult-add-helpful-functions-with-completion][Consult: add helpful functions with completion]]
   - [[#orderless-match-the-different-parts-of-completion-candidates][Orderless: match the different parts of completion candidates]]
   - [[#all-the-icons-completion-add-icons-to-completion-candidates][All-the-icons-completion: add icons to completion candidates]]
+  - [[#embark][Embark]]
 - [[#editor][Editor]]
   - [[#aggressive-indent-always-keep-code-properly-indented][Aggressive-indent: Always keep code properly indented]]
   - [[#rainbow-delimiters-different-color-for-each-parenthesis-level][Rainbow-delimiters: Different color for each parenthesis level]]
@@ -43,14 +44,15 @@
   - [[#corfu-completion-at-point][Corfu: Completion at point]]
   - [[#which-key-list-commands-for-current-prefix][Which-key: List commands for current prefix]]
   - [[#olivetti-centered-document-editing][Olivetti: Centered document editing]]
-  - [[#perspective-give-projects-their-own-named-workspaces][Perspective: Give projects their own named workspaces]]
 - [[#spell-checker][Spell checker]]
   - [[#flyspell][Flyspell]]
   - [[#flyspell-correct-show-list-of-correct-spelling-suggestions][Flyspell-correct: Show list of correct spelling suggestions]]
 - [[#project-management][Project Management]]
   - [[#projectile][Projectile]]
   - [[#treemacs-a-tree-layout-file-explorer][Treemacs: A tree layout file explorer]]
-- [[#keybindings][Keybindings]]
+  - [[#perspective-give-projects-their-own-named-workspaces][Perspective: Give projects their own named workspaces]]
+  - [[#tab-bar-mode][Tab-bar-mode]]
+- [[#keybindings-and-basic-feature-configuration][Keybindings and Basic Feature Configuration]]
   - [[#esc-quits-prompts][ESC quits prompts]]
   - [[#movement][Movement]]
   - [[#hydra][Hydra]]
@@ -72,12 +74,13 @@
   - [[#blamer-git-blame-the-current-line][Blamer: Git blame the current line]]
 - [[#org-mode][Org Mode]]
   - [[#basic-config][Basic config]]
+  - [[#fonts-1][Fonts]]
   - [[#configure-babel][Configure Babel]]
   - [[#auto-tangle-configuration-files][Auto-tangle configuration files]]
   - [[#org-agenda-and-org-capture][Org-agenda and org-capture]]
   - [[#org-roam][Org-roam]]
   - [[#org-journal][Org-journal]]
-  - [[#org-tree-slide][Org-tree-slide]]
+  - [[#org-present][Org-present]]
   - [[#org-modern][Org-modern]]
   - [[#table-of-contents][Table of Contents]]
   - [[#imenu-list][Imenu-list]]
@@ -117,6 +120,7 @@ One important thing is that I haven't really done any effort to shorten the Emac
 Some specific configs I looked at include:
 
 - [[https://github.com/dakra/dmacs][Dmacs]] (the structure of this config file is heavily inspired by this!)
+- [[https://www.youtube.com/watch?v=SCPoF1PTZpI&t=896s][System Crafters]]
 
 * Installation
 
@@ -322,7 +326,7 @@ Set up =general.el= to control all of my custom keybindings.
 #+end_src
 
 * UI
-Set up all the fancy user-interface elements to make Emacs modern.
+Set up all the fancy user-interface elements to make Emacs look nice.
 
 ** Basic Emacs appearance settings
 Set the window title to display the current file and major mode.
@@ -363,15 +367,16 @@ Set up the fonts for text rendering, pretty self explanatory :)
 
 Here are my current font settings
 #+BEGIN_SRC emacs-lisp
+
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'variable-pitch nil :font "SourceSans3" :height 140)
+
 #+END_SRC 
 
 Here are some of my older settings that I'm keeping around in case I ever want to switch back.
 #+BEGIN_SRC emacs-lisp
-;; (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
-;; (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 ;; (set-face-attribute 'default nil :font "Rec Mono Semi Casual" :height 120)
 ;; (set-face-attribute 'fixed-pitch nil :font "Rec Mono Semi Casual" :height 120)
 #+END_SRC 
@@ -479,11 +484,15 @@ I like having a nice dashboard when Emacs loads in order to remember what I was 
 Make Emacs scroll more consistently with a small margin at the bottom.
 
 #+BEGIN_SRC emacs-lisp
-(use-package smooth-scrolling
-  :init
-  (setq smooth-scroll-margin 5)
-  :config
-  (smooth-scrolling-mode))
+;; (use-package smooth-scrolling
+;;   :init
+;;   (setq smooth-scroll-margin 5)
+;;   :config
+;;   (smooth-scrolling-mode))
+
+(pixel-scroll-mode)
+(setq scroll-margin 5)
+
 #+END_SRC 
 
 ** Helpful
@@ -541,7 +550,7 @@ Creates a handy little function to toggle a semi-transparent window frame either
 
 #+END_SRC
 
-* Vertico
+* Vertico: Minibuffer
 Sets up minibuffer completion with Vertico.
 
 #+BEGIN_SRC emacs-lisp
@@ -580,6 +589,14 @@ Sets up minibuffer completion with Vertico.
 (use-package all-the-icons-completion
   :config
   (all-the-icons-completion-mode))
+
+#+END_SRC 
+
+** Embark
+
+#+BEGIN_SRC emacs-lisp
+
+;; TODO
 
 #+END_SRC 
 
@@ -728,51 +745,11 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
 #+BEGIN_SRC emacs-lisp
 
 (use-package olivetti
-  :init
-  (setq olivetti-body-width 80
-        olivetti-style t)
-  :hook
-  (org-mode . olivetti-mode))
-
-#+END_SRC
-
-** Perspective: Give projects their own named workspaces 
-Add named workspaces to Emacs with their own buffers.
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package perspective
-    :init
-    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
-          persp-mode-prefix-key (kbd "C-c M-p"))
-
-    :config
-    (persp-mode)
-
-    ;; set up for Consult
-    (consult-customize consult--source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source)
-
-    :general
-    (my-leader
-      ;; "," '(persp-switch-buffer :which-key "Switch buffer")
-      "b k" '(persp-remove-buffer :which-key "Remove buffer")
-
-      "TAB" '(:ignore t :which-key "workspace")
-      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
-      "TAB r" '(persp-rename :which-key "Rename workspace")
-      "TAB s" '(persp-state-save :which-key "Save workspaces")
-      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
-      "TAB k" '(persp-kill :which-key "Kill workspace")
-      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
-      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
-      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
-      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
-      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
-      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
-      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
-      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
-      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
+  :custom
+  (olivetti-body-width 110)
+  (olivetti-style t))
+  ;; :hook
+  ;; (org-mode . olivetti-mode))
 
 #+END_SRC
 
@@ -835,6 +812,8 @@ Tools to distinguish projects and quickly navigate inside projects and between t
     :after (treemacs projectile))
 (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
+(use-package treemacs-perspective
+  :after (treemacs perspective))
 (use-package treemacs-magit
     :after (treemacs magit))
 ;; (use-package lsp-treemacs
@@ -846,7 +825,58 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 
 #+end_src
 
-* Keybindings
+
+** Perspective: Give projects their own named workspaces 
+Add named workspaces to Emacs with their own buffers.
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package perspective
+    :init
+    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
+          persp-mode-prefix-key (kbd "C-c M-p"))
+
+    :config
+    (persp-mode)
+
+    ;; set up for Consult
+    (consult-customize consult--source-buffer :hidden t :default nil)
+    (add-to-list 'consult-buffer-sources persp-consult-source)
+
+    :general
+    (my-leader
+      ;; "," '(persp-switch-buffer :which-key "Switch buffer")
+      "b k" '(persp-remove-buffer :which-key "Remove buffer")
+
+      "TAB" '(:ignore t :which-key "workspace")
+      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
+      "TAB r" '(persp-rename :which-key "Rename workspace")
+      "TAB s" '(persp-state-save :which-key "Save workspaces")
+      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
+      "TAB k" '(persp-kill :which-key "Kill workspace")
+      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
+      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
+      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
+      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
+      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
+      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
+      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
+      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
+      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
+
+#+END_SRC
+
+** Tab-bar-mode
+
+#+BEGIN_SRC emacs-lisp
+
+
+
+#+END_SRC 
+
+* Keybindings and Basic Feature Configuration
+Here's where I configure some basic Emacs features with keybindings.
+
 ** ESC quits prompts
 Make ESC quit prompts.
 
@@ -891,17 +921,26 @@ Sets up a hydra to let me easily change the text scale.
  "t k" '(hydra-text-scale/body :which-key "Scale text"))
 #+end_src
 
+
 ** Evil
 It's hard for me to function without VIM-style keybindings at this point, so Evil mode is a must-have feature.
 
 #+begin_src emacs-lisp
 
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode))
+
 (use-package evil
-  :init
-  (setq evil-want-integration t
-	evil-want-keybinding nil
-	evil-want-C-u-scroll t
-	evil-want-C-i-jump nil)
+  :custom
+  (evil-want-keybinding nil)
+  (evil-want-integration t)
+  (evil-want-integration t)
+  (evil-want-C-u-scroll nil)
+  (evil-want-C-i-jump nil)
+  (evil-respect-visual-line-mode t)
+  (evil-undo-system 'undo-tree)
+
   :config
   (evil-mode 1)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
@@ -925,9 +964,6 @@ It's hard for me to function without VIM-style keybindings at this point, so Evi
   (evil-collection-init))
 
 #+end_src
-
-#+RESULTS:
-: t
 
 *** Multiple Cursors
 This is an attempt to set up multiple cursors with =evil-mc=. For now, I'm trying to use the =multiple-cursors= package instead.
@@ -1086,7 +1122,13 @@ Some useful keybindings for working with buffers.
       "b k" '(kill-buffer :which-key "Kill buffer"))
 
 #+END_SRC
-*** Basics
+
+Auto-revert all buffers by default
+#+BEGIN_SRC emacs-lisp
+
+(global-auto-revert-mode 1)
+
+#+END_SRC 
 
 ** Search
 Keybindings for searching within different contexts.
@@ -1094,7 +1136,7 @@ Keybindings for searching within different contexts.
 | COMMAND             | DESCRIPTION                                     | KEYBINDING |
 |---------------------+-------------------------------------------------+------------|
 | avy-goto-char-timer | Start typing some chars on screen, jump to them | s          |
-| avy-pop-mark        | Jump back from last =avy= search                  | S          |
+| avy-pop-mark        | Jump back from last =avy= search                | S          |
 | swiper              | Search the current buffer                       | SPC s b    |
 
 #+BEGIN_SRC emacs-lisp
@@ -1271,6 +1313,41 @@ The very basics for Org-mode, setting up fonts and basic visual features.
 
 #+end_src
 
+** Fonts
+Set up ~variable-pitch~ fonts.
+
+#+BEGIN_SRC emacs-lisp
+
+(add-hook 'org-mode-hook 'variable-pitch-mode)
+
+(require 'org-faces)
+
+;; Resize Org headings
+(dolist (face '((org-level-1 . 1.2)
+                (org-level-2 . 1.1)
+                (org-level-3 . 1.05)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.1)
+                (org-level-6 . 1.1)
+                (org-level-7 . 1.1)
+                (org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil :font "Iosevka Aile" :weight 'medium :height (cdr face)))
+
+;; Make the document title a bit bigger
+(set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
+
+;; Make sure certain org faces continue to use fixed-pitch face even whenn variable-pitch-mode is on
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-formula nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-facee fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+#+END_SRC 
+
 ** Configure Babel
 #+begin_src emacs-lisp
 
@@ -1322,7 +1399,7 @@ Now, I need to set up some capture templates to quickly add items to the agenda.
 #+BEGIN_SRC emacs-lisp
 
 (setq org-capture-templates
-       `(("i" "Inbox" entry  (file "inbox.org")
+       `(("i" "Inbox" entry  (file "agenda/inbox.org")
         ,(concat "* TODO %?\n"
                  "/Entered on/ %U"))
          ("m" "Meeting entry" entry (file+headline "agenda.org" "Future")
@@ -1338,7 +1415,7 @@ Make it easier to move tasks from the inbox or other files over to ~projects.org
 #+BEGIN_SRC emacs-lisp
 
 (setq org-refile-targets
-      '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
+      '(("agenda/projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
       org-refile-use-outline-path 'file
       org-outline-path-complete-in-steps nil)
 
@@ -1459,44 +1536,46 @@ Finally, define a keybinding for =org-capture= and opening up the =org-agenda=
 
 #+END_SRC 
 
-** Org-tree-slide
-Make presentations in org-mode!
+** Org-present
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package hide-mode-line)
+(defun ns/org-present-begin ()
+  (setq-local ns/olivetti-mode-enabled (bound-and-true-p olivetti-mode)) ;; remember if olivetti was already enabled or not
+  (olivetti-mode 1)                                                      ;; enable olivetti-mode regardless
 
-(defun ns/presentation-setup ()
-    (setq text-scale-mode-amount 2)
-    (org-display-inline-images)
-    (text-scale-mode 1)
-    (hide-mode-line-mode 1))
+  ;; Tweak the font sizes
+  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                     (header-line (:height 4.0) variable-pitch)
+                                     (org-document-title (:height 1.75) org-document-title)
+                                     (org-code (:height 1.55) org-code)
+                                     (org-verbatim (:height 1.55) org-verbatim)
+                                     (org-block (:height 1.25) org-block)
+                                     (org-block-begin-line (:height 0.7) org-block)))
 
-(defun ns/presentation-end ()
-    (text-scale-mode 0)
-    (hide-mode-line-mode 0))
+  ;; Set a blank header line string to create some blank space at the top
+  (setq-local header-line-format " ")
 
-(use-package org-tree-slide
-    :hook ((org-tree-slide-play . ns/presentation-setup)
-           (org-tree-slide-stop . ns/presentation-end))
-    :custom
-    (org-tree-slide-slide-in-effect nil)
-    (org-tree-slide-activate-message "Presentation started!")
-    (org-tree-slide-deactivate-message "Presentation finished!")
-    (org-tree-slide-header t)
-    (org-image-actual-width nil)
-    :bind
-    (:map org-mode-map
-            ("<f8>" . org-tree-slide-mode)
-        :map org-tree-slide-mode-map
-            ("<f9>" . org-tree-slide-move-previous-tree)
-            ("<f10>" . org-tree-slide-move-next-tree)
-        ))
+  (message "Starting presentation. Good luck!"))
 
-#+END_SRC
+(defun ns/org-present-end ()
+  (unless (symbol-value 'ns/olivetti-mode-enabled)
+    (olivetti-mode 0))                                                   ;; disable olivetti-mode only if it wasn't open before the presentation
 
-#+RESULTS:
-: org-tree-slide-move-next-tree
+  ;; Reset the font customizations
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+
+  ;; Reset the header line back to nothing
+  (setq-local header-line-format nil)
+
+  (message "Ending presentation. Nice job!"))
+
+(use-package org-present
+  :config
+  (add-hook 'org-present-mode-hook 'ns/org-present-begin)
+  (add-hook 'org-present-mode-quit-hook 'ns/org-present-end))
+
+#+END_SRC 
 
 ** Org-modern
 Give Org-mode documents some extra visual polish.
@@ -1536,8 +1615,6 @@ Give Org-mode documents some extra visual polish.
   
 
 #+END_SRC 
-
-
 
 * Note Taking
 ** Denote
@@ -1672,7 +1749,9 @@ A simple code formatting system for a ton of languages.
 ** Flycheck
 #+BEGIN_SRC emacs-lisp
 
-(use-package flycheck)
+(use-package flycheck
+  :config
+  (global-flycheck-mode))
 
 #+END_SRC 
 
@@ -1722,13 +1801,14 @@ A simple code formatting system for a ton of languages.
   
 
 #+END_SRC 
+
 ** DAP: Debugging support
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package dap-mode
-  :config
-  (dap-auto-configure-mode))
+;; (use-package dap-mode
+;;   :config
+;;   (dap-auto-configure-mode))
 
 #+END_SRC 
 
@@ -1842,18 +1922,18 @@ The company backend needs the ~glslang~ package installed for ~glslangValidator~
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package lsp-pyright)
+;; (use-package lsp-pyright)
 
 (use-package python-mode
   :hook (python-mode . (lambda ()
                          (eglot-ensure)
                          (setq tab-width 4)))
   :custom
-  (python-shell-interpreter "python3")
-  (dap-python-debugger 'debugpy))
+  (python-shell-interpreter "python3"))
+  ;;(dap-python-debugger 'debugpy))
 
-(require 'lsp-pyright)
-(require 'dap-python)
+;; (require 'lsp-pyright)
+;; (require 'dap-python)
 
 
 #+END_SRC

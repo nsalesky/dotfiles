@@ -111,8 +111,7 @@
 (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'variable-pitch nil :font "SourceSans3" :height 140)
 
-;; (set-face-attribute 'default nil :font "Iosevka Nerd Font" :height 120)
-;; (set-face-attribute 'fixed-pitch nil :font "Iosevka Nerd Font" :height 120)
+;; (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 ;; (set-face-attribute 'default nil :font "Rec Mono Semi Casual" :height 120)
 ;; (set-face-attribute 'fixed-pitch nil :font "Rec Mono Semi Casual" :height 120)
 
@@ -175,11 +174,14 @@
     :config
     (dashboard-setup-startup-hook))
 
-(use-package smooth-scrolling
-  :init
-  (setq smooth-scroll-margin 5)
-  :config
-  (smooth-scrolling-mode))
+;; (use-package smooth-scrolling
+;;   :init
+;;   (setq smooth-scroll-margin 5)
+;;   :config
+;;   (smooth-scrolling-mode))
+
+(pixel-scroll-mode)
+(setq scroll-margin 5)
 
 (use-package helpful
   :bind
@@ -228,6 +230,8 @@
 (use-package all-the-icons-completion
   :config
   (all-the-icons-completion-mode))
+
+;; TODO
 
 (use-package aggressive-indent
   :hook
@@ -325,44 +329,11 @@
   (setq which-key-idle-delay 0.3))
 
 (use-package olivetti
-  :init
-  (setq olivetti-body-width 80
-        olivetti-style t)
-  :hook
-  (org-mode . olivetti-mode))
-
-(use-package perspective
-    :init
-    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
-          persp-mode-prefix-key (kbd "C-c M-p"))
-
-    :config
-    (persp-mode)
-
-    ;; set up for Consult
-    (consult-customize consult--source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source)
-
-    :general
-    (my-leader
-      ;; "," '(persp-switch-buffer :which-key "Switch buffer")
-      "b k" '(persp-remove-buffer :which-key "Remove buffer")
-
-      "TAB" '(:ignore t :which-key "workspace")
-      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
-      "TAB r" '(persp-rename :which-key "Rename workspace")
-      "TAB s" '(persp-state-save :which-key "Save workspaces")
-      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
-      "TAB k" '(persp-kill :which-key "Kill workspace")
-      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
-      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
-      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
-      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
-      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
-      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
-      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
-      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
-      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
+  :custom
+  (olivetti-body-width 110)
+  (olivetti-style t))
+  ;; :hook
+  ;; (org-mode . olivetti-mode))
 
 (use-package flyspell
   :hook ((prog-mode . flyspell-prog-mode)
@@ -400,6 +371,8 @@
     :after (treemacs projectile))
 (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
+(use-package treemacs-perspective
+  :after (treemacs perspective))
 (use-package treemacs-magit
     :after (treemacs magit))
 ;; (use-package lsp-treemacs
@@ -408,6 +381,41 @@
 (use-package treemacs-all-the-icons
   :config
   (treemacs-load-theme "all-the-icons"))
+
+(use-package perspective
+    :init
+    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
+          persp-mode-prefix-key (kbd "C-c M-p"))
+
+    :config
+    (persp-mode)
+
+    ;; set up for Consult
+    (consult-customize consult--source-buffer :hidden t :default nil)
+    (add-to-list 'consult-buffer-sources persp-consult-source)
+
+    :general
+    (my-leader
+      ;; "," '(persp-switch-buffer :which-key "Switch buffer")
+      "b k" '(persp-remove-buffer :which-key "Remove buffer")
+
+      "TAB" '(:ignore t :which-key "workspace")
+      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
+      "TAB r" '(persp-rename :which-key "Rename workspace")
+      "TAB s" '(persp-state-save :which-key "Save workspaces")
+      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
+      "TAB k" '(persp-kill :which-key "Kill workspace")
+      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
+      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
+      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
+      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
+      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
+      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
+      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
+      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
+      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
+
+
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -425,12 +433,20 @@
 (my-leader
  "t k" '(hydra-text-scale/body :which-key "Scale text"))
 
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode))
+
 (use-package evil
-  :init
-  (setq evil-want-integration t
-	evil-want-keybinding nil
-	evil-want-C-u-scroll t
-	evil-want-C-i-jump nil)
+  :custom
+  (evil-want-keybinding nil)
+  (evil-want-integration t)
+  (evil-want-integration t)
+  (evil-want-C-u-scroll nil)
+  (evil-want-C-i-jump nil)
+  (evil-respect-visual-line-mode t)
+  (evil-undo-system 'undo-tree)
+
   :config
   (evil-mode 1)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
@@ -550,6 +566,8 @@
 
       "b" '(:ignore t :which-key "buffers")
       "b k" '(kill-buffer :which-key "Kill buffer"))
+
+(global-auto-revert-mode 1)
 
 (general-define-key
  :states 'normal
@@ -671,6 +689,34 @@
     ;;   "b" '(org-babel-tangle :which-key "Org babel tangle")
     ;;   "t" '(
 
+(add-hook 'org-mode-hook 'variable-pitch-mode)
+
+(require 'org-faces)
+
+;; Resize Org headings
+(dolist (face '((org-level-1 . 1.2)
+                (org-level-2 . 1.1)
+                (org-level-3 . 1.05)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.1)
+                (org-level-6 . 1.1)
+                (org-level-7 . 1.1)
+                (org-level-8 . 1.1)))
+  (set-face-attribute (car face) nil :font "Iosevka Aile" :weight 'medium :height (cdr face)))
+
+;; Make the document title a bit bigger
+(set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
+
+;; Make sure certain org faces continue to use fixed-pitch face even whenn variable-pitch-mode is on
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-formula nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-facee fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
 (org-babel-do-load-languages 'org-babel-load-languages
     '((emacs-lisp . t)
     (python . t)))
@@ -695,7 +741,7 @@
       )
 
 (setq org-capture-templates
-       `(("i" "Inbox" entry  (file "inbox.org")
+       `(("i" "Inbox" entry  (file "agenda/inbox.org")
         ,(concat "* TODO %?\n"
                  "/Entered on/ %U"))
          ("m" "Meeting entry" entry (file+headline "agenda.org" "Future")
@@ -706,7 +752,7 @@
                    "/Entered on/ %U\n" "\n" "%?"))))
 
 (setq org-refile-targets
-      '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
+      '(("agenda/projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
       org-refile-use-outline-path 'file
       org-outline-path-complete-in-steps nil)
 
@@ -821,6 +867,41 @@
             ("<f10>" . org-tree-slide-move-next-tree)
         ))
 
+(defun ns/org-present-begin ()
+  (setq-local ns/olivetti-mode-enabled (bound-and-true-p olivetti-mode)) ;; remember if olivetti was already enabled or not
+  (olivetti-mode 1)                                                      ;; enable olivetti-mode regardless
+
+  ;; Tweak the font sizes
+  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                     (header-line (:height 4.0) variable-pitch)
+                                     (org-document-title (:height 1.75) org-document-title)
+                                     (org-code (:height 1.55) org-code)
+                                     (org-verbatim (:height 1.55) org-verbatim)
+                                     (org-block (:height 1.25) org-block)
+                                     (org-block-begin-line (:height 0.7) org-block)))
+
+  ;; Set a blank header line string to create some blank space at the top
+  (setq-local header-line-format " ")
+
+  (message "Starting presentation. Good luck!"))
+
+(defun ns/org-present-end ()
+  (unless (symbol-value 'ns/olivetti-mode-enabled)
+    (olivetti-mode 0))                                                   ;; disable olivetti-mode only if it wasn't open before the presentation
+
+  ;; Reset the font customizations
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+
+  ;; Reset the header line back to nothing
+  (setq-local header-line-format nil)
+
+  (message "Ending presentation. Nice job!"))
+
+(use-package org-present
+  :config
+  (add-hook 'org-present-mode-hook 'ns/org-present-begin)
+  (add-hook 'org-present-mode-quit-hook 'ns/org-present-end))
+
 ;; (use-package org-modern
 ;;     :config
 ;;     (add-hook 'org-mode-hook #'org-modern-mode)
@@ -931,7 +1012,9 @@
   ;:hook
   ;(prog-mode . format-all-mode)
 
-(use-package flycheck)
+(use-package flycheck
+  :config
+  (global-flycheck-mode))
 
 ;; (use-package lsp-mode
 ;;     :commands (lsp lsp-deferred)
@@ -968,9 +1051,9 @@
   :custom
   (eglot-events-buffer-size 0)) ;; Disable the events buffer for performance
 
-(use-package dap-mode
-  :config
-  (dap-auto-configure-mode))
+;; (use-package dap-mode
+;;   :config
+;;   (dap-auto-configure-mode))
 
 (use-package realgud)
 
@@ -1022,18 +1105,18 @@
 ;;   :hook
 ;;   (java-mode . lsp))
 
-(use-package lsp-pyright)
+;; (use-package lsp-pyright)
 
 (use-package python-mode
   :hook (python-mode . (lambda ()
                          (eglot-ensure)
                          (setq tab-width 4)))
   :custom
-  (python-shell-interpreter "python3")
-  (dap-python-debugger 'debugpy))
+  (python-shell-interpreter "python3"))
+  ;;(dap-python-debugger 'debugpy))
 
-(require 'lsp-pyright)
-(require 'dap-python)
+;; (require 'lsp-pyright)
+;; (require 'dap-python)
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
