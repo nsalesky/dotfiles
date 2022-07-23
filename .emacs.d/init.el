@@ -1,3 +1,5 @@
+(add-to-list 'load-path "~/.dotfiles/.emacs.d/lisp")
+
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
       native-comp-async-report-warnings-errors nil)
 
@@ -83,7 +85,7 @@
 (use-package general
     :config
     (general-override-mode)
-    (general-evil-setup t)
+    ;; (general-evil-setup t)
     (general-create-definer my-leader
       :states '(normal visual emacs)
       :keymaps 'override
@@ -109,7 +111,7 @@
 
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
-(set-face-attribute 'variable-pitch nil :font "SourceSans3" :height 140)
+(set-face-attribute 'variable-pitch nil :font "Iosevka Aile" :height 140)
 
 ;; (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 ;; (set-face-attribute 'default nil :font "Rec Mono Semi Casual" :height 120)
@@ -125,24 +127,33 @@
   :config
   (load-theme 'doom-shades-of-purple t))
 
+(use-package mindre-theme
+  :straight (:host github :repo "erikbackman/mindre-theme")
+  :custom
+  (mindre-use-more-bold t)
+  (mindre-use-faded-lisp-parens t))
+  ;; :config
+  ;; (load-theme 'mindre t))
+
 ;; (use-package nano-theme
 ;;   :straight (nano-theme :type git :host github
 ;;                         :repo "rougier/nano-theme")
 ;;   :config
 ;;   (nano-light))
 
-;; (use-package modus-themes
-;;   :init
-;;   (setq modus-themes-italic-constructs t     ; use italics for comments
-;;         modus-themes-bold-constructs t       ; use bold
-;;         modus-themes-syntax '()
-;;         modus-themes-mixed-fonts t           ; Enable fixed and variable pitched fonts
-;;         modus-themes-prompts '(italic)
-;;         ;; modus-themes-mode-line '(accented borderless)
-;;         modus-themes-mode-line '()
-;;         )
-;;   :config
-;;   (modus-themes-load-vivendi))
+(use-package modus-themes
+  :init
+  (setq modus-themes-italic-constructs t     ; use italics for comments
+        modus-themes-bold-constructs t       ; use bold
+        modus-themes-syntax '(faint)
+        modus-themes-mixed-fonts t           ; Enable fixed and variable pitched fonts
+        modus-themes-prompts '(italic)
+        ;; modus-themes-mode-line '(accented borderless)
+        modus-themes-mode-line '()
+        modus-themes-subtle-line-numbers t
+        ))
+  ;; :config
+  ;; (modus-themes-load-operandi))
 
 (use-package doom-modeline
   :init
@@ -218,7 +229,9 @@
   :init
   (vertico-mode))
 
-(use-package consult)
+(use-package consult
+  :bind
+  ("C-s" . consult-line))
 
 (use-package orderless
   :custom
@@ -231,7 +244,25 @@
   :config
   (all-the-icons-completion-mode))
 
-;; TODO
+(use-package embark
+  ;; TODO: set up bindings for embark-act and embark-dwim
+  :bind
+  (("C-." . embark-act)
+   ("M-." . embark-dwim))
+
+  :config
+
+  ;; Hide the mode line for Embark buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+(use-package embark-consult
+  :after (embark consult)
+  :demand t
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package aggressive-indent
   :hook
@@ -244,21 +275,20 @@
   :hook
   (prog-mode . smartparens-mode))
 
-(use-package evil-smartparens
-  :hook
-  (smartparens-enabled . evil-smartparens-mode))
+;; (use-package evil-smartparens
+;;   :hook
+;;   (smartparens-enabled . evil-smartparens-mode))
 
 (use-package yasnippet
   :config
   (yas-global-mode))
 
 ;; (use-package company
-;;     :after lsp-mode
-;;     :hook (lsp-mode . company-mode)
+;;     :hook (prog-mode . company-mode)
 ;;     :bind (:map company-active-map
 ;;         ("<tab>" . company-complete-selection))
-;;         (:map lsp-mode-map
-;;         ("<tab>" . company-indent-or-complete-common))
+;;         ;; (:map lsp-mode-map
+;;         ;; ("<tab>" . company-indent-or-complete-common))
 ;;     :custom
 ;;     (company-minimum-prefix-length 1)
 ;;     (company-idle-delay 0.0))
@@ -279,28 +309,28 @@
             "M-l" #'corfu-show-location)
   
   :custom
-  (corfu-auto t) ; Only use 'corfu' when calling 'completion-at-point' or 'indent-for-tab-command'
+  (corfu-auto t)
+  (corfu-auto-prefix 0) ; Minimum length of prefix for auto-complete
+  (corfu-auto-delay 0) ; Immediately start auto-completion
 
-  (corfu-auto-prefix 3)             ; Minimum length of prefix for auto-complete
-  (corfu-auto-delay 0.25)
-
-  (corfu-min-width 80)
+  (corfu-min-width 80) ; Min width of popup, I like to have it consistent
   (corfu-max-width corfu-min-width) ; Always have the same width
   (corfu-count 14) ; Max number of candidates to show
   (corfu-scroll-margin 4)
-  (corfu-cycle nil)
+  ;; (corfu-cycle nil)
 
-  (corfu-quit-at-boundary nil)
-  (corfu-seperator ?\s)            ; Use space
-  (corfu-quit-no-match 'seperator) ; Don't quit if there is 'corfu-seperator' inserted
-  (corfu-preview-current 'insert)  ; Preview first candidate. Insert on input if only one candidate
+  ;; (corfu-quit-at-boundary nil)
+  ;; (corfu-seperator ?\s)            ; Use space
+  ;; (corfu-quit-no-match 'seperator) ; Don't quit if there is 'corfu-seperator' inserted
+  ;; (corfu-quit-no-match t)
+  (corfu-preview-current 'insert)  ; Preview first candidate
   (corfu-preselect-first t)        ; Preselect first candidate?
 
   (corfu-echo-documentation nil) ; Use 'corfu-doc' instead
 
   ;; Enable indentation+completion using the TAB key instead of M-TAB
   (tab-always-indent 'complete)
-  (completion-cycle-threshold nil)
+  ;; (completion-cycle-threshold nil)
 
   (corfu-excluded-modes '(eshell-mode))
 
@@ -335,9 +365,30 @@
   ;; :hook
   ;; (org-mode . olivetti-mode))
 
-(use-package flyspell
-  :hook ((prog-mode . flyspell-prog-mode)
-        ((org-mode markdown-mode) . flyspell-mode)))
+(defun iedit-dwim (arg)
+  "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
+  (interactive "P")
+  (if arg
+      (iedit-mode)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (if iedit-mode
+            (iedit-done)
+          (narrow-to-defun)
+          (iedit-start (current-word) (point-min) (point-max)))))))
+
+(use-package iedit
+  :bind
+  ("C-;" . iedit-dwim))
+
+;; (use-package flyspell
+;;   :bind
+;;   (:map flyspell-mode-map
+;;         ("C-;" . nil)) ;; unbind this key so I can use it for iedit-dwim
+  
+;;   :hook ((prog-mode . flyspell-prog-mode)
+;;         ((org-mode markdown-mode) . flyspell-mode)))
 
 ;; (use-package flyspell-correct
 ;;   :after (flyspell)
@@ -365,8 +416,8 @@
 ;;   :config (counsel-projectile-mode))
 
 (use-package treemacs)
-(use-package treemacs-evil
-    :after (treemacs evil))
+;; (use-package treemacs-evil
+;;     :after (treemacs evil))
 (use-package treemacs-projectile
     :after (treemacs projectile))
 (use-package treemacs-icons-dired
@@ -437,82 +488,44 @@
   :config
   (global-undo-tree-mode))
 
-(use-package evil
-  :custom
-  (evil-want-keybinding nil)
-  (evil-want-integration t)
-  (evil-want-integration t)
-  (evil-want-C-u-scroll nil)
-  (evil-want-C-i-jump nil)
-  (evil-respect-visual-line-mode t)
-  (evil-undo-system 'undo-tree)
+;; (use-package evil
+;;   :custom
+;;   (evil-want-keybinding nil)
+;;   (evil-want-integration t)
+;;   (evil-want-integration t)
+;;   (evil-want-C-u-scroll nil)
+;;   (evil-want-C-i-jump nil)
+;;   (evil-respect-visual-line-mode t)
+;;   (evil-undo-system 'undo-tree)
 
-  :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-  (define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop)
-
-  ;; use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-  ;; set the initial state for certain special modes
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
-  ;; disable Evil-mode for certain buffers
-  ;; (evil-set-initial-state 'eshell-mode 'emacs))
-
-;; Gives us default Evil configurations for a lot of other modes
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
-
-;; (defhydra my-mc-hydra (:color pink
-;;                        :hint nil
-;;                        :pre (evil-mc-pause-cursors))
-;;   "
-;; ^Match^            ^Line-wise^           ^Manual^
-;; ^^^^^^----------------------------------------------------
-;; _Z_: match all     _J_: make & go down   _z_: toggle here
-;; _m_: make & next   _K_: make & go up     _r_: remove last
-;; _M_: make & prev   ^ ^                   _R_: remove all
-;; _n_: skip & next   ^ ^                   _p_: pause/resume
-;; _N_: skip & prev
-
-;; Current pattern: %`evil-mc-pattern
-
-;; "
-;;   ("Z" #'evil-mc-make-all-cursors)
-;;   ("m" #'evil-mc-make-and-goto-next-match)
-;;   ("M" #'evil-mc-make-and-goto-prev-match)
-;;   ("n" #'evil-mc-skip-and-goto-next-match)
-;;   ("N" #'evil-mc-skip-and-goto-prev-match)
-;;   ("J" #'evil-mc-make-cursor-move-next-line)
-;;   ("K" #'evil-mc-make-cursor-move-prev-line)
-;;   ("z" #'+multiple-cursors/evil-mc-toggle-cursor-here)
-;;   ("r" #'+multiple-cursors/evil-mc-undo-cursor)
-;;   ("R" #'evil-mc-undo-all-cursors)
-;;   ("p" #'+multiple-cursors/evil-mc-toggle-cursors)
-;;   ("q" #'evil-mc-resume-cursors "quit" :color blue)
-;;   ("<escape>" #'evil-mc-resume-cursors "quit" :color blue))
-
-
-;; (use-package evil-mc
 ;;   :config
-;;   (global-evil-mc-mode)
-;;   (general-define-key
-;;     :states '(normal visual)
-;;     :prefix "g"
-;;     "z" 'my-mc-hydra/body))
+;;   (evil-mode 1)
+;;   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+;;   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+;;   (define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop)
+
+;;   ;; use visual line motions even outside of visual-line-mode buffers
+;;   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+;;   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+;;   ;; set the initial state for certain special modes
+;;   (evil-set-initial-state 'messages-buffer-mode 'normal)
+;;   (evil-set-initial-state 'dashboard-mode 'normal))
+;;   ;; disable Evil-mode for certain buffers
+;;   ;; (evil-set-initial-state 'eshell-mode 'emacs))
+
+;; ;; Gives us default Evil configurations for a lot of other modes
+;; (use-package evil-collection
+;;   :after evil
+;;   :config
+;;   (evil-collection-init))
 
 ;; Set the default tab settings
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq-default c-basic-offset 4)
 (setq-default python-indent-offset 4)
-(setq-default evil-shift-width 4)
+;; (setq-default evil-shift-width 4)
 
 ;; (setq-default electric-indent-inhibit t)
 
@@ -533,13 +546,15 @@
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
 (setq recentf-max-saved-items 25)
+(global-set-key (kbd "C-x C-r") 'consult-recent-file)
 
-(my-leader
-    "." '(find-file :which-key "Find file")
 
-    "f" '(:ignore t :which-key "files")
-    "f r" '(consult-recent-file :which-key "Open Recent Files")
-    "f c" '((lambda () (interactive)(find-file "~/.dotfiles/.emacs.d/config.org")) :which-key "Open config.org"))
+;; (my-leader
+;;     "." '(find-file :which-key "Find file")
+
+;;     "f" '(:ignore t :which-key "files")
+;;     "f r" '(consult-recent-file :which-key "Open Recent Files")
+;;     "f c" '((lambda () (interactive)(find-file "~/.dotfiles/.emacs.d/config.org")) :which-key "Open config.org"))
 
 (my-leader
      "t"  '(:ignore t :which-key "toggle")
@@ -550,6 +565,8 @@
 
 (my-leader
     "o" '(:ignore t :which-key "open"))
+
+(define-key global-map (kbd "M-o") 'ace-window)
 
 (my-leader
      "w" '(:ignore t :which-key "window")
@@ -602,18 +619,6 @@
     :keymaps 'dired-mode-map
     "h" 'dired-up-directory
     "l" 'dired-find-file)
-
-(use-package multiple-cursors
-  :general
-  (general-define-key
-    :states '(normal visual)
-    "R" 'mc/mark-all-like-this
-    "L" 'mc/edit-lines)
-  ;; keybindings for when multiple cursors are active
-  (general-define-key
-   :states '(normal visual emacs)
-   :keymaps 'mc/keymap
-    "C-n" 'mc/mark-more-like-this-extended))
 
 (use-package magit
   :general
@@ -838,35 +843,6 @@
 ;;   (org-journal-date-prefix "* ")
 ;;   (org-journal-time-prefix "** "))
 
-(use-package hide-mode-line)
-
-(defun ns/presentation-setup ()
-    (setq text-scale-mode-amount 2)
-    (org-display-inline-images)
-    (text-scale-mode 1)
-    (hide-mode-line-mode 1))
-
-(defun ns/presentation-end ()
-    (text-scale-mode 0)
-    (hide-mode-line-mode 0))
-
-(use-package org-tree-slide
-    :hook ((org-tree-slide-play . ns/presentation-setup)
-           (org-tree-slide-stop . ns/presentation-end))
-    :custom
-    (org-tree-slide-slide-in-effect nil)
-    (org-tree-slide-activate-message "Presentation started!")
-    (org-tree-slide-deactivate-message "Presentation finished!")
-    (org-tree-slide-header t)
-    (org-image-actual-width nil)
-    :bind
-    (:map org-mode-map
-            ("<f8>" . org-tree-slide-mode)
-        :map org-tree-slide-mode-map
-            ("<f9>" . org-tree-slide-move-previous-tree)
-            ("<f10>" . org-tree-slide-move-next-tree)
-        ))
-
 (defun ns/org-present-begin ()
   (setq-local ns/olivetti-mode-enabled (bound-and-true-p olivetti-mode)) ;; remember if olivetti was already enabled or not
   (olivetti-mode 1)                                                      ;; enable olivetti-mode regardless
@@ -926,6 +902,14 @@
   (denote-known-keywords
     '("emacs" "personal" "journal")))
 
+(use-package term
+  :custom
+  (explicit-shell-file-name "fish"))
+
+(use-package eterm-256color
+  :hook
+  (term-mode . eterm-256color-mode))
+
 (use-package eshell-toggle
   :straight (eshell-toggle :type git :host github
                            :repo "4DA/eshell-toggle")
@@ -943,70 +927,10 @@
   :config
   (eshell-git-prompt-use-theme 'multiline2))
 
-;; (require 'dash)
-;; (require 's)
-;; (require 'magit)
-
-;; (defmacro with-face (STR &rest PROPS)
-;;   "Return STR propertized with PROPS."
-;;   `(propertize ,STR 'face (list ,@PROPS)))
-
-;; (defmacro esh-section (NAME ICON FORM &rest PROPS)
-;;   "Build eshell section NAME with ICON prepended to evaled FORM with PROPS."
-;;   `(setq ,NAME
-;;         (lambda () (when ,FORM
-;;                      (-> ,ICON
-;;                          (concat esh-section-delim ,FORM)
-;;                          (with-face ,@PROPS))))))
-
-;; (defun esh-acc (acc x)
-;;   "Accumulator for evaluating andd concatenating esh-sections."
-;;   (--if-let (funcall x)
-;;       (if (s-blank? acc)
-;;           it
-;;         (concat acc esh-sep it))
-;;     acc))
-
-;; (defun esh-prompt-func ()
-;;   "Build `eshell-prompt-function`."
-;;   (concat esh-header
-;;           (-reduce-from 'esh-acc "" eshell-funcs)
-;;           "\n"
-;;           eshell-prompt-string))
-
-;; ;; Seperator between esh-sections
-;; (setq esh-sep "  ")
-
-;; ;; Seperator between an esh-section icon and form
-;; (setq esh-section-delim " ")
-
-;; ;; Eshell prompt header
-;; (setq esh-header "\n┌─")
-
-;; ;; Eshell prompt regexp and string
-;; (setq eshell-prompt-regexp "└─> ")
-;; (setq eshell-prompt-string "└─> ")
-
-;; (esh-section esh-dir
-;;              (all-the-icons-faicon "folder-open")
-;;              (abbreviate-file-name (eshell/pwd))
-;;              '(:foreground "gold" :bold ultra-bold :underline t))
-
-;; (esh-section esh-git
-;;              (all-the-icons-all-the-icon "git")
-;;              (magit-get-current-branch)
-;;              '(:foreground "pink"))
-
-;; (esh-section esh-clock
-;;              (all-the-icons-octicon "clock")
-;;              (format-time-string "%H:%M" (current-time))
-;;              '(:foreground "forest green"))
-
-;; ;; Choose which eshell-funcs to enable
-;; (setq eshell-funcs (list esh-dir esh-git esh-clock))
-
-;; ;; Enable the new eshell prompt
-;; (setq eshell-prompt-function 'esh-prompt-func)
+(use-package vterm
+  :custom
+  (vterm-shell "fish")
+  (vterm-max-scrollback 10000))
 
 (use-package format-all)
   ;:hook
@@ -1128,9 +1052,12 @@
   :mode "\\.s\\'")
 
 (use-package rustic
-  :bind (:map rustic-mode-map
-              ("M-j" . lsp-ui-imenu)
-              ("M-?" . lsp-find-references)))
+  :hook (rustic-mode . eglot-ensure)
+  :custom
+  (rustic-lsp-client 'eglot))
+  ;; :bind (:map rustic-mode-map
+              ;; ("M-j" . lsp-ui-imenu)
+              ;; ("M-?" . lsp-find-references)))
   ;; :config
   ;; uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)
@@ -1151,6 +1078,45 @@
             ("\\.erb\\'" . web-mode)
             ("\\.sgml\\'" . web-mode)))
 
+;; (require 'erc-sasl)
+
+;; (add-to-list 'erc-sasl-server-regexp-list "irc\\.libera\\.chat")
+
+;; ;; Redefine/Override the erc-login() function from the erc package, so that
+;; ;; it now uses SASL
+;; (defun erc-login ()
+;;   "Perform user authentication at the IRC server. (PATCHED)"
+;;   (erc-log (format "login: nick: %s, user: %s %s %s :%s"
+;;            (erc-current-nick)
+;;            (user-login-name)
+;;            (or erc-system-name (system-name))
+;;            erc-session-server
+;;            erc-session-user-full-name))
+;;   (if erc-session-password
+;;       (erc-server-send (format "PASS %s" erc-session-password))
+;;     (message "Logging in without password"))
+;;   (when (and (featurep 'erc-sasl) (erc-sasl-use-sasl-p))
+;;     (erc-server-send "CAP REQ :sasl"))
+;;   (erc-server-send (format "NICK %s" (erc-current-nick)))
+;;   (erc-server-send
+;;    (format "USER %s %s %s :%s"
+;;        ;; hacked - S.B.
+;;        (if erc-anonymous-login erc-email-userid (user-login-name))
+;;        "0" "*"
+;;        erc-session-user-full-name))
+;;   (erc-update-mode-line))
+
+(setq erc-server "irc.libera.chat"
+      erc-nick "abcd987"              ; change this
+      erc-autojoin-channels-alist '((Libera.Chat
+                                     "#systemcrafters"
+                                     "#emacs"
+                                     "#go-nuts"
+                                     "##rust"))
+      erc-track-shorten-start 8
+      erc-kill-buffer-on-part t
+      erc-auto-query 'bury)
+
 (use-package tablist)
 
 (use-package pdf-tools
@@ -1161,5 +1127,3 @@
 
 (use-package nov
   :mode "\\.epub\\'")
-
-(use-package smart-comment)
