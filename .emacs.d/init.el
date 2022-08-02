@@ -82,14 +82,7 @@
 
 ;; TODO look into displaying the current time in the modeline
 
-(use-package general
-    :config
-    (general-override-mode)
-    ;; (general-evil-setup t)
-    (general-create-definer my-leader
-      :states '(normal visual emacs)
-      :keymaps 'override
-      :prefix "SPC"))
+(global-auto-revert-mode 1)
 
 (setq-default frame-title-format '("%b [%m]"))
 
@@ -106,6 +99,7 @@
         eshell-mode-hook
         treemacs-mode-hook
         pdf-view-mode-hook
+        vterm-mode-hook
         ))
 (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
@@ -123,37 +117,21 @@
   :config
   (global-emojify-mode))
 
-(use-package doom-themes
-  :config
-  (load-theme 'doom-shades-of-purple t))
-
-(use-package mindre-theme
-  :straight (:host github :repo "erikbackman/mindre-theme")
-  :custom
-  (mindre-use-more-bold t)
-  (mindre-use-faded-lisp-parens t))
-  ;; :config
-  ;; (load-theme 'mindre t))
-
-;; (use-package nano-theme
-;;   :straight (nano-theme :type git :host github
-;;                         :repo "rougier/nano-theme")
-;;   :config
-;;   (nano-light))
+(use-package doom-themes)
 
 (use-package modus-themes
-  :init
-  (setq modus-themes-italic-constructs t     ; use italics for comments
-        modus-themes-bold-constructs t       ; use bold
-        modus-themes-syntax '(faint)
-        modus-themes-mixed-fonts t           ; Enable fixed and variable pitched fonts
-        modus-themes-prompts '(italic)
-        ;; modus-themes-mode-line '(accented borderless)
-        modus-themes-mode-line '()
-        modus-themes-subtle-line-numbers t
-        ))
-  ;; :config
-  ;; (modus-themes-load-operandi))
+  :custom
+  (modus-themes-italic-constructs t)     ; use italics for comments
+  (modus-themes-bold-constructs t)       ; use bold
+  (modus-themes-syntax '(faint))
+  (modus-themes-mixed-fonts t)           ; Enable fixed and variable pitched fonts
+  (modus-themes-prompts '(italic))
+  ;; (modus-themes-mode-line '(accented borderless))
+  (modus-themes-mode-line '())
+  (modus-themes-subtle-line-numbers t)
+
+  :config
+  (modus-themes-load-vivendi))
 
 (use-package doom-modeline
   :init
@@ -184,12 +162,6 @@
                           (agenda . 5)))
     :config
     (dashboard-setup-startup-hook))
-
-;; (use-package smooth-scrolling
-;;   :init
-;;   (setq smooth-scroll-margin 5)
-;;   :config
-;;   (smooth-scrolling-mode))
 
 (pixel-scroll-mode)
 (setq scroll-margin 5)
@@ -273,11 +245,11 @@
 
 (use-package smartparens
   :hook
-  (prog-mode . smartparens-mode))
+  (prog-mode . smartparens-mode)
 
-;; (use-package evil-smartparens
-;;   :hook
-;;   (smartparens-enabled . evil-smartparens-mode))
+  :config
+  ;; Don't insert paired single quotes in Elisp mode
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
 
 (use-package yasnippet
   :config
@@ -298,19 +270,18 @@
 ;;     :hook (company-mode . company-box-mode))
 
 (use-package corfu
-  :general
-  (:keymaps 'corfu-map
-            :states 'insert
-            "C-n" #'corfu-next
-            "C-p" #'corfu-previous
-            "<escape>" #'corfu-quit
-            "<return>" #'corfu-insert
-            "M-d" #'corfu-show-documentation
-            "M-l" #'corfu-show-location)
-  
+  :bind
+  (:map corfu-map
+        ("C-n" . corfu-next)
+        ("C-p" . corfu-previous)
+        ("<escape>" . corfu-quit)
+        ("<return>" . corfu-insert)
+        ("M-d" . corfu-show-documentation)
+        ("M-l" . corfu-show-location))
+
   :custom
   (corfu-auto t)
-  (corfu-auto-prefix 0) ; Minimum length of prefix for auto-complete
+  (corfu-auto-prefix 3) ; Minimum length of prefix for auto-complete
   (corfu-auto-delay 0) ; Immediately start auto-completion
 
   (corfu-min-width 80) ; Min width of popup, I like to have it consistent
@@ -404,16 +375,7 @@
   :init
   ;(when (file-directory-p "~/Documents")
     ;(setq projectile-project-search-path '("~/Documents")))
-  (setq projectile-switch-project-action #'projectile-dired)
-
-  :general
-  (my-leader
-      "SPC" '(projectile-find-file :which-key "Find file in project")
-      "p" '(:ignore t :which-key "projects")
-      "p p" '(projectile-switch-project :which-key "Switch project")))
-
-;; (use-package counsel-projectile
-;;   :config (counsel-projectile-mode))
+  (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package treemacs)
 ;; (use-package treemacs-evil
@@ -443,35 +405,32 @@
 
     ;; set up for Consult
     (consult-customize consult--source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source)
+    (add-to-list 'consult-buffer-sources persp-consult-source))
 
-    :general
-    (my-leader
-      ;; "," '(persp-switch-buffer :which-key "Switch buffer")
-      "b k" '(persp-remove-buffer :which-key "Remove buffer")
+    ;; :general
+    ;; (my-leader
+    ;;   ;; "," '(persp-switch-buffer :which-key "Switch buffer")
+    ;;   "b k" '(persp-remove-buffer :which-key "Remove buffer")
 
-      "TAB" '(:ignore t :which-key "workspace")
-      "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
-      "TAB r" '(persp-rename :which-key "Rename workspace")
-      "TAB s" '(persp-state-save :which-key "Save workspaces")
-      "TAB l" '(persp-state-load :which-key "Load saved workspaces")
-      "TAB k" '(persp-kill :which-key "Kill workspace")
-      "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
-      "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
-      "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
-      "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
-      "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
-      "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
-      "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
-      "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
-      "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
+    ;;   "TAB" '(:ignore t :which-key "workspace")
+    ;;   "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
+    ;;   "TAB r" '(persp-rename :which-key "Rename workspace")
+    ;;   "TAB s" '(persp-state-save :which-key "Save workspaces")
+    ;;   "TAB l" '(persp-state-load :which-key "Load saved workspaces")
+    ;;   "TAB k" '(persp-kill :which-key "Kill workspace")
+    ;;   "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
+    ;;   "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
+    ;;   "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
+    ;;   "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
+    ;;   "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
+    ;;   "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
+    ;;   "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
+    ;;   "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
+    ;;   "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
 
 
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
-;; Insert newlines when you C-n at the end of the buffer
-;; (setq next-line-add-newlines t)
 
 (use-package hydra)
 
@@ -481,66 +440,15 @@
   ("k" text-scale-decrease "down")
   ("f" nil "finished" :exit t))
 
-(my-leader
- "t k" '(hydra-text-scale/body :which-key "Scale text"))
-
-(use-package undo-tree
-  :config
-  (global-undo-tree-mode))
-
-;; (use-package evil
-;;   :custom
-;;   (evil-want-keybinding nil)
-;;   (evil-want-integration t)
-;;   (evil-want-integration t)
-;;   (evil-want-C-u-scroll nil)
-;;   (evil-want-C-i-jump nil)
-;;   (evil-respect-visual-line-mode t)
-;;   (evil-undo-system 'undo-tree)
-
-;;   :config
-;;   (evil-mode 1)
-;;   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-;;   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-;;   (define-key evil-insert-state-map (kbd "TAB") 'tab-to-tab-stop)
-
-;;   ;; use visual line motions even outside of visual-line-mode buffers
-;;   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-;;   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-;;   ;; set the initial state for certain special modes
-;;   (evil-set-initial-state 'messages-buffer-mode 'normal)
-;;   (evil-set-initial-state 'dashboard-mode 'normal))
-;;   ;; disable Evil-mode for certain buffers
-;;   ;; (evil-set-initial-state 'eshell-mode 'emacs))
-
-;; ;; Gives us default Evil configurations for a lot of other modes
-;; (use-package evil-collection
-;;   :after evil
-;;   :config
-;;   (evil-collection-init))
-
 ;; Set the default tab settings
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq-default c-basic-offset 4)
 (setq-default python-indent-offset 4)
-;; (setq-default evil-shift-width 4)
-
-;; (setq-default electric-indent-inhibit t)
 
 ;; Make the backspace properly erase the whole tab instead of removing
 ;; 1 space at a time
 (setq backward-delete-char-untabify-method 'hungry)
-
-;; Make Evil mode backspace delete a whole tab's worth of spaces at a time
-(general-define-key
-    :states 'insert
-    "<backspace>" 'backward-delete-char-untabify)
-
-(my-leader
-    ;; Line formatting
-    "TAB TAB" '(smart-comment :which-key "Comment or uncomment lines"))
 
 ;; Keep track of recently-opened files
 (recentf-mode 1)
@@ -548,90 +456,46 @@
 (setq recentf-max-saved-items 25)
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 
-
-;; (my-leader
-;;     "." '(find-file :which-key "Find file")
-
-;;     "f" '(:ignore t :which-key "files")
-;;     "f r" '(consult-recent-file :which-key "Open Recent Files")
-;;     "f c" '((lambda () (interactive)(find-file "~/.dotfiles/.emacs.d/config.org")) :which-key "Open config.org"))
-
-(my-leader
-     "t"  '(:ignore t :which-key "toggle")
-     "t s" '(consult-theme :which-key "Choose theme")
-
-     "t t" '(treemacs :which-key "Treemacs"))
-     ;; "t y" '(lsp-treemacs-symbols :which-key "Treemacs Symbols"))
-
-(my-leader
-    "o" '(:ignore t :which-key "open"))
-
 (define-key global-map (kbd "M-o") 'ace-window)
 
-(my-leader
-     "w" '(:ignore t :which-key "window")
-     "wc" '(delete-window :which-key "Close window")
-     "wv" '(split-window-right :which-key "Vertical split")
-     "ws" '(split-window-below :which-key "Horizontal split")
-     "wh" '(windmove-left :which-key "Select left window")
-     "wj" '(windmove-down :which-key "Select down window")
-     "wk" '(windmove-up :which-key "Select up window")
-     "wl" '(windmove-right :which-key "Select right window"))
+; TODO: convert this to Emacs keybindings
 
-(my-leader
-      "," '(consult-buffer :which-key "Switch buffer")
+;; (general-define-key
+;;  :states 'normal
+;;  "s" 'avy-goto-char-timer
+;;  "S" 'avy-pop-mark)
 
-      "b" '(:ignore t :which-key "buffers")
-      "b k" '(kill-buffer :which-key "Kill buffer"))
+;; (general-define-key
+;;  :states '(normal emacs)
+;;  "C-s" 'consult-line)
 
-(global-auto-revert-mode 1)
+;; (my-leader
+;;   "s" '(:ignore t :which-key "search")
+;;   "s b" '(consult-line :which-key "Search buffer"))
 
-(general-define-key
- :states 'normal
- "s" 'avy-goto-char-timer
- "S" 'avy-pop-mark)
+;; (use-package ag
+;;   :general
+;;   (my-leader
+;;     "s p" '(projectile-ag :which-key "Search project")))
 
-(general-define-key
- :states '(normal emacs)
- "C-s" 'consult-line)
+(use-package dumb-jump
+  :config
+  (defhydra dumb-jump-hydra (:color blue :columns 3)
+    "Dumb Jump"
+    ("j" dumb-jump-go "Go")
+    ("o" dumb-jump-go-other-window "Other window")
+    ("e" dumb-jump-go-prefer-external "Go external")
+    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
+    ("i" dumb-jump-go-prompt "Prompt")
+    ("l" dumb-jump-quick-look "Quick look")
+    ("b" dumb-jump-back "Back"))
+  (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
 
-(my-leader
-  "s" '(:ignore t :which-key "search")
-  "s b" '(consult-line :which-key "Search buffer"))
-
-(use-package ag
-  :general
-  (my-leader
-    "s p" '(projectile-ag :which-key "Search project")))
-
-(my-leader
-  "h" '(:ignore t :which-key "help")
-  "h v" '(helpful-variable :which-key "Describe variable")
-  "h f" '(helpful-callable :which-key "Describe function")
-  "h k" '(helpful-key :which-key "Describe key"))
-
-;; Simple keybinding to open dired if C-x d is too hard :)
-(my-leader "d" '(dired :which-key "Dired"))
-
-;; Set up some custom keybindings for Dired
-(general-define-key
-    :states 'normal
-    :keymaps 'dired-mode-map
-    "h" 'dired-up-directory
-    "l" 'dired-find-file)
-
-(use-package magit
-  :general
-  (my-leader
-    "g" '(:ignore t :which-key "git")
-    "g g" '(magit-status :which-key "Magit Status")))
+(use-package magit)
 
 ;(use-package forge)
 
-(use-package blamer
-  :general
-  (my-leader
-    "g b" '(global-blamer-mode :which-key "Toggle blamer mode")))
+(use-package blamer)
 
  (defun ns/org-mode-setup ()
    (org-indent-mode)
@@ -682,17 +546,7 @@
         org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
             (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-                "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
-
-    :general
-    (my-leader
-      "n" '(:ignore t :which-key "notes")))
-
-    ;; local-leader stuff
-    ;; (my-local-leader
-    ;;   :keymaps 'org-mode-map
-    ;;   "b" '(org-babel-tangle :which-key "Org babel tangle")
-    ;;   "t" '(
+                "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
 
 (add-hook 'org-mode-hook 'variable-pitch-mode)
 
@@ -809,9 +663,8 @@
           (tags "CLOSED>=\"<today>\""
                 ((org-agenda-overriding-header "\nCompleted today\n")))))))
 
-(my-leader
-  "c" '(org-capture :which-key "Capture")
-  "a" '(org-agenda :which-key "Agenda"))
+(keymap-global-set "C-c c" 'org-capture)
+(keymap-global-set "C-c a" 'org-agenda)
 
 ;; (use-package org-roam
 ;;   :custom
@@ -883,17 +736,6 @@
 ;;     (add-hook 'org-mode-hook #'org-modern-mode)
 ;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
 
-(use-package toc-org
-  :hook
-  (org-mode . toc-org-mode))
-
-(use-package imenu-list
-  :init
-  (setq imenu-list-position 'left)
-  :general
-  (my-leader
-   "t i" '(imenu-list-smart-toggle :which-key "Imenu")))
-
 (use-package denote
   :straight (denote :type git :host gitlab
                     :repo "protesilaos/denote")
@@ -910,23 +752,6 @@
   :hook
   (term-mode . eterm-256color-mode))
 
-(use-package eshell-toggle
-  :straight (eshell-toggle :type git :host github
-                           :repo "4DA/eshell-toggle")
-  :custom
-  (eshell-toggle-size-fraction 3)         ; use 30% of the frame (?)
-  (eshell-toggle-use-projectile-root t)   ; use projectile root if it exists
-  (eshell-toggle-default-directory "~")   ; default to home directory
-  :general
-  (my-leader
-    "o e" '(eshell-toggle :which-key "Open Eshell")))
-
-(use-package eshell-git-prompt
-  :straight (eshell-git-prompt :type git :host github
-                               :repo "xuchunyang/eshell-git-prompt")
-  :config
-  (eshell-git-prompt-use-theme 'multiline2))
-
 (use-package vterm
   :custom
   (vterm-shell "fish")
@@ -936,9 +761,16 @@
   ;:hook
   ;(prog-mode . format-all-mode)
 
-(use-package flycheck
-  :config
-  (global-flycheck-mode))
+(use-package flycheck)
+  ;; :config
+  ;; (global-flycheck-mode))
+
+(use-package eglot
+  :custom
+  (eglot-events-buffer-size 0)) ;; Disable the events buffer for performance
+
+  ;; :config
+  ;; (add-hook 'eglot-managed-mode-hook (lambda () (flymake-mode -1))))
 
 ;; (use-package lsp-mode
 ;;     :commands (lsp lsp-deferred)
@@ -971,32 +803,26 @@
 ;;     (lsp-ui-doc-position 'bottom)
 ;;     (lsp-ui-doc-enable nil))
 
-(use-package eglot
-  :custom
-  (eglot-events-buffer-size 0)) ;; Disable the events buffer for performance
-
 ;; (use-package dap-mode
 ;;   :config
 ;;   (dap-auto-configure-mode))
 
-(use-package realgud)
-
-(use-package tree-sitter
-  :config
-  (global-tree-sitter-mode)
-  :hook
-  (tree-sitter-mode . tree-sitter-hl-mode))
-
-(use-package tree-sitter-langs)
+;; (use-package realgud)
 
 (use-package wakatime-mode
   :config
   (global-wakatime-mode))
 
+(use-package yaml-mode
+  :mode "\\.yml\\'")
+
 ;; (add-hook 'c-mode-hook 'lsp)
 ;; (add-hook 'c++-mode-hook 'lsp)
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
+
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
 
 (use-package clojure-mode
   :mode "\\.clj\\'"
@@ -1017,18 +843,6 @@
   :mode "\\.go\\'"
   :hook (go-mode . eglot-ensure))
 
-;; (use-package meghanada
-;;   :hook
-;;   (java-mode . meghanada-mode)
-;;   (java-mode . flycheck-mode))
-
-;; (setq meghanada-java-path "java"
-;;       meghanada-maven-path "mvn")
-
-;; (use-package lsp-java
-;;   :hook
-;;   (java-mode . lsp))
-
 ;; (use-package lsp-pyright)
 
 (use-package python-mode
@@ -1048,17 +862,16 @@
   :config
   (setq typescript-indent-level 4))
 
-(use-package ca65-mode
-  :mode "\\.s\\'")
-
 (use-package rustic
   :hook (rustic-mode . eglot-ensure)
   :custom
-  (rustic-lsp-client 'eglot))
+  (rustic-lsp-client 'eglot)
   ;; :bind (:map rustic-mode-map
               ;; ("M-j" . lsp-ui-imenu)
               ;; ("M-?" . lsp-find-references)))
-  ;; :config
+  :config
+  (remove-hook 'rustic-mode-hook 'flycheck-mode))
+
   ;; uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)
   ;; (setq lsp-enable-symbol-highlighting nil)
@@ -1077,6 +890,9 @@
             ("\\.as[cp]x\\'" . web-mode)
             ("\\.erb\\'" . web-mode)
             ("\\.sgml\\'" . web-mode)))
+
+(use-package ca65-mode
+  :mode "\\.s\\'")
 
 ;; (require 'erc-sasl)
 
@@ -1127,3 +943,5 @@
 
 (use-package nov
   :mode "\\.epub\\'")
+
+(use-package request)
