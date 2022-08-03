@@ -344,7 +344,7 @@
     (save-excursion
       (save-restriction
         (widen)
-        (if iedit-mode
+        (if (bound-and-true-p iedit-mode)
             (iedit-done)
           (narrow-to-defun)
           (iedit-start (current-word) (point-min) (point-max)))))))
