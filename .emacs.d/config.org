@@ -708,8 +708,8 @@ I took this from [[https://www.masteringemacs.org/article/iedit-interactive-mult
 
 (setq tramp-default-method "ssh") ;; Use SSH by default for remote files
 
+#+END_SRC
 
-#+END_SRC 
 * Spell checker
 ** Flyspell
 #+BEGIN_SRC emacs-lisp
@@ -777,13 +777,24 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 
 #+end_src
 
-** Tab-bar-mode
-I used to use =perspective=, but in my grand push to minimize external packages, I stumbled upon =tab-bar-mode=. It does everything I ever wanted from perspective, and integrates really well with the rest of Emacs.
-
-I got some help for these functions from [[https://mmk2410.org/2022/02/11/using-emacs-tab-bar-mode/]]
+** Perspective
+Named workspaces that isolate buffer lists.
 
 #+BEGIN_SRC emacs-lisp
+(use-package perspective
+  :custom
+  (persp-mode-prefix-key (kbd "C-c w"))
+  :init
+  (persp-mode)
+  :config
+  (consult-customize consult--source-buffer :hidden t :default nil)
+  (add-to-list 'consult-buffer-sources persp-consult-source))
+#+END_SRC
 
+** Tab-bar-mode
+I initially thought that this would be able to replace =perspective.el=, but it doesn't currently have the ability to isolate buffer lists. I really like the idea of using base Emacs functionalities wherever possible, so I'm keeping this around in case it ever becomes more useful in the future. I got some help for these functions from [[https://mmk2410.org/2022/02/11/using-emacs-tab-bar-mode/]]
+
+#+BEGIN_SRC emacs-lisp
 (defun ns/tab-bar-switch-or-create (name func)
   (if (ns/tab-bar-tab-exists name)
       (tab-bar-switch-to-tab name)
@@ -799,12 +810,12 @@ I got some help for these functions from [[https://mmk2410.org/2022/02/11/using-
     (tab-bar-mode))
   (tab-bar-new-tab)
   (tab-bar-rename-tab name)
-  (funcall func))
+  (when func ;; If func is nil, don't try to run it
+      (funcall func)))
 
 (use-package emacs
   :custom
   (tab-bar-show nil))
-
 #+END_SRC 
 
 * Keybindings and Basic Feature Configuration
@@ -1290,7 +1301,7 @@ Give Org-mode documents some extra visual polish.
 
 (use-package term
   :custom
-  (explicit-shell-file-name "fish"))
+  (explicit-shell-file-name "/usr/bin/fish"))
 
 (use-package eterm-256color
   :hook

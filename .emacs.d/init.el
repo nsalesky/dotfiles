@@ -312,9 +312,6 @@
   ;; (org-mode . olivetti-mode))
 
 (use-package iedit
-  ;; :bind
-  ;; ("C-;" . iedit-dwim)
-
   :config
   (defun iedit-dwim (arg)
     "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
@@ -374,6 +371,15 @@
   :config
   (treemacs-load-theme "all-the-icons"))
 
+(use-package perspective
+  :custom
+  (persp-mode-prefix-key (kbd "C-c w"))
+  :init
+  (persp-mode)
+  :config
+  (consult-customize consult--source-buffer :hidden t :default nil)
+  (add-to-list 'consult-buffer-sources persp-consult-source))
+
 (defun ns/tab-bar-switch-or-create (name func)
   (if (ns/tab-bar-tab-exists name)
       (tab-bar-switch-to-tab name)
@@ -389,7 +395,8 @@
     (tab-bar-mode))
   (tab-bar-new-tab)
   (tab-bar-rename-tab name)
-  (funcall func))
+  (when func ;; If func is nil, don't try to run it
+      (funcall func)))
 
 (use-package emacs
   :custom
@@ -705,7 +712,7 @@
 
 (use-package term
   :custom
-  (explicit-shell-file-name "fish"))
+  (explicit-shell-file-name "/usr/bin/fish"))
 
 (use-package eterm-256color
   :hook
