@@ -20,17 +20,6 @@
 
 (setq confirm-nonexistent-file-or-buffer nil)
 
-;; (require 'package)
-
-;; (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-;; 			 ;("melpa-stable" . "https://stable.melpa.org/packages/")
-;; 			 ("elpa" . "https://elpa.gnu.org/packages/")
-;;              ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-
-;; (package-initialize)
-;; (unless package-archive-contents
-;;   (package-refresh-contents))
-
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -43,18 +32,6 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
-;; Initalize use-package on non-Linux platforms
-;; (unless (package-installed-p 'use-package)
-;;   (package-install 'use-package))
-
-;; (require 'use-package)
-;; (setq use-package-always-ensure t) ;; Always installs packages that you use if they're not already installed
-
-;; ;; Make sure PATH is correct
-;; (use-package exec-path-from-shell
-;;   :config
-;;   (exec-path-from-shell-initialize))
 
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
@@ -119,31 +96,29 @@
 
 (use-package doom-themes)
 
-(use-package modus-themes
-  :custom
-  (modus-themes-italic-constructs t)     ; use italics for comments
-  (modus-themes-bold-constructs t)       ; use bold
-  (modus-themes-syntax '(faint))
-  (modus-themes-mixed-fonts t)           ; Enable fixed and variable pitched fonts
-  (modus-themes-prompts '(italic))
-  ;; (modus-themes-mode-line '(accented borderless))
-  (modus-themes-mode-line '())
-  (modus-themes-subtle-line-numbers t)
-
+(use-package ef-themes
   :config
-  (modus-themes-load-vivendi))
+  (load-theme 'ef-spring t))
+
+(use-package modus-themes)
+  ;; :custom
+  ;; (modus-themes-italic-constructs t)     ; use italics for comments
+  ;; (modus-themes-bold-constructs t)       ; use bold
+  ;; (modus-themes-syntax '(faint))
+  ;; (modus-themes-mixed-fonts t)           ; Enable fixed and variable pitched fonts
+  ;; (modus-themes-prompts '(italic))
+  ;; ;; (modus-themes-mode-line '(accented borderless))
+  ;; (modus-themes-mode-line '())
+  ;; (modus-themes-subtle-line-numbers t)
+
+  ;; :config
+  ;; (modus-themes-load-vivendi))
 
 (use-package doom-modeline
   :init
   (setq doom-modeline-height 35
         doom-modeline-support-imenu t)
   (doom-modeline-mode 1))
-
-(use-package nano-modeline
-  :straight (nano-modeline :type git :host github
-                           :repo "rougier/nano-modeline"))
-  ;; :init
-  ;; (nano-modeline-mode 1))
 
 ;; Necessary for dashboard in order to get nice seperators between sections
 (use-package page-break-lines)
@@ -336,22 +311,26 @@
   ;; :hook
   ;; (org-mode . olivetti-mode))
 
-(defun iedit-dwim (arg)
-  "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
-  (interactive "P")
-  (if arg
-      (iedit-mode)
-    (save-excursion
-      (save-restriction
-        (widen)
-        (if (bound-and-true-p iedit-mode)
-            (iedit-done)
-          (narrow-to-defun)
-          (iedit-start (current-word) (point-min) (point-max)))))))
-
 (use-package iedit
-  :bind
-  ("C-;" . iedit-dwim))
+  ;; :bind
+  ;; ("C-;" . iedit-dwim)
+
+  :config
+  (defun iedit-dwim (arg)
+    "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
+    (interactive "P")
+    (if arg
+        (iedit-mode)
+      (save-excursion
+        (save-restriction
+          (widen)
+          (if (bound-and-true-p iedit-mode)
+              (iedit-done)
+            (narrow-to-defun)
+            (iedit-start (current-word) (point-min) (point-max)))))))
+  (keymap-global-set "C-;" 'iedit-dwim))
+
+(setq tramp-default-method "ssh") ;; Use SSH by default for remote files
 
 ;; (use-package flyspell
 ;;   :bind
@@ -384,8 +363,8 @@
     :after (treemacs projectile))
 (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
-(use-package treemacs-perspective
-  :after (treemacs perspective))
+;;(use-package treemacs-perspective
+;;  :after (treemacs perspective))
 (use-package treemacs-magit
     :after (treemacs magit))
 ;; (use-package lsp-treemacs
@@ -395,50 +374,30 @@
   :config
   (treemacs-load-theme "all-the-icons"))
 
-(use-package perspective
-    :init
-    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
-          persp-mode-prefix-key (kbd "C-c M-p"))
+(defun ns/tab-bar-switch-or-create (name func)
+  (if (ns/tab-bar-tab-exists name)
+      (tab-bar-switch-to-tab name)
+    (ns/tab-bar-new-tab name func)))
 
-    :config
-    (persp-mode)
+(defun ns/tab-bar-tab-exists (name)
+  (member name
+          (mapcar #'(lambda (tab) (alist-get 'name tab))
+                  (tab-bar-tabs))))
 
-    ;; set up for Consult
-    (consult-customize consult--source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source))
+(defun ns/tab-bar-new-tab (name func)
+  (when (eq nil tab-bar-mode)
+    (tab-bar-mode))
+  (tab-bar-new-tab)
+  (tab-bar-rename-tab name)
+  (funcall func))
 
-    ;; :general
-    ;; (my-leader
-    ;;   ;; "," '(persp-switch-buffer :which-key "Switch buffer")
-    ;;   "b k" '(persp-remove-buffer :which-key "Remove buffer")
-
-    ;;   "TAB" '(:ignore t :which-key "workspace")
-    ;;   "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
-    ;;   "TAB r" '(persp-rename :which-key "Rename workspace")
-    ;;   "TAB s" '(persp-state-save :which-key "Save workspaces")
-    ;;   "TAB l" '(persp-state-load :which-key "Load saved workspaces")
-    ;;   "TAB k" '(persp-kill :which-key "Kill workspace")
-    ;;   "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
-    ;;   "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
-    ;;   "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
-    ;;   "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
-    ;;   "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
-    ;;   "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
-    ;;   "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
-    ;;   "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
-    ;;   "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
-
-
+(use-package emacs
+  :custom
+  (tab-bar-show nil))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (use-package hydra)
-
-(defhydra hydra-text-scale (:timeout 4)
-  "scale text"
-  ("j" text-scale-increase "up")
-  ("k" text-scale-decrease "down")
-  ("f" nil "finished" :exit t))
 
 ;; Set the default tab settings
 (setq-default tab-width 4)
@@ -835,10 +794,6 @@
 (use-package glsl-mode
   :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
 
-;; (use-package company-glsl
-;;   :after glsl-mode
-;;   :config (add-to-list 'company-backends 'company-glsl))
-
 (use-package go-mode
   :mode "\\.go\\'"
   :hook (go-mode . eglot-ensure))
@@ -862,15 +817,20 @@
   :config
   (setq typescript-indent-level 4))
 
-(use-package rustic
-  :hook (rustic-mode . eglot-ensure)
-  :custom
-  (rustic-lsp-client 'eglot)
-  ;; :bind (:map rustic-mode-map
-              ;; ("M-j" . lsp-ui-imenu)
-              ;; ("M-?" . lsp-find-references)))
-  :config
-  (remove-hook 'rustic-mode-hook 'flycheck-mode))
+;; (use-package ruby-mode
+;;   :hook (ruby-mode . eglot-ensure))
+
+(use-package inf-ruby) ;; Interact with a Ruby REPL
+
+;; (use-package rustic
+;;   :hook (rustic-mode . eglot-ensure)
+;;   :custom
+;;   (rustic-lsp-client 'eglot)
+;;   ;; :bind (:map rustic-mode-map
+;;               ;; ("M-j" . lsp-ui-imenu)
+;;               ;; ("M-?" . lsp-find-references)))
+;;   :config
+;;   (remove-hook 'rustic-mode-hook 'flycheck-mode))
 
   ;; uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)
@@ -879,6 +839,10 @@
 
   ;; comment to disable rustfmt on save
   ;; (setq rustic-format-on-save t))
+
+(use-package rust-mode
+  :mode "\\.rs\\'"
+  :hook (rust-mode . eglot-ensure))
 
 (use-package web-mode
     :commands (web-mode)
@@ -890,9 +854,6 @@
             ("\\.as[cp]x\\'" . web-mode)
             ("\\.erb\\'" . web-mode)
             ("\\.sgml\\'" . web-mode)))
-
-(use-package ca65-mode
-  :mode "\\.s\\'")
 
 ;; (require 'erc-sasl)
 

@@ -106,9 +106,7 @@ Installation should be fairly straightforward. The first time Emacs runs this co
 * Emacs Initialization
 Add my custom ELisp files to the load-path.
 #+BEGIN_SRC emacs-lisp
-
 (add-to-list 'load-path "~/.dotfiles/.emacs.d/lisp")
-
 #+END_SRC 
 
 Disable certain byte compiler warnings to cut down on the noise for (usually unnecessary) errors.
@@ -116,17 +114,13 @@ Disable certain byte compiler warnings to cut down on the noise for (usually unn
 #+BEGIN_SRC emacs-lisp
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
       native-comp-async-report-warnings-errors nil)
-
-
 #+END_SRC 
 
 Increase the garbage collection threshold and process data chunking for performance.
 
 #+BEGIN_SRC emacs-lisp
-
 (setq gc-cons-threshold 100000000
       read-process-output-max (* 1024 1024))
-
 #+END_SRC 
 
 ** Set some early UI settings
@@ -176,28 +170,9 @@ Don't confirm nonexistent files or buffers
 #+END_SRC 
 
 * Package System Setup
-For now, I just use the standard Emacs ~package.el~ system with ~use-package~.
+I'm using =straight.el= with =use-package= to install and configure packages
 
-*** Initialize package sources
-Setup the package repos to search when installing new packages.
-
-#+BEGIN_SRC emacs-lisp
-
-;; (require 'package)
-
-;; (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-;; 			 ;("melpa-stable" . "https://stable.melpa.org/packages/")
-;; 			 ("elpa" . "https://elpa.gnu.org/packages/")
-;;              ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-
-;; (package-initialize)
-;; (unless package-archive-contents
-;;   (package-refresh-contents))
-
-#+END_SRC 
-
-*** Straight.el
-
+Set up =straight.el=
 #+BEGIN_SRC emacs-lisp
 
 (defvar bootstrap-version)
@@ -215,36 +190,18 @@ Setup the package repos to search when installing new packages.
 
 #+END_SRC 
 
-*** Use-Package
-Set up ~use-package~ for installing further packages with ~straight.el~
-
+Set up =use-package=
 #+BEGIN_SRC emacs-lisp
-
-;; Initalize use-package on non-Linux platforms
-;; (unless (package-installed-p 'use-package)
-;;   (package-install 'use-package))
-
-;; (require 'use-package)
-;; (setq use-package-always-ensure t) ;; Always installs packages that you use if they're not already installed
-
-;; ;; Make sure PATH is correct
-;; (use-package exec-path-from-shell
-;;   :config
-;;   (exec-path-from-shell-initialize))
-
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
-
 #+END_SRC 
 
 * Personal Information
 Set up the basic user information variables.
 
 #+BEGIN_SRC emacs-lisp
-
 (setq user-full-name "Nick Salesky"
       user-mail-address "nicksalesky@gmail.com")
-
 #+END_SRC 
 
 * Configure Emacs builtin packages
@@ -294,7 +251,8 @@ Auto-revert all buffers by default
 
 #+BEGIN_SRC emacs-lisp
 (global-auto-revert-mode 1)
-#+END_SRC 
+#+END_SRC
+
 * UI
 Set up all the fancy user-interface elements to make Emacs look nice.
 
@@ -379,19 +337,23 @@ Give Emacs a nice color scheme! Other themes that I like include:
 
 (use-package doom-themes)
 
-(use-package modus-themes
-  :custom
-  (modus-themes-italic-constructs t)     ; use italics for comments
-  (modus-themes-bold-constructs t)       ; use bold
-  (modus-themes-syntax '(faint))
-  (modus-themes-mixed-fonts t)           ; Enable fixed and variable pitched fonts
-  (modus-themes-prompts '(italic))
-  ;; (modus-themes-mode-line '(accented borderless))
-  (modus-themes-mode-line '())
-  (modus-themes-subtle-line-numbers t)
-
+(use-package ef-themes
   :config
-  (modus-themes-load-vivendi))
+  (load-theme 'ef-spring t))
+
+(use-package modus-themes)
+  ;; :custom
+  ;; (modus-themes-italic-constructs t)     ; use italics for comments
+  ;; (modus-themes-bold-constructs t)       ; use bold
+  ;; (modus-themes-syntax '(faint))
+  ;; (modus-themes-mixed-fonts t)           ; Enable fixed and variable pitched fonts
+  ;; (modus-themes-prompts '(italic))
+  ;; ;; (modus-themes-mode-line '(accented borderless))
+  ;; (modus-themes-mode-line '())
+  ;; (modus-themes-subtle-line-numbers t)
+
+  ;; :config
+  ;; (modus-themes-load-vivendi))
 
 #+END_SRC 
 
@@ -405,12 +367,6 @@ I use ~doom-modeline~ to manage my modeline.
   (setq doom-modeline-height 35
         doom-modeline-support-imenu t)
   (doom-modeline-mode 1))
-
-(use-package nano-modeline
-  :straight (nano-modeline :type git :host github
-                           :repo "rougier/nano-modeline"))
-  ;; :init
-  ;; (nano-modeline-mode 1))
 
 #+END_SRC 
 
@@ -508,11 +464,9 @@ Creates a handy little function to toggle a semi-transparent window frame either
 Sets up minibuffer completion with Vertico.
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package vertico
   :init
   (vertico-mode))
-
 #+END_SRC 
 
 ** Consult: add helpful functions with completion
@@ -728,29 +682,34 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
 #+END_SRC
 
 ** Iedit: Simple multi-cursor editing
-I took this from [[https://www.masteringemacs.org/article/iedit-interactive-multi-occurrence-editing-in-your-buffer]]
+I took this from [[https://www.masteringemacs.org/article/iedit-interactive-multi-occurrence-editing-in-your-buffer]] but modified it slightly. I use this method of binding the key to avoid triggering the annoying =iedit= warning informing me that the default key ~C-;~ is occupied.
+
+#+BEGIN_SRC emacs-lisp
+(use-package iedit
+  :config
+  (defun iedit-dwim (arg)
+    "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
+    (interactive "P")
+    (if arg
+        (iedit-mode)
+      (save-excursion
+        (save-restriction
+          (widen)
+          (if (bound-and-true-p iedit-mode)
+              (iedit-done)
+            (narrow-to-defun)
+            (iedit-start (current-word) (point-min) (point-max)))))))
+  (keymap-global-set "C-;" 'iedit-dwim))
+#+END_SRC
+
+** TRAMP: Edit remote files
 
 #+BEGIN_SRC emacs-lisp
 
-(defun iedit-dwim (arg)
-  "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
-  (interactive "P")
-  (if arg
-      (iedit-mode)
-    (save-excursion
-      (save-restriction
-        (widen)
-        (if (bound-and-true-p iedit-mode)
-            (iedit-done)
-          (narrow-to-defun)
-          (iedit-start (current-word) (point-min) (point-max)))))))
+(setq tramp-default-method "ssh") ;; Use SSH by default for remote files
 
-(use-package iedit
-  :bind
-  ("C-;" . iedit-dwim))
 
-#+END_SRC
-
+#+END_SRC 
 * Spell checker
 ** Flyspell
 #+BEGIN_SRC emacs-lisp
@@ -805,8 +764,8 @@ Tools to distinguish projects and quickly navigate inside projects and between t
     :after (treemacs projectile))
 (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
-(use-package treemacs-perspective
-  :after (treemacs perspective))
+;;(use-package treemacs-perspective
+;;  :after (treemacs perspective))
 (use-package treemacs-magit
     :after (treemacs magit))
 ;; (use-package lsp-treemacs
@@ -818,51 +777,33 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 
 #+end_src
 
-** Perspective: Give projects their own named workspaces 
-Add named workspaces to Emacs with their own buffers.
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package perspective
-    :init
-    (setq persp-state-default-file "~/.dotfiles/.emacs.d/perspective-state"
-          persp-mode-prefix-key (kbd "C-c M-p"))
-
-    :config
-    (persp-mode)
-
-    ;; set up for Consult
-    (consult-customize consult--source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source))
-
-    ;; :general
-    ;; (my-leader
-    ;;   ;; "," '(persp-switch-buffer :which-key "Switch buffer")
-    ;;   "b k" '(persp-remove-buffer :which-key "Remove buffer")
-
-    ;;   "TAB" '(:ignore t :which-key "workspace")
-    ;;   "TAB ." '(persp-switch :which-key "Switch to or create a workspace")
-    ;;   "TAB r" '(persp-rename :which-key "Rename workspace")
-    ;;   "TAB s" '(persp-state-save :which-key "Save workspaces")
-    ;;   "TAB l" '(persp-state-load :which-key "Load saved workspaces")
-    ;;   "TAB k" '(persp-kill :which-key "Kill workspace")
-    ;;   "TAB 1" '((lambda () (interactive)(persp-switch-by-number 1)) :which-key "Switch to workspace 1")
-    ;;   "TAB 2" '((lambda () (interactive)(persp-switch-by-number 2)) :which-key "Switch to workspace 2")
-    ;;   "TAB 3" '((lambda () (interactive)(persp-switch-by-number 3)) :which-key "Switch to workspace 3")
-    ;;   "TAB 4" '((lambda () (interactive)(persp-switch-by-number 4)) :which-key "Switch to workspace 4")
-    ;;   "TAB 5" '((lambda () (interactive)(persp-switch-by-number 5)) :which-key "Switch to workspace 5")
-    ;;   "TAB 6" '((lambda () (interactive)(persp-switch-by-number 6)) :which-key "Switch to workspace 6")
-    ;;   "TAB 7" '((lambda () (interactive)(persp-switch-by-number 7)) :which-key "Switch to workspace 7")
-    ;;   "TAB 8" '((lambda () (interactive)(persp-switch-by-number 8)) :which-key "Switch to workspace 8")
-    ;;   "TAB 9" '((lambda () (interactive)(persp-switch-by-number 9)) :which-key "Switch to workspace 9")))
-
-#+END_SRC
-
 ** Tab-bar-mode
+I used to use =perspective=, but in my grand push to minimize external packages, I stumbled upon =tab-bar-mode=. It does everything I ever wanted from perspective, and integrates really well with the rest of Emacs.
+
+I got some help for these functions from [[https://mmk2410.org/2022/02/11/using-emacs-tab-bar-mode/]]
 
 #+BEGIN_SRC emacs-lisp
 
+(defun ns/tab-bar-switch-or-create (name func)
+  (if (ns/tab-bar-tab-exists name)
+      (tab-bar-switch-to-tab name)
+    (ns/tab-bar-new-tab name func)))
 
+(defun ns/tab-bar-tab-exists (name)
+  (member name
+          (mapcar #'(lambda (tab) (alist-get 'name tab))
+                  (tab-bar-tabs))))
+
+(defun ns/tab-bar-new-tab (name func)
+  (when (eq nil tab-bar-mode)
+    (tab-bar-mode))
+  (tab-bar-new-tab)
+  (tab-bar-rename-tab name)
+  (funcall func))
+
+(use-package emacs
+  :custom
+  (tab-bar-show nil))
 
 #+END_SRC 
 
@@ -887,19 +828,6 @@ Install the base Hydra package.
 
 #+begin_src emacs-lisp
 (use-package hydra)
-#+end_src
-
-*** Text Scale
-Sets up a hydra to let me easily change the text scale.
-
-#+begin_src emacs-lisp
-
-(defhydra hydra-text-scale (:timeout 4)
-  "scale text"
-  ("j" text-scale-increase "up")
-  ("k" text-scale-decrease "down")
-  ("f" nil "finished" :exit t))
-
 #+end_src
 
 ** Tabs Not Spaces
@@ -998,9 +926,7 @@ Keybindings for searching within different contexts.
 ** Magit
 
 #+begin_src emacs-lisp
-
 (use-package magit)
-
 #+end_src
 
 ** Forge: issue GitHub pull requests and more
@@ -1348,7 +1274,6 @@ Give Org-mode documents some extra visual polish.
 ** Denote
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package denote
   :straight (denote :type git :host gitlab
                     :repo "protesilaos/denote")
@@ -1356,7 +1281,6 @@ Give Org-mode documents some extra visual polish.
   (denote-directory "~/notes")
   (denote-known-keywords
     '("emacs" "personal" "journal")))
-
 #+END_SRC 
 
 * Shells/Terminal Emulators
@@ -1539,16 +1463,6 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
 
 #+END_SRC
 
-The company backend needs the ~glslang~ package installed for ~glslangValidator~.
-
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package company-glsl
-;;   :after glsl-mode
-;;   :config (add-to-list 'company-backends 'company-glsl))
-
-#+END_SRC 
-
 *** Go
 #+BEGIN_SRC emacs-lisp
 
@@ -1592,6 +1506,17 @@ The company backend needs the ~glslang~ package installed for ~glslangValidator~
 
 #+RESULTS:
 
+*** Ruby
+
+#+BEGIN_SRC emacs-lisp
+
+;; (use-package ruby-mode
+;;   :hook (ruby-mode . eglot-ensure))
+
+(use-package inf-ruby) ;; Interact with a Ruby REPL
+
+#+END_SRC
+
 *** Rust
 Inspired by https://robert.kra.hn/posts/2021-02-07_rust-with-emacs/
 
@@ -1599,15 +1524,15 @@ Most Rustic keybindings begin with =C-c C-c=
 
 #+begin_src emacs-lisp
 
-(use-package rustic
-  :hook (rustic-mode . eglot-ensure)
-  :custom
-  (rustic-lsp-client 'eglot)
-  ;; :bind (:map rustic-mode-map
-              ;; ("M-j" . lsp-ui-imenu)
-              ;; ("M-?" . lsp-find-references)))
-  :config
-  (remove-hook 'rustic-mode-hook 'flycheck-mode))
+;; (use-package rustic
+;;   :hook (rustic-mode . eglot-ensure)
+;;   :custom
+;;   (rustic-lsp-client 'eglot)
+;;   ;; :bind (:map rustic-mode-map
+;;               ;; ("M-j" . lsp-ui-imenu)
+;;               ;; ("M-?" . lsp-find-references)))
+;;   :config
+;;   (remove-hook 'rustic-mode-hook 'flycheck-mode))
 
   ;; uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)
@@ -1617,6 +1542,9 @@ Most Rustic keybindings begin with =C-c C-c=
   ;; comment to disable rustfmt on save
   ;; (setq rustic-format-on-save t))
 
+(use-package rust-mode
+  :mode "\\.rs\\'"
+  :hook (rust-mode . eglot-ensure))
 
 #+end_src
 
@@ -1637,16 +1565,6 @@ Editing in a mixed-language web format.
             ("\\.sgml\\'" . web-mode)))
 
 #+END_SRC 
-
-*** 6502 Assembly
-Programming for the C64 and NES.
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package ca65-mode
-  :mode "\\.s\\'")
-
-#+END_SRC
 
 * IRC
 I use the ~erc-sasl~ implementation provided [[https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Bchat/erc/local/erc-sasl/erc-sasl.el][here]], so you'll have to download it before running this.

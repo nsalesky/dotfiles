@@ -1,9 +1,0 @@
-.DS_Store
-.idea
-*.log
-tmp/
-elpa/
-*~
-auto-save-list/
-/.emacs.d/.dap-breakpoints
-/.emacs.d/.dap-breakpoints
