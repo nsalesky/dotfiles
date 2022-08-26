@@ -296,11 +296,9 @@ Set up the fonts for text rendering, pretty self explanatory :)
 
 Here are my current font settings
 #+BEGIN_SRC emacs-lisp
-
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
 (set-face-attribute 'variable-pitch nil :font "Iosevka Aile" :height 140)
-
 #+END_SRC 
 
 Here are some of my older settings that I'm keeping around in case I ever want to switch back.
@@ -339,7 +337,7 @@ Give Emacs a nice color scheme! Other themes that I like include:
 
 (use-package ef-themes
   :config
-  (load-theme 'ef-spring t))
+  (load-theme 'ef-summer t))
 
 (use-package modus-themes)
   ;; :custom
@@ -460,9 +458,10 @@ Creates a handy little function to toggle a semi-transparent window frame either
 
 #+END_SRC
 
-* Vertico: Minibuffer
+* Minibuffer
 Sets up minibuffer completion with Vertico.
 
+** Vertico
 #+BEGIN_SRC emacs-lisp
 (use-package vertico
   :init
@@ -492,12 +491,27 @@ Sets up minibuffer completion with Vertico.
 
 #+END_SRC 
 
+** Marginalia: decorate minibuffer completion candidates
+
+#+BEGIN_SRC emacs-lisp
+(use-package marginalia
+  :bind
+  (:map minibuffer-local-map
+        ("M-A" . marginalia-cycle))
+  :custom
+  (marginalia-align 'right)
+  :init
+  (marginalia-mode))
+#+END_SRC
+
 ** All-the-icons-completion: add icons to completion candidates
 
 #+BEGIN_SRC emacs-lisp
 
 (use-package all-the-icons-completion
-  :config
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
   (all-the-icons-completion-mode))
 
 #+END_SRC 
@@ -599,7 +613,6 @@ A good code-completion package. I might consider switching to Corfu at some poin
 Configure the ~corfu~ completion-at-point package. This configuration was inspired by the official documentation and [[https://kristofferbalintona.me/posts/202202270056/][here]].
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package corfu
   :bind
   (:map corfu-map
@@ -785,10 +798,10 @@ Named workspaces that isolate buffer lists.
   :custom
   (persp-mode-prefix-key (kbd "C-c w"))
   :init
-  (persp-mode)
-  :config
-  (consult-customize consult--source-buffer :hidden t :default nil)
-  (add-to-list 'consult-buffer-sources persp-consult-source))
+  (persp-mode))
+  ;; :config
+  ;; (consult-customize consult--source-buffer :hidden t :default nil)
+  ;; (add-to-list 'consult-buffer-sources persp-consult-source))
 #+END_SRC
 
 ** Tab-bar-mode
@@ -821,17 +834,33 @@ I initially thought that this would be able to replace =perspective.el=, but it 
 * Keybindings and Basic Feature Configuration
 Here's where I configure some basic Emacs features with keybindings.
 
+** God-mode
+
+This defines a little function so that ~esc~ doesn't toggle =god-mode= when I'm in a recursive edit (like in the minibuffer), and can instead be used to exit one recursive layer. I got it from [[https://www.reddit.com/r/emacs/comments/3pk8rl/exiting_godmode_with_the_escape_key/]]
+#+BEGIN_SRC emacs-lisp
+;; (defun ns/escape ()
+;;   (interactive)
+;;   (if (and (>= (recursion-depth) 1) (active-minibuffer-window))
+;;       (abort-recursive-edit)
+;;     (god-mode-all)))
+#+END_SRC 
+
+#+BEGIN_SRC emacs-lisp
+;; (use-package god-mode
+;;   :bind
+;;   (:map god-local-mode-map
+;;         ("i" . god-local-mode))
+;;   :config
+;;   (god-mode-all)
+;;   (global-set-key (kbd "<escape>") 'ns/escape))
+#+END_SRC 
+
 ** ESC quits prompts
 Make ESC quit prompts.
 
 #+begin_src emacs-lisp
-
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
 #+end_src
-
-#+RESULTS:
-: keyboard-escape-quit
 
 ** Hydra
 *** Basic Config

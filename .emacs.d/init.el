@@ -98,7 +98,7 @@
 
 (use-package ef-themes
   :config
-  (load-theme 'ef-spring t))
+  (load-theme 'ef-summer t))
 
 (use-package modus-themes)
   ;; :custom
@@ -187,8 +187,19 @@
                                    (file (styles basic partial-completion))
                                    (eglot (styles orderless)))))
 
+(use-package marginalia
+  :bind
+  (:map minibuffer-local-map
+        ("M-A" . marginalia-cycle))
+  :custom
+  (marginalia-align 'right)
+  :init
+  (marginalia-mode))
+
 (use-package all-the-icons-completion
-  :config
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
   (all-the-icons-completion-mode))
 
 (use-package embark
@@ -375,10 +386,10 @@
   :custom
   (persp-mode-prefix-key (kbd "C-c w"))
   :init
-  (persp-mode)
-  :config
-  (consult-customize consult--source-buffer :hidden t :default nil)
-  (add-to-list 'consult-buffer-sources persp-consult-source))
+  (persp-mode))
+  ;; :config
+  ;; (consult-customize consult--source-buffer :hidden t :default nil)
+  ;; (add-to-list 'consult-buffer-sources persp-consult-source))
 
 (defun ns/tab-bar-switch-or-create (name func)
   (if (ns/tab-bar-tab-exists name)
@@ -401,6 +412,20 @@
 (use-package emacs
   :custom
   (tab-bar-show nil))
+
+;; (defun ns/escape ()
+;;   (interactive)
+;;   (if (and (>= (recursion-depth) 1) (active-minibuffer-window))
+;;       (abort-recursive-edit)
+;;     (god-mode-all)))
+
+;; (use-package god-mode
+;;   :bind
+;;   (:map god-local-mode-map
+;;         ("i" . god-local-mode))
+;;   :config
+;;   (god-mode-all)
+;;   (global-set-key (kbd "<escape>") 'ns/escape))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
