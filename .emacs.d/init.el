@@ -413,19 +413,15 @@
   :custom
   (tab-bar-show nil))
 
-;; (defun ns/escape ()
-;;   (interactive)
-;;   (if (and (>= (recursion-depth) 1) (active-minibuffer-window))
-;;       (abort-recursive-edit)
-;;     (god-mode-all)))
+; (use-package evil
+;   :config
+;   (evil-mode))
 
-;; (use-package god-mode
-;;   :bind
-;;   (:map god-local-mode-map
-;;         ("i" . god-local-mode))
-;;   :config
-;;   (god-mode-all)
-;;   (global-set-key (kbd "<escape>") 'ns/escape))
+; (use-package key-chord
+; :config
+; (key-chord-mode)
+; (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+; (key-chord-define evil-visual-state-map "jk" 'evil-normal-state))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -799,6 +795,11 @@
 ;;   (dap-auto-configure-mode))
 
 ;; (use-package realgud)
+
+(use-package verb
+  :after (org)
+  :config
+  (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
 
 (use-package wakatime-mode
   :config

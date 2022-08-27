@@ -770,24 +770,26 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 ** Treemacs: A tree layout file explorer
 #+begin_src emacs-lisp
 
-(use-package treemacs)
-;; (use-package treemacs-evil
-;;     :after (treemacs evil))
+(use-package treemacs
+  :custom
+  (treemacs-width 25)
+  :bind
+  ("M-0" . treemacs-select-window)
+  ("C-c t 1" . treemacs-delete-other-windows)
+  ("C-c t t" . treemacs)
+  ("C-c t d" . treemacs-select-directory)
+  ("C-c t B" . treemacs-bookmark)
+  ("C-c t f" . treemacs-find-file))
 (use-package treemacs-projectile
-    :after (treemacs projectile))
 (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
-;;(use-package treemacs-perspective
-;;  :after (treemacs perspective))
+(use-package treemacs-perspective
+  :after (treemacs perspective))
 (use-package treemacs-magit
     :after (treemacs magit))
-;; (use-package lsp-treemacs
-;;     :after (treemacs lsp-mode)
-;;     :config (lsp-treemacs-sync-mode 1))
 (use-package treemacs-all-the-icons
   :config
   (treemacs-load-theme "all-the-icons"))
-
 #+end_src
 
 ** Perspective
@@ -834,26 +836,19 @@ I initially thought that this would be able to replace =perspective.el=, but it 
 * Keybindings and Basic Feature Configuration
 Here's where I configure some basic Emacs features with keybindings.
 
-** God-mode
-
-This defines a little function so that ~esc~ doesn't toggle =god-mode= when I'm in a recursive edit (like in the minibuffer), and can instead be used to exit one recursive layer. I got it from [[https://www.reddit.com/r/emacs/comments/3pk8rl/exiting_godmode_with_the_escape_key/]]
-#+BEGIN_SRC emacs-lisp
-;; (defun ns/escape ()
-;;   (interactive)
-;;   (if (and (>= (recursion-depth) 1) (active-minibuffer-window))
-;;       (abort-recursive-edit)
-;;     (god-mode-all)))
-#+END_SRC 
+** Evil: vim emulation layer
 
 #+BEGIN_SRC emacs-lisp
-;; (use-package god-mode
-;;   :bind
-;;   (:map god-local-mode-map
-;;         ("i" . god-local-mode))
-;;   :config
-;;   (god-mode-all)
-;;   (global-set-key (kbd "<escape>") 'ns/escape))
-#+END_SRC 
+; (use-package evil
+;   :config
+;   (evil-mode))
+
+; (use-package key-chord
+; :config
+; (key-chord-mode)
+; (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+; (key-chord-define evil-visual-state-map "jk" 'evil-normal-state))
+ #+END_SRC 
 
 ** ESC quits prompts
 Make ESC quit prompts.
@@ -863,15 +858,14 @@ Make ESC quit prompts.
 #+end_src
 
 ** Hydra
-*** Basic Config
 Install the base Hydra package.
 
 #+begin_src emacs-lisp
 (use-package hydra)
 #+end_src
 
-** Tabs Not Spaces
-I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
+** Indentation: spaces, not tabs!
+Set up the indentation behavior. I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
 
 #+begin_src emacs-lisp
 
@@ -904,9 +898,7 @@ Keybindings for working with files.
 Keybindings for operating windows.
 
 #+BEGIN_SRC emacs-lisp
-
 (define-key global-map (kbd "M-o") 'ace-window)
-
 #+END_SRC
 
 ** Search
@@ -1438,6 +1430,14 @@ A simple code formatting system for a ton of languages.
 
 #+END_SRC 
 
+*** Verb
+
+#+BEGIN_SRC emacs-lisp
+(use-package verb
+  :after (org)
+  :config
+  (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+#+END_SRC 
 *** Wakatime
 Wakatime makes it easy for me to keep track of how much time I'm spending on various projects.
 
