@@ -255,6 +255,7 @@ Auto-revert all buffers by default
 
 ** Backup and auto-save files
 Put all backup and auto-save files in subfolders of the Emacs directory instead of littering the filesystem with them, including for Tramp sessions.
+I got the basic code for this from [[https://emacs.stackexchange.com/questions/33/put-all-backups-into-one-backup-folder]]
 
 #+BEGIN_SRC emacs-lisp
 (let ((backup-dir (concat user-emacs-directory "backups"))
