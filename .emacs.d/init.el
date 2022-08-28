@@ -447,6 +447,8 @@
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
+(delete-selection-mode 1)
+
 (use-package hydra)
 
 ;; Set the default tab settings

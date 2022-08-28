@@ -880,6 +880,12 @@ Make ESC quit prompts.
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+end_src
 
+** Replace selected text
+Enable =delete-selection-mode= so that if there is a marked region, typing in text replaces it
+
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode 1)
+#+END_SRC 
 ** Hydra
 Install the base Hydra package.
 
