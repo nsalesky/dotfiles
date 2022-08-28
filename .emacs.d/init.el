@@ -61,6 +61,25 @@
 
 (global-auto-revert-mode 1)
 
+(let ((backup-dir (concat user-emacs-directory "backups"))
+      (auto-saves-dir (concat user-emacs-directory "auto-saves")))
+  (dolist (dir (list backup-dir auto-saves-dir))
+    (when (not (file-directory-p dir))
+      (make-directory dir t)))
+  (setq backup-directory-alist `(("." . ,backup-dir))
+        auto-save-file-name-transforms `((".*" ,auto-saves-dir t))
+        tramp-backup-directory-alist `((".*" . ,backup-dir))
+        tramp-auto-save-directory auto-saves-dir))
+
+(setq backup-by-copying t   ; Don't delink hardlinks
+      delete-old-versions t ; Clean up the backups
+      version-control t     ; Use version numbers on backups
+      kept-new-versions 2   ; Keep some new versions of backups
+      kept-old-versions 1)  ; Keep some old backups too
+
+(setq backup-directory-alist
+      '(("." . (concat user-emacs-directory "backups"))))
+
 (setq-default frame-title-format '("%b [%m]"))
 
 (global-visual-line-mode 1)
@@ -364,20 +383,23 @@
     ;(setq projectile-project-search-path '("~/Documents")))
   (setq projectile-switch-project-action #'projectile-dired))
 
-(use-package treemacs)
-;; (use-package treemacs-evil
-;;     :after (treemacs evil))
-(use-package treemacs-projectile
-    :after (treemacs projectile))
+(use-package treemacs
+  :custom
+  (treemacs-width 25)
+  :bind
+  ("M-0" . treemacs-select-window)
+  ("C-c t 1" . treemacs-delete-other-windows)
+  ("C-c t t" . treemacs)
+  ("C-c t d" . treemacs-select-directory)
+  ("C-c t B" . treemacs-bookmark)
+  ("C-c t f" . treemacs-find-file))
+(use-package treemacs-projectile)
 (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
-;;(use-package treemacs-perspective
-;;  :after (treemacs perspective))
+(use-package treemacs-perspective
+  :after (treemacs perspective))
 (use-package treemacs-magit
     :after (treemacs magit))
-;; (use-package lsp-treemacs
-;;     :after (treemacs lsp-mode)
-;;     :config (lsp-treemacs-sync-mode 1))
 (use-package treemacs-all-the-icons
   :config
   (treemacs-load-theme "all-the-icons"))

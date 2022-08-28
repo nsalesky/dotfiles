@@ -253,6 +253,30 @@ Auto-revert all buffers by default
 (global-auto-revert-mode 1)
 #+END_SRC
 
+** Backup and auto-save files
+Put all backup and auto-save files in subfolders of the Emacs directory instead of littering the filesystem with them, including for Tramp sessions.
+
+#+BEGIN_SRC emacs-lisp
+(let ((backup-dir (concat user-emacs-directory "backups"))
+      (auto-saves-dir (concat user-emacs-directory "auto-saves")))
+  (dolist (dir (list backup-dir auto-saves-dir))
+    (when (not (file-directory-p dir))
+      (make-directory dir t)))
+  (setq backup-directory-alist `(("." . ,backup-dir))
+        auto-save-file-name-transforms `((".*" ,auto-saves-dir t))
+        tramp-backup-directory-alist `((".*" . ,backup-dir))
+        tramp-auto-save-directory auto-saves-dir))
+
+(setq backup-by-copying t   ; Don't delink hardlinks
+      delete-old-versions t ; Clean up the backups
+      version-control t     ; Use version numbers on backups
+      kept-new-versions 2   ; Keep some new versions of backups
+      kept-old-versions 1)  ; Keep some old backups too
+
+(setq backup-directory-alist
+      '(("." . (concat user-emacs-directory "backups"))))
+#+END_SRC
+
 * UI
 Set up all the fancy user-interface elements to make Emacs look nice.
 
@@ -753,7 +777,6 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 
 ** Projectile
 #+begin_src emacs-lisp
-
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
@@ -764,7 +787,6 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   ;(when (file-directory-p "~/Documents")
     ;(setq projectile-project-search-path '("~/Documents")))
   (setq projectile-switch-project-action #'projectile-dired))
-
 #+end_src
 
 ** Treemacs: A tree layout file explorer
@@ -780,7 +802,7 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   ("C-c t d" . treemacs-select-directory)
   ("C-c t B" . treemacs-bookmark)
   ("C-c t f" . treemacs-find-file))
-(use-package treemacs-projectile
+(use-package treemacs-projectile)
 (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
 (use-package treemacs-perspective
