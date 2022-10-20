@@ -36,6 +36,10 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
+(use-package exec-path-from-shell
+  :config
+  (exec-path-from-shell-initialize))
+
 (setq user-full-name "Nick Salesky"
       user-mail-address "nicksalesky@gmail.com")
 
@@ -78,7 +82,7 @@
       kept-old-versions 1)  ; Keep some old backups too
 
 (setq backup-directory-alist
-      '(("." . (concat user-emacs-directory "backups"))))
+      `(("." . ,(concat user-emacs-directory "backups/"))))
 
 (setq-default frame-title-format '("%b [%m]"))
 
@@ -113,11 +117,19 @@
   :config
   (global-emojify-mode))
 
-(use-package doom-themes)
-
-(use-package ef-themes
+(use-package doom-themes
   :config
-  (load-theme 'ef-summer t))
+  (load-theme 'doom-moonlight t))
+
+(use-package ef-themes)
+  ;; :config
+  ;; (load-theme 'ef-summer t))
+
+(use-package catppuccin-theme)
+  ;; :custom
+  ;; (catppuccin-height-title1 1.5)
+  ;; :config
+  ;; (load-theme 'catppuccin t))
 
 (use-package modus-themes)
   ;; :custom
@@ -153,7 +165,9 @@
         ;; dashboard-projects-switch-function 'projectile-switch-project
         dashboard-items '((recents . 5)
                           (projects . 5)
-                          (agenda . 5)))
+                          (agenda . 5))
+        initial-buffer-hoice (lambda () (get-buffer-create "*dashboard*")))
+    (add-hook 'after-init-hook 'dashboard-refresh-buffer)
     :config
     (dashboard-setup-startup-hook))
 
@@ -186,10 +200,13 @@
 (defun ns/toggle-window-transparency ()
   "Toggle transparency."
   (interactive)
-  (let ((alpha-transparency 75))
+  (let ((alpha-transparency 90))
     (if (equal alpha-transparency (frame-parameter nil 'alpha-background))
         (set-frame-parameter nil 'alpha-background 100)
       (set-frame-parameter nil 'alpha-background alpha-transparency))))
+
+;; Make the frame transparent when launched
+(ns/toggle-window-transparency)
 
 (use-package vertico
   :init
@@ -259,73 +276,6 @@
 (use-package yasnippet
   :config
   (yas-global-mode))
-
-;; (use-package company
-;;     :hook (prog-mode . company-mode)
-;;     :bind (:map company-active-map
-;;         ("<tab>" . company-complete-selection))
-;;         ;; (:map lsp-mode-map
-;;         ;; ("<tab>" . company-indent-or-complete-common))
-;;     :custom
-;;     (company-minimum-prefix-length 1)
-;;     (company-idle-delay 0.0))
-
-;; ;; Adds colors and icons to company-mode
-;; (use-package company-box
-;;     :hook (company-mode . company-box-mode))
-
-(use-package corfu
-  :bind
-  (:map corfu-map
-        ("C-n" . corfu-next)
-        ("C-p" . corfu-previous)
-        ("<escape>" . corfu-quit)
-        ("<return>" . corfu-insert)
-        ("M-d" . corfu-show-documentation)
-        ("M-l" . corfu-show-location))
-
-  :custom
-  (corfu-auto t)
-  (corfu-auto-prefix 3) ; Minimum length of prefix for auto-complete
-  (corfu-auto-delay 0) ; Immediately start auto-completion
-
-  (corfu-min-width 80) ; Min width of popup, I like to have it consistent
-  (corfu-max-width corfu-min-width) ; Always have the same width
-  (corfu-count 14) ; Max number of candidates to show
-  (corfu-scroll-margin 4)
-  ;; (corfu-cycle nil)
-
-  ;; (corfu-quit-at-boundary nil)
-  ;; (corfu-seperator ?\s)            ; Use space
-  ;; (corfu-quit-no-match 'seperator) ; Don't quit if there is 'corfu-seperator' inserted
-  ;; (corfu-quit-no-match t)
-  (corfu-preview-current 'insert)  ; Preview first candidate
-  (corfu-preselect-first t)        ; Preselect first candidate?
-
-  (corfu-echo-documentation nil) ; Use 'corfu-doc' instead
-
-  ;; Enable indentation+completion using the TAB key instead of M-TAB
-  (tab-always-indent 'complete)
-  ;; (completion-cycle-threshold nil)
-
-  (corfu-excluded-modes '(eshell-mode))
-
-  :init
-  (global-corfu-mode))
-
-  ;; :config
-  ;; (general-add-advice '(corfu--setup corfu--teardown) :after 'evil-normalize-keymaps)
-  ;; (evil-make-overriding-map corfu-map))
-
-
-(use-package kind-icon
-  :custom
-  (kind-icon-default-face 'corfu-default)
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-(use-package corfu-doc
-  :hook (corfu-mode . corfu-doc-mode))
 
 (use-package which-key
   ;; :after (ivy)
@@ -502,7 +452,7 @@
    '("o" . meow-block)
    '("O" . meow-to-block)
    '("p" . meow-yank)
-   '("q" . meow-quit)
+   ;; '("q" . meow-quit)
    '("Q" . meow-goto-line)
    '("r" . meow-replace)
    '("R" . meow-swap-grab)
@@ -521,10 +471,15 @@
    '("'" . repeat)
    '("<escape>" . ignore)))
 
-(use-package meow
-  :config
-  (meow-setup)
-  (meow-global-mode 1))
+;; (use-package meow
+;;   :config
+;;   (meow-setup)
+;;   (meow-global-mode 1))
+
+;; (use-package key-chord
+;;   :config
+;;   (key-chord-mode 1)
+;;   (key-chord-define meow-insert-state-keymap "jk" [escape]))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -585,7 +540,9 @@
 
 (use-package magit)
 
-;(use-package forge)
+;; (use-package forge
+;;   :after magit)
+;; TODO set up personal access token personal to work with pull requests from Emacs  :after magit)
 
 (use-package blamer)
 
@@ -849,31 +806,14 @@
   (vterm-shell "fish")
   (vterm-max-scrollback 10000))
 
-(use-package format-all)
-  ;:hook
-  ;(prog-mode . format-all-mode)
-
-(use-package flycheck)
-  ;; :config
-  ;; (global-flycheck-mode))
-
-(use-package eglot
-  :custom
-  (eglot-events-buffer-size 0)) ;; Disable the events buffer for performance
-
-  ;; :config
-  ;; (add-hook 'eglot-managed-mode-hook (lambda () (flymake-mode -1))))
-
 ;; (use-package lsp-mode
 ;;     :commands (lsp lsp-deferred)
-;;     :init
-;;     (setq lsp-lens-enable t
-;;           lsp-signature-auto-activate nil
-;;           lsp-ui-doc-mode t)
-;;     :general
-;;     (evil-define-key 'normal lsp-mode-map (kbd "/") lsp-command-map)
-;;     :config
+;;     :custom
+;;     (lsp-keymap-prefix "C-c l")
 ;;     (lsp-enable-which-key-integration t)
+;;     (lsp-lens-enable t)
+;;     (lsp-signature-auto-activate nil)
+;;     (lsp-ui-doc-mode t))
 ;;     :custom
 
 ;;     ;; Enable/disable type hints as you type for Rust
@@ -898,6 +838,97 @@
 ;; (use-package dap-mode
 ;;   :config
 ;;   (dap-auto-configure-mode))
+
+;; (use-package company
+;;     :hook (prog-mode . company-mode)
+;;     :bind (:map company-active-map
+;;         ("<tab>" . company-complete-selection))
+;;         ;; (:map lsp-mode-map
+;;         ;; ("<tab>" . company-indent-or-complete-common))
+;;     :custom
+;;     (company-minimum-prefix-length 1)
+;;     (company-idle-delay 0.0))
+
+;; ;; Adds colors and icons to company-mode
+;; (use-package company-box
+;;     :hook (company-mode . company-box-mode))
+
+(use-package eglot
+  :custom
+  (eglot-events-buffer-size 0) ; Disable the events buffer for performance
+  (eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
+  ;; :config
+  ;; (add-hook 'eglot-managed-mode-hook
+            ;; (lambda ()
+              ;; (eldoc-mode -1)
+              ;; (flymake-mode -1)))) ; Disable doc popups in the minibuffer
+
+(use-package corfu
+  :bind
+  (:map corfu-map
+        ("C-n" . corfu-next)
+        ("C-p" . corfu-previous)
+        ("<escape>" . corfu-quit)
+        ("<return>" . corfu-insert)
+        ("M-d" . corfu-show-documentation)
+        ("M-l" . corfu-show-location))
+
+  :custom
+  (corfu-auto t)
+  (corfu-auto-prefix 3) ; Minimum length of prefix for auto-complete
+  (corfu-auto-delay 0.2) ; Start auto-completion after 0.2 seconds
+
+  (corfu-min-width 80) ; Min width of popup, I like to have it consistent
+  (corfu-max-width corfu-min-width) ; Always have the same width
+  (corfu-count 14) ; Max number of candidates to show
+  (corfu-scroll-margin 4)
+  ;; (corfu-cycle nil)
+
+  ;; (corfu-quit-at-boundary nil)
+  ;; (corfu-seperator ?\s)            ; Use space
+  ;; (corfu-quit-no-match 'seperator) ; Don't quit if there is 'corfu-seperator' inserted
+  ;; (corfu-quit-no-match t)
+  (corfu-preview-current 'insert)  ; Preview first candidate
+  (corfu-preselect-first t)        ; Preselect first candidate?
+
+  (corfu-echo-documentation nil) ; Use 'corfu-doc' instead
+
+  ;; Enable indentation+completion using the TAB key instead of M-TAB
+  (tab-always-indent 'complete)
+  ;; (completion-cycle-threshold nil)
+
+  (corfu-excluded-modes '(eshell-mode))
+
+  :init
+  (global-corfu-mode))
+
+  ;; :config
+  ;; (general-add-advice '(corfu--setup corfu--teardown) :after 'evil-normalize-keymaps)
+  ;; (evil-make-overriding-map corfu-map))
+
+
+(use-package kind-icon
+  :custom
+  (kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(use-package corfu-doc
+  :hook (corfu-mode . corfu-doc-mode))
+
+(use-package format-all)
+  ;:hook
+  ;(prog-mode . format-all-mode)
+
+;; (use-package flymake
+;;   :bind
+;;   (:map flymake-mode-map
+;;         ("M-p" . flymake-goto-prev-error)
+;;         ("M-n" . flymake-goto-next-error)))
+
+(use-package flycheck
+  :init
+  (global-flycheck-mode))
 
 ;; (use-package realgud)
 
@@ -939,9 +970,10 @@
 ;; (use-package lsp-pyright)
 
 (use-package python-mode
-  :hook (python-mode . (lambda ()
-                         (eglot-ensure)
-                         (setq tab-width 4)))
+  :hook (python-mode . eglot-ensure)
+  ;; :hook (python-mode . (lambda ()
+                         ;; (eglot-ensure)
+                         ;; (setq tab-width 4)))
   :custom
   (python-shell-interpreter "python3"))
   ;;(dap-python-debugger 'debugpy))
@@ -950,37 +982,59 @@
 ;; (require 'dap-python)
 
 (use-package typescript-mode
-  :mode "\\.ts\\'"
+  :mode ("\\.ts\\'" "\\.tsx\\'")
   ;; :hook (typescript-mode . lsp-deferred)
+  :hook (typescript-mode . eglot-ensure)
   :config
   (setq typescript-indent-level 4))
 
-;; (use-package ruby-mode
-;;   :hook (ruby-mode . eglot-ensure))
+;; (use-package tide
+;;   :after web-mode
+;;   :hook
+;;   (typescript-mode-hook . setup-tide-mode)
+;;   :config
+;;   (defun setup-tide-mode ()
+;;     (interactive)
+;;     (tide-setup)
+;;     (flycheck-mode +1)
+;;     (setq flycheck-check-syntax-automatically '(save mode-enabled))
+;;     (eldoc-mode +1)
+;;     (tide-hl-identifier-mode +1))
+
+;;   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+;;   (add-hook 'web-mode-hook
+;;             (lambda ()
+;;               (when (string-equal "tsx" (file-name-extension buffer-file-name))
+;;                 (setup-tide-mode))))
+;;   (flycheck-add-mode 'typescript-tslint 'web-mode))
+
+(use-package ruby-mode
+  :hook (ruby-mode . eglot-ensure))
 
 (use-package inf-ruby) ;; Interact with a Ruby REPL
 
-;; (use-package rustic
-;;   :hook (rustic-mode . eglot-ensure)
-;;   :custom
-;;   (rustic-lsp-client 'eglot)
-;;   ;; :bind (:map rustic-mode-map
-;;               ;; ("M-j" . lsp-ui-imenu)
-;;               ;; ("M-?" . lsp-find-references)))
-;;   :config
-;;   (remove-hook 'rustic-mode-hook 'flycheck-mode))
+(use-package rustic
+  ;; :hook (rustic-mode . eglot-ensure)
+  :custom
+  (rustic-lsp-client 'eglot)
+  :hook
+  (rustic-mode . (lambda () (flycheck-mode -1))))
 
-  ;; uncomment for less flashiness
+  ;; ;;uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)
   ;; (setq lsp-enable-symbol-highlighting nil)
   ;; (setq lsp-signature-auto-activate nil)
 
-  ;; comment to disable rustfmt on save
-  ;; (setq rustic-format-on-save t))
+  ;comment to disable rustfmt on save
+  ;(setq rustic-format-on-save t))
 
-(use-package rust-mode
-  :mode "\\.rs\\'"
-  :hook (rust-mode . eglot-ensure))
+;; TODO set up keybindings
+;; (use-package rust-auto-use)
+  
+
+;; (use-package rust-mode
+;;   :mode "\\.rs\\'"
+;;   :hook (rust-mode . eglot-ensure))
 
 (use-package web-mode
     :commands (web-mode)
