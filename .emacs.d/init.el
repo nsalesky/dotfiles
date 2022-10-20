@@ -854,6 +854,9 @@
 ;;     :hook (company-mode . company-box-mode))
 
 (use-package eglot
+  :bind
+  (:map eglot-mode-map
+   ("C-c e" . eglot-code-actions))
   :custom
   (eglot-events-buffer-size 0) ; Disable the events buffer for performance
   (eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
@@ -920,15 +923,11 @@
   ;:hook
   ;(prog-mode . format-all-mode)
 
-;; (use-package flymake
-;;   :bind
-;;   (:map flymake-mode-map
-;;         ("M-p" . flymake-goto-prev-error)
-;;         ("M-n" . flymake-goto-next-error)))
-
-(use-package flycheck
-  :init
-  (global-flycheck-mode))
+(use-package flymake
+  :bind
+  (:map flymake-mode-map
+        ("M-p" . flymake-goto-prev-error)
+        ("M-n" . flymake-goto-next-error)))
 
 ;; (use-package realgud)
 
