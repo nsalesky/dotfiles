@@ -1658,8 +1658,7 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
 
 #+END_SRC 
 
-*** Py
-thon
+*** Python
 
 #+BEGIN_SRC emacs-lisp
 
