@@ -332,6 +332,7 @@
   ;(when (file-directory-p "~/Documents")
     ;(setq projectile-project-search-path '("~/Documents")))
   (setq projectile-switch-project-action #'projectile-dired))
+(use-package ripgrep)
 
 (use-package treemacs
   :custom
@@ -853,10 +854,19 @@
 ;; (use-package company-box
 ;;     :hook (company-mode . company-box-mode))
 
+(define-prefix-command 'ns/eglot-actions-map)
+(fset 'ns/eglot-actions-map ns/eglot-actions-map)
+
 (use-package eglot
+  :bind-keymap
+  ("C-c e" . 'ns/eglot-actions-map)
+  ;; :bind
+  ;; (:map eglot-mode-map
+  ;;       ("C-c e" . ns/eglot-actions-map))
   :bind
-  (:map eglot-mode-map
-   ("C-c e" . eglot-code-actions))
+  (:map ns/eglot-actions-map
+   ("C-c e a" . eglot-code-actions)
+   ("C-c e f" . eglot-format-buffer))
   :custom
   (eglot-events-buffer-size 0) ; Disable the events buffer for performance
   (eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
@@ -1017,7 +1027,8 @@
   :custom
   (rustic-lsp-client 'eglot)
   :hook
-  (rustic-mode . (lambda () (flycheck-mode -1))))
+  (rustic-mode . (lambda () (flycheck-mode -1)))
+  (rustic-mode . eglot-ensure))
 
   ;; ;;uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)

@@ -726,6 +726,7 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   ;(when (file-directory-p "~/Documents")
     ;(setq projectile-project-search-path '("~/Documents")))
   (setq projectile-switch-project-action #'projectile-dired))
+(use-package ripgrep)
 #+end_src
 
 ** Treemacs: A tree layout file explorer
@@ -1741,7 +1742,8 @@ Most Rustic keybindings begin with =C-c C-c=
   :custom
   (rustic-lsp-client 'eglot)
   :hook
-  (rustic-mode . (lambda () (flycheck-mode -1))))
+  (rustic-mode . (lambda () (flycheck-mode -1)))
+  (rustic-mode . eglot-ensure))
 
   ;; ;;uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)
