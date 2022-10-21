@@ -854,19 +854,12 @@
 ;; (use-package company-box
 ;;     :hook (company-mode . company-box-mode))
 
-(define-prefix-command 'ns/eglot-actions-map)
-(fset 'ns/eglot-actions-map ns/eglot-actions-map)
-
 (use-package eglot
-  :bind-keymap
-  ("C-c e" . 'ns/eglot-actions-map)
-  ;; :bind
-  ;; (:map eglot-mode-map
-  ;;       ("C-c e" . ns/eglot-actions-map))
   :bind
-  (:map ns/eglot-actions-map
-   ("C-c e a" . eglot-code-actions)
-   ("C-c e f" . eglot-format-buffer))
+  (:prefix-map ns/eglot-actions-map
+               :prefix "C-c e"
+               ("a" . eglot-code-actions)
+               ("f" . eglot-format-buffer))
   :custom
   (eglot-events-buffer-size 0) ; Disable the events buffer for performance
   (eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
