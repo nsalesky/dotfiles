@@ -309,6 +309,15 @@
 
 (setq tramp-default-method "ssh") ;; Use SSH by default for remote files
 
+(use-package expand-region
+  :bind
+  ("C-=" . er/expand-region))
+
+(use-package mwim
+  :bind
+  ("C-a" . mwim-beginning)
+  ("C-e" . mwim-end))
+
 ;; (use-package flyspell
 ;;   :bind
 ;;   (:map flyspell-mode-map
@@ -332,6 +341,7 @@
   ;(when (file-directory-p "~/Documents")
     ;(setq projectile-project-search-path '("~/Documents")))
   (setq projectile-switch-project-action #'projectile-dired))
+
 (use-package ripgrep)
 
 (use-package treemacs

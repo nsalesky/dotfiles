@@ -686,6 +686,21 @@ I took this from [[https://www.masteringemacs.org/article/iedit-interactive-mult
 
 #+END_SRC
 
+** expand-region
+#+BEGIN_SRC emacs-lisp
+(use-package expand-region
+  :bind
+  ("C-=" . er/expand-region))
+#+END_SRC
+
+** mwim
+#+BEGIN_SRC emacs-lisp
+(use-package mwim
+  :bind
+  ("C-a" . mwim-beginning)
+  ("C-e" . mwim-end))
+#+END_SRC
+
 * Spell checker
 ** Flyspell
 #+BEGIN_SRC emacs-lisp
@@ -726,6 +741,7 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   ;(when (file-directory-p "~/Documents")
     ;(setq projectile-project-search-path '("~/Documents")))
   (setq projectile-switch-project-action #'projectile-dired))
+
 (use-package ripgrep)
 #+end_src
 
