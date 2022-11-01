@@ -368,11 +368,14 @@
 (use-package perspective
   :custom
   (persp-mode-prefix-key (kbd "C-c w"))
+  (persp-modestring-short t)
   :init
   (persp-mode))
   ;; :config
   ;; (consult-customize consult--source-buffer :hidden t :default nil)
   ;; (add-to-list 'consult-buffer-sources persp-consult-source))
+
+(use-package persp-projectile)
 
 (defun ns/tab-bar-switch-or-create (name func)
   (if (ns/tab-bar-tab-exists name)
