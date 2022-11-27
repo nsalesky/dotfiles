@@ -29,3 +29,6 @@
 /.emacs.d/elpa/
 /.emacs.d/eln-cache/
 /.emacs.d/.dap-breakpoints
+/.emacs.d/**/*#
+/.emacs.d/**/*~
+/.emacs.d/*.plstore

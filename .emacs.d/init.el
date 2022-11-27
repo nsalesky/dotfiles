@@ -117,19 +117,21 @@
   :config
   (global-emojify-mode))
 
+(use-package autothemer)
+
 (use-package doom-themes
   :config
-  (load-theme 'doom-moonlight t))
+  (load-theme 'doom-palenight t))
 
 (use-package ef-themes)
   ;; :config
   ;; (load-theme 'ef-summer t))
 
-(use-package catppuccin-theme)
-  ;; :custom
-  ;; (catppuccin-height-title1 1.5)
-  ;; :config
-  ;; (load-theme 'catppuccin t))
+(use-package catppuccin-theme
+  :straight (:type git :host github
+                   :repo "catppuccin/emacs")
+  :after autothemer)
+  ;; :config (load-theme 'catppuccin-macchiato t))
 
 (use-package modus-themes)
   ;; :custom
@@ -141,9 +143,6 @@
   ;; ;; (modus-themes-mode-line '(accented borderless))
   ;; (modus-themes-mode-line '())
   ;; (modus-themes-subtle-line-numbers t)
-
-  ;; :config
-  ;; (modus-themes-load-vivendi))
 
 (use-package doom-modeline
   :init
@@ -206,7 +205,9 @@
       (set-frame-parameter nil 'alpha-background alpha-transparency))))
 
 ;; Make the frame transparent when launched
-(ns/toggle-window-transparency)
+;; (ns/toggle-window-transparency)
+
+(use-package discover)
 
 (use-package vertico
   :init
@@ -354,7 +355,9 @@
   ("C-c t d" . treemacs-select-directory)
   ("C-c t B" . treemacs-bookmark)
   ("C-c t f" . treemacs-find-file))
-(use-package treemacs-projectile)
+(use-package treemacs-projectile
+  :config
+  (treemacs-project-follow-mode 1))
 (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
 (use-package treemacs-perspective
@@ -580,33 +583,32 @@
     (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 ;; Got this from https://stackoverflow.com/questions/10969617/hiding-markup-elements-in-org-mode
-(defun ns/org-toggle-emphasis ()
-  "Toggle hiding/showing of org emphasis markers"
-  (interactive)
-  (if org-hide-emphasis-markers
-      (set-variable 'org-hide-emphasis-markers nil)
-    (set-variable 'org-hide-emphasis-markers t)))
+;; (defun ns/org-toggle-emphasis ()
+;;   "Toggle hiding/showing of org emphasis markers"
+;;   (interactive)
+;;   (if org-hide-emphasis-markers
+;;       (set-variable 'org-hide-emphasis-markers nil)
+;;     (set-variable 'org-hide-emphasis-markers t)))
 
-
-;; (use-package org-contrib :pin nongnu)
-(use-package org-contrib)
+;; (use-package org-contrib)
 
 ;; Org Mode
 (use-package org
     :hook (org-mode . ns/org-mode-setup)
     :config
     ;; (ns/org-font-setup)
-    (setq
+    :custom
      ;; org-hide-emphasis-markers nil
-        org-ellipsis " ▾"
-        org-pretty-entities t
+    (org-ellipsis "…")
+    (org-pretty-entities t)
+    (org-hide-emphasis-markers nil)
 
-        org-directory "~/notes"
+    (org-directory "~/notes")
 
-        org-src-tab-acts-natively t
-        org-src-preserve-indentation t
+    (org-src-tab-acts-natively t)
+    (org-src-preserve-indentation t)
 
-        org-todo-keywords
+    (org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
             (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
                 "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
@@ -794,7 +796,9 @@
   (add-hook 'org-present-mode-hook 'ns/org-present-begin)
   (add-hook 'org-present-mode-quit-hook 'ns/org-present-end))
 
-;; (use-package org-modern
+(use-package org-modern
+  :config
+  (global-org-modern-mode))
 ;;     :config
 ;;     (add-hook 'org-mode-hook #'org-modern-mode)
 ;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
@@ -925,6 +929,7 @@
   ;; (general-add-advice '(corfu--setup corfu--teardown) :after 'evil-normalize-keymaps)
   ;; (evil-make-overriding-map corfu-map))
 
+(use-package cape)
 
 (use-package kind-icon
   :custom
@@ -997,31 +1002,37 @@
 ;; (require 'dap-python)
 
 (use-package typescript-mode
-  :mode ("\\.ts\\'" "\\.tsx\\'")
-  ;; :hook (typescript-mode . lsp-deferred)
+  :mode ("\\.ts\\'" "\\.tsx\\'" "\\.js\\'" "\\.jsx\\'")
   :hook (typescript-mode . eglot-ensure)
   :config
   (setq typescript-indent-level 4))
 
+;; (defun tide-completion-at-point ()
+;;   (let ((prefix (progn (looking-back "[a-zA-Z_$]\*" 50 t) (match-string 0))))
+;;     (tide-command:completions
+;;      prefix
+;;      `(lambda (response)
+;;         (completion-in-region (- (point) (length ',prefix)) (point)
+;;                               (loop for completion in response
+;;                                     if (string-prefix-p ',prefix completion)
+;;                                     collect completion))))))
+
+;; (defun ns/setup-tide-mode ()
+;;   (interactive)
+;;   (tide-setup)
+;;   (tide-hl-identifier-mode +1)
+;;   (add-hook 'before-save-hook #'tide-format-before-save nil t)
+;;   (add-hook 'completion-at-point-functions #'tide-completion-at-point nil t))
+;;   ;; (add-hook 'completion-at-point-functions (cape-company-to-capf #'company-tide) nil t))
+
 ;; (use-package tide
 ;;   :after web-mode
+;;   :init
 ;;   :hook
-;;   (typescript-mode-hook . setup-tide-mode)
-;;   :config
-;;   (defun setup-tide-mode ()
-;;     (interactive)
-;;     (tide-setup)
-;;     (flycheck-mode +1)
-;;     (setq flycheck-check-syntax-automatically '(save mode-enabled))
-;;     (eldoc-mode +1)
-;;     (tide-hl-identifier-mode +1))
-
-;;   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-;;   (add-hook 'web-mode-hook
-;;             (lambda ()
-;;               (when (string-equal "tsx" (file-name-extension buffer-file-name))
-;;                 (setup-tide-mode))))
-;;   (flycheck-add-mode 'typescript-tslint 'web-mode))
+;;   (typescript-mode . ns/setup-tide-mode)
+;;   :custom
+;;   (tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil)))
+  ;; (tide-completion-setup-company-backend t))
 
 (use-package ruby-mode
   :hook (ruby-mode . eglot-ensure))
@@ -1052,16 +1063,29 @@
 ;;   :mode "\\.rs\\'"
 ;;   :hook (rust-mode . eglot-ensure))
 
+;; (defun ns/toggle-web-mode ()
+;;   "Toggles web-mode on or off, switching back to the previous major mode when disabled."
+;;   (interactive)
+;;   (if (eq 'web-mode major-mode)
+;;       (funcall (symbol-value 'ns/prev-major-mode))
+;;     (progn
+;;       ;; (setq-local ns/prev-major-mode major-mode)
+;;       (set (make-local-variable 'ns/prev-major-mode) major-mode)
+;;       (web-mode))))
+
 (use-package web-mode
     :commands (web-mode)
     :mode (("\\.html" . web-mode)
             ("\\.htm" . web-mode)
-;           ("\\.tsx$" . web-mode)
+            ;; ("\\.tsx\\'" . web-mode)
+            ;; ("\\.jsx\\'" . web-mode)
             ("\\.mustache\\'" . web-mode)
             ("\\.phtml\\'" . web-mode)
             ("\\.as[cp]x\\'" . web-mode)
             ("\\.erb\\'" . web-mode)
             ("\\.sgml\\'" . web-mode)))
+    ;; :bind
+    ;; ("C-c h" . ns/toggle-web-mode))
 
 ;; (require 'erc-sasl)
 
@@ -1101,6 +1125,13 @@
       erc-track-shorten-start 8
       erc-kill-buffer-on-part t
       erc-auto-query 'bury)
+
+(use-package mastodon
+  :custom
+  (mastodon-instance-url "https://emacs.ch")
+  (mastodon-active-user "nsalesky")
+  :config
+  (mastodon-discover))
 
 (use-package tablist)
 
