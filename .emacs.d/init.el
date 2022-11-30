@@ -154,19 +154,19 @@
 (use-package page-break-lines)
 
 (use-package dashboard
-    :init
-    (setq
-        dashboard-image-banner-max-width 256
-        dashboard-startup-banner "~/.dotfiles/.emacs.d/emacs.png"
-        dashboard-center-content t
-        dashboard-set-heading-icons t
-        dashboard-set-file-icons t
-        ;; dashboard-projects-switch-function 'projectile-switch-project
-        dashboard-items '((recents . 5)
+    :custom
+    (dashboard-image-banner-max-width 256)
+    (dashboard-startup-banner "~/.dotfiles/.emacs.d/emacs.png")
+    (dashboard-center-content t)
+    (dashboard-set-heading-icons t)
+    (dashboard-set-file-icons t)
+    (dashboard-projects-switch-function 'projectile-persp-switch-project)
+    (dashboard-items '((recents . 5)
                           (projects . 5)
-                          (agenda . 5))
-        initial-buffer-hoice (lambda () (get-buffer-create "*dashboard*")))
-    (add-hook 'after-init-hook 'dashboard-refresh-buffer)
+                          (agenda . 5)))
+    (initial-buffer-hoice (lambda () (get-buffer-create "*dashboard*")))
+    (dashboard-
+    :hook (after-init-hook . dashboard-refresh-buffer)
     :config
     (dashboard-setup-startup-hook))
 
@@ -960,6 +960,10 @@
 (use-package wakatime-mode
   :config
   (global-wakatime-mode))
+
+(use-package ws-butler
+  :hook
+  (prog-mode . ws-butler-mode))
 
 (use-package yaml-mode
   :mode "\\.yml\\'")
