@@ -165,7 +165,6 @@
                           (projects . 5)
                           (agenda . 5)))
     (initial-buffer-hoice (lambda () (get-buffer-create "*dashboard*")))
-    (dashboard-
     :hook (after-init-hook . dashboard-refresh-buffer)
     :config
     (dashboard-setup-startup-hook))
@@ -977,10 +976,10 @@
   :mode "Dockerfile\\'")
 
 (use-package clojure-mode
-  :mode "\\.clj\\'"
-  :hook ((clojure-mode . eglot-ensure)
-         (clojurescript-mode . eglot-ensure)
-         (clojurec-mode . eglot-ensure)))
+  :mode "\\.clj\\'")
+  ;; :hook ((clojure-mode . eglot-ensure)
+  ;;        (clojurescript-mode . eglot-ensure)
+  ;;        (clojurec-mode . eglot-ensure)))
 
 (use-package cider)
 

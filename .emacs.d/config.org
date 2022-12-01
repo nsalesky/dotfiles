@@ -426,7 +426,6 @@ I like having a nice dashboard when Emacs loads in order to remember what I was 
                           (projects . 5)
                           (agenda . 5)))
     (initial-buffer-hoice (lambda () (get-buffer-create "*dashboard*")))
-    (dashboard-
     :hook (after-init-hook . dashboard-refresh-buffer)
     :config
     (dashboard-setup-startup-hook))
@@ -1667,15 +1666,13 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
 *** Clojure
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package clojure-mode
-  :mode "\\.clj\\'"
-  :hook ((clojure-mode . eglot-ensure)
-         (clojurescript-mode . eglot-ensure)
-         (clojurec-mode . eglot-ensure)))
+  :mode "\\.clj\\'")
+  ;; :hook ((clojure-mode . eglot-ensure)
+  ;;        (clojurescript-mode . eglot-ensure)
+  ;;        (clojurec-mode . eglot-ensure)))
 
 (use-package cider)
-
 #+END_SRC 
 
 *** GLSL: OpenGL shaders
@@ -1930,29 +1927,6 @@ Idk, these are just some libraries I'm testing our for writing in Elisp
 (use-package request)
 
 #+END_SRC 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
