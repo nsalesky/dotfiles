@@ -156,7 +156,7 @@
 (use-package dashboard
     :custom
     (dashboard-image-banner-max-width 256)
-    (dashboard-startup-banner "~/.dotfiles/.emacs.d/emacs.png")
+    (dashboard-startup-banner (expand-file-name "emacs.png" user-emacs-directory))
     (dashboard-center-content t)
     (dashboard-set-heading-icons t)
     (dashboard-set-file-icons t)
@@ -164,8 +164,8 @@
     (dashboard-items '((recents . 5)
                           (projects . 5)
                           (agenda . 5)))
-    (initial-buffer-hoice (lambda () (get-buffer-create "*dashboard*")))
-    :hook (after-init-hook . dashboard-refresh-buffer)
+    (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+    ;; :hook (after-init-hook . dashboard-refresh-buffer)
     :config
     (dashboard-setup-startup-hook))
 
@@ -497,7 +497,9 @@
 ;;   (key-chord-mode 1)
 ;;   (key-chord-define meow-insert-state-keymap "jk" [escape]))
 
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+(global-unset-key (kbd "ESC ESC"))
 
 (delete-selection-mode 1)
 
@@ -975,13 +977,18 @@
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
+(defun ns/setup-cider-format-hook
+    ()
+  (add-hook 'before-save-hook 'cider-format-buffer nil t))
+
 (use-package clojure-mode
   :mode "\\.clj\\'")
-  ;; :hook ((clojure-mode . eglot-ensure)
-  ;;        (clojurescript-mode . eglot-ensure)
-  ;;        (clojurec-mode . eglot-ensure)))
 
-(use-package cider)
+(use-package cider
+  :hook
+  (clojure-mode . ns/setup-cider-format-hook)
+  (clojurescript-mode . ns/setup-cider-format-hook)
+  (clojurec-mode . ns/setup-cider-format-hook))
 
 (use-package glsl-mode
   :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))

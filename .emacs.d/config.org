@@ -1,6 +1,6 @@
 #+title: My Emacs Configuration
 #+author: Nick Salesky
-#+PROPERTY: header-args:emacs-lisp :tangle ./init.el
+#+PROPERTY: header-args:emacs-lisp :tangle init.el
 #+STARTUP: overview
 
 * Contents :TOC:
@@ -123,17 +123,14 @@ Increase the garbage collection threshold and process data chunking for performa
       read-process-output-max (* 1024 1024))
 #+END_SRC 
 
-** Set some early UI settings
-
+** early-init.el
 Disable the Toolbar and Menubar in the early-init.el file via ~default-frame-alist~. This is slightly faster than loading them first before turning them off.
-
 #+BEGIN_SRC emacs-lisp :tangle early-init.el
-
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(menu-bar-lines . 0) default-frame-alist)
+#+END_SRC
 
-#+END_SRC 
-
+** Set some basic UI settings early 
 Disable the scroll-bar
 #+BEGIN_SRC emacs-lisp
 (scroll-bar-mode -1)
@@ -417,7 +414,7 @@ I like having a nice dashboard when Emacs loads in order to remember what I was 
 (use-package dashboard
     :custom
     (dashboard-image-banner-max-width 256)
-    (dashboard-startup-banner "~/.dotfiles/.emacs.d/emacs.png")
+    (dashboard-startup-banner (expand-file-name "emacs.png" user-emacs-directory))
     (dashboard-center-content t)
     (dashboard-set-heading-icons t)
     (dashboard-set-file-icons t)
@@ -425,8 +422,8 @@ I like having a nice dashboard when Emacs loads in order to remember what I was 
     (dashboard-items '((recents . 5)
                           (projects . 5)
                           (agenda . 5)))
-    (initial-buffer-hoice (lambda () (get-buffer-create "*dashboard*")))
-    :hook (after-init-hook . dashboard-refresh-buffer)
+    (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+    ;; :hook (after-init-hook . dashboard-refresh-buffer)
     :config
     (dashboard-setup-startup-hook))
 
@@ -934,9 +931,14 @@ Here's where I configure some basic Emacs features with keybindings.
 Make ESC quit prompts.
 
 #+begin_src emacs-lisp
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+end_src
 
+** Disable ESC ESC ESC
+
+#+BEGIN_SRC emacs-lisp
+(global-unset-key (kbd "ESC ESC"))
+#+END_SRC 
 ** Replace selected text
 Enable =delete-selection-mode= so that if there is a marked region, typing in text replaces it
 
@@ -1666,13 +1668,18 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
 *** Clojure
 
 #+BEGIN_SRC emacs-lisp
+(defun ns/setup-cider-format-hook
+    ()
+  (add-hook 'before-save-hook 'cider-format-buffer nil t))
+
 (use-package clojure-mode
   :mode "\\.clj\\'")
-  ;; :hook ((clojure-mode . eglot-ensure)
-  ;;        (clojurescript-mode . eglot-ensure)
-  ;;        (clojurec-mode . eglot-ensure)))
 
-(use-package cider)
+(use-package cider
+  :hook
+  (clojure-mode . ns/setup-cider-format-hook)
+  (clojurescript-mode . ns/setup-cider-format-hook)
+  (clojurec-mode . ns/setup-cider-format-hook))
 #+END_SRC 
 
 *** GLSL: OpenGL shaders
