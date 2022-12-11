@@ -106,7 +106,7 @@ Installation should be fairly straightforward. The first time Emacs runs this co
 * Emacs Initialization
 Add my custom ELisp files to the load-path.
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.dotfiles/.emacs.d/lisp")
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 #+END_SRC 
 
 Disable certain byte compiler warnings to cut down on the noise for (usually unnecessary) errors.
@@ -345,10 +345,12 @@ Also install helpful icons useful for a ton of packages to add more visual detai
 
 Emojis!!!! Works in any text mode :smile:
 
+
+
 #+BEGIN_SRC emacs-lisp
-(use-package emojify
-  :config
-  (global-emojify-mode))
+;; (use-package emojify
+;;   :config
+;;   (global-emojify-mode))
 #+END_SRC
 
 ** Theme
@@ -483,7 +485,6 @@ Highlight the current line where point is present. I have this disabled for now 
 Creates a handy little function to toggle a semi-transparent window frame either for aeshetics or to view another window underneath Emacs.
 
 #+BEGIN_SRC emacs-lisp
-
 (defun ns/toggle-window-transparency ()
   "Toggle transparency."
   (interactive)
@@ -494,7 +495,6 @@ Creates a handy little function to toggle a semi-transparent window frame either
 
 ;; Make the frame transparent when launched
 ;; (ns/toggle-window-transparency)
-
 #+END_SRC
 
 ** Discover.el
@@ -660,24 +660,24 @@ Add various templates to Emacs.
 #+END_SRC
 
 ** Iedit: Simple multi-cursor editing
-I took this from [[https://www.masteringemacs.org/article/iedit-interactive-multi-occurrence-editing-in-your-buffer]] but modified it slightly. I use this method of binding the key to avoid triggering the annoying =iedit= warning informing me that the default key ~C-;~ is occupied.
+I took this from [[https://www.masteringemacs.org/article/iedit-interactive-multi-occurrence-editing-in-your-buffer]] but modified it slightly.
 
 #+BEGIN_SRC emacs-lisp
-(use-package iedit
-  :config
-  (defun iedit-dwim (arg)
-    "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
-    (interactive "P")
-    (if arg
-        (iedit-mode)
-      (save-excursion
-        (save-restriction
-          (widen)
-          (if (bound-and-true-p iedit-mode)
-              (iedit-done)
-            (narrow-to-defun)
-            (iedit-start (current-word) (point-min) (point-max)))))))
-  (keymap-global-set "C-;" 'iedit-dwim))
+(use-package iedit)
+  ;; :config
+  ;; (defun iedit-dwim (arg)
+  ;;   "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
+  ;;   (interactive "P")
+  ;;   (if arg
+  ;;       (iedit-mode)
+  ;;     (save-excursion
+  ;;       (save-restriction
+  ;;         (widen)
+  ;;         (if (bound-and-true-p iedit-mode)
+  ;;             (iedit-done)
+  ;;           (narrow-to-defun)
+  ;;           (iedit-start (current-word) (point-min) (point-max)))))))
+  ;; (keymap-global-set "C-;" 'iedit-dwim))
 #+END_SRC
 
 ** TRAMP: Edit remote files
@@ -1634,6 +1634,14 @@ Wakatime makes it easy for me to keep track of how much time I'm spending on var
   (prog-mode . ws-butler-mode))
 #+END_SRC
 
+*** RE-Builder
+A pretty useful tool for debugging regular expressions. I use the ~string~ mode so that I don't have to backslash the backslashes.
+
+#+BEGIN_SRC emacs-lisp
+(use-package re-builder
+  :custom
+  (reb-re-syntax 'string))
+#+END_SRC 
 ** Languages
 *** YAML
 
@@ -1888,15 +1896,14 @@ Set up my basic IRC user info.
 ** Mastodon
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package mastodon
   :custom
   (mastodon-instance-url "https://emacs.ch")
   (mastodon-active-user "nsalesky")
   :config
   (mastodon-discover))
+#+END_SRC
 
-#+END_SRC 
 * Documents
 ** PDFs
 
@@ -1926,6 +1933,11 @@ Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
 
 #+END_SRC
 
+* Games
+** asm-blox: a Zachtronics type puzzle game
+#+BEGIN_SRC emacs-lisp
+(use-package asm-blox)
+#+END_SRC 
 * Elisp Libraries
 Idk, these are just some libraries I'm testing our for writing in Elisp
 

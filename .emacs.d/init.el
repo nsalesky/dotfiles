@@ -1,4 +1,4 @@
-(add-to-list 'load-path "~/.dotfiles/.emacs.d/lisp")
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
       native-comp-async-report-warnings-errors nil)
@@ -113,9 +113,9 @@
 
 (use-package all-the-icons)
 
-(use-package emojify
-  :config
-  (global-emojify-mode))
+;; (use-package emojify
+;;   :config
+;;   (global-emojify-mode))
 
 (use-package autothemer)
 
@@ -291,21 +291,21 @@
   ;; :hook
   ;; (org-mode . olivetti-mode))
 
-(use-package iedit
-  :config
-  (defun iedit-dwim (arg)
-    "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
-    (interactive "P")
-    (if arg
-        (iedit-mode)
-      (save-excursion
-        (save-restriction
-          (widen)
-          (if (bound-and-true-p iedit-mode)
-              (iedit-done)
-            (narrow-to-defun)
-            (iedit-start (current-word) (point-min) (point-max)))))))
-  (keymap-global-set "C-;" 'iedit-dwim))
+(use-package iedit)
+  ;; :config
+  ;; (defun iedit-dwim (arg)
+  ;;   "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
+  ;;   (interactive "P")
+  ;;   (if arg
+  ;;       (iedit-mode)
+  ;;     (save-excursion
+  ;;       (save-restriction
+  ;;         (widen)
+  ;;         (if (bound-and-true-p iedit-mode)
+  ;;             (iedit-done)
+  ;;           (narrow-to-defun)
+  ;;           (iedit-start (current-word) (point-min) (point-max)))))))
+  ;; (keymap-global-set "C-;" 'iedit-dwim))
 
 (setq tramp-default-method "ssh") ;; Use SSH by default for remote files
 
@@ -966,6 +966,10 @@
   :hook
   (prog-mode . ws-butler-mode))
 
+(use-package re-builder
+  :custom
+  (reb-re-syntax 'string))
+
 (use-package yaml-mode
   :mode "\\.yml\\'")
 
@@ -1153,5 +1157,7 @@
 
 (use-package nov
   :mode "\\.epub\\'")
+
+(use-package asm-blox)
 
 (use-package request)
