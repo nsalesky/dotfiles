@@ -854,9 +854,51 @@
 ;;     (lsp-ui-doc-position 'bottom)
 ;;     (lsp-ui-doc-enable nil))
 
-;; (use-package dap-mode
-;;   :config
-;;   (dap-auto-configure-mode))
+(require 'treesit)
+(defun ns/tree-sitter-compile-grammar (destination &optional path)
+  "Compile grammar at PATH, and place the resulting shared library in DESTINATION."
+  (interactive "fWhere should we put the shared library? \nfWhat tree-sitter grammar are we compiling? \n")
+  (make-directory destination 'parents)
+
+  (let* ((default-directory
+          (expand-file-name "src/" (or path default-directory)))
+         (parser-name
+          (thread-last (expand-file-name "grammar.json" default-directory)
+                       (json-read-file)
+                       (alist-get 'name)))
+         (emacs-module-url
+          "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/emacs-module.h")
+         (tree-sitter-lang-in-url
+          "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/tree-sitter-lang.in")
+         (needs-cpp-compiler nil))
+    (message "Compiling grammar at %s" path)
+
+    (url-copy-file emacs-module-url "emacs-module.h" :ok-if-already-exists)
+    (url-copy-file tree-sitter-lang-in-url "tree-sitter-lang.in" :ok-if-already-exists)
+
+    (with-temp-buffer
+      (unless
+          (zerop
+           (apply #'call-process
+                  (if (file-exists-p "scanner.cc") "c++" "cc") nil t nil
+                  "parser.c" "-I." "--shared" "-o"
+                  (expand-file-name
+                   (format "libtree-sitter-%s%s" parser-name module-file-suffix)
+                   destination)
+                  (cond ((file-exists-p "scanner.c") '("scanner.c"))
+                        ((file-exists-p "scanner.cc") '("scanner.cc")))))
+        (user-error
+         "Unable to compile grammar, please file a bug report\n%s"
+         (buffer-string))))
+    (message "Completed compilation")))
+
+(use-package tree-sitter-rust
+  :straight (:type git
+             :host github
+             :repo "tree-sitter/tree-sitter-rust"
+             :post-build
+             (ns/tree-sitter-compile-grammar
+              (expand-file-name "ts-grammars" user-emacs-directory))))
 
 ;; (use-package company
 ;;     :hook (prog-mode . company-mode)
@@ -1000,6 +1042,9 @@
 (use-package go-mode
   :mode "\\.go\\'"
   :hook (go-mode . eglot-ensure))
+
+(use-package markdown-mode
+  :mode "\\.md\\'")
 
 ;; (use-package lsp-pyright)
 

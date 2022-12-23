@@ -1468,16 +1468,62 @@ Give Org-mode documents some extra visual polish.
 ;;     (lsp-ui-doc-enable nil))
 
 #+end_src
+ 
+*** Treesitter
+This is a handy little hack I got from [[https://leba.dev/blog/2022/12/12/(ab)using-straightel-for-easy-tree-sitter-grammar-installations/]] to use ~Straight~ to compile and load Treesitter grammars for me
 
-*** DAP: Debugging support
+**** Here's the function to compile grammars
 
 #+BEGIN_SRC emacs-lisp
+(require 'treesit)
+(defun ns/tree-sitter-compile-grammar (destination &optional path)
+  "Compile grammar at PATH, and place the resulting shared library in DESTINATION."
+  (interactive "fWhere should we put the shared library? \nfWhat tree-sitter grammar are we compiling? \n")
+  (make-directory destination 'parents)
 
-;; (use-package dap-mode
-;;   :config
-;;   (dap-auto-configure-mode))
+  (let* ((default-directory
+          (expand-file-name "src/" (or path default-directory)))
+         (parser-name
+          (thread-last (expand-file-name "grammar.json" default-directory)
+                       (json-read-file)
+                       (alist-get 'name)))
+         (emacs-module-url
+          "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/emacs-module.h")
+         (tree-sitter-lang-in-url
+          "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/tree-sitter-lang.in")
+         (needs-cpp-compiler nil))
+    (message "Compiling grammar at %s" path)
 
+    (url-copy-file emacs-module-url "emacs-module.h" :ok-if-already-exists)
+    (url-copy-file tree-sitter-lang-in-url "tree-sitter-lang.in" :ok-if-already-exists)
+
+    (with-temp-buffer
+      (unless
+          (zerop
+           (apply #'call-process
+                  (if (file-exists-p "scanner.cc") "c++" "cc") nil t nil
+                  "parser.c" "-I." "--shared" "-o"
+                  (expand-file-name
+                   (format "libtree-sitter-%s%s" parser-name module-file-suffix)
+                   destination)
+                  (cond ((file-exists-p "scanner.c") '("scanner.c"))
+                        ((file-exists-p "scanner.cc") '("scanner.cc")))))
+        (user-error
+         "Unable to compile grammar, please file a bug report\n%s"
+         (buffer-string))))
+    (message "Completed compilation")))
 #+END_SRC 
+
+**** And here's where I install the grammars themselves
+#+BEGIN_SRC emacs-lisp
+(use-package tree-sitter-rust
+  :straight (:type git
+             :host github
+             :repo "tree-sitter/tree-sitter-rust"
+             :post-build
+             (ns/tree-sitter-compile-grammar
+              (expand-file-name "ts-grammars" user-emacs-directory))))
+#+END_SRC
 
 *** Company: Auto completion
 A good code-completion package. I might consider switching to Corfu at some point.
@@ -1642,6 +1688,7 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
   :custom
   (reb-re-syntax 'string))
 #+END_SRC 
+
 ** Languages
 *** YAML
 
@@ -1701,11 +1748,15 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
 
 *** Go
 #+BEGIN_SRC emacs-lisp
-
 (use-package go-mode
   :mode "\\.go\\'"
   :hook (go-mode . eglot-ensure))
+#+END_SRC 
 
+*** Markdown
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :mode "\\.md\\'")
 #+END_SRC 
 
 *** Python
@@ -1938,6 +1989,7 @@ Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
 #+BEGIN_SRC emacs-lisp
 (use-package asm-blox)
 #+END_SRC 
+
 * Elisp Libraries
 Idk, these are just some libraries I'm testing our for writing in Elisp
 
