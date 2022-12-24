@@ -166,6 +166,13 @@ Don't confirm nonexistent files or buffers
 (setq confirm-nonexistent-file-or-buffer nil)
 #+END_SRC 
 
+** custom.el
+Create a ~custom.el~ file to store customization info instead of init.el, since this is a literal config.
+
+#+BEGIN_SRC emacs-lisp
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+#+END_SRC
+
 * Package System Setup
 I'm using =straight.el= with =use-package= to install and configure packages
 
@@ -208,7 +215,7 @@ Set up the basic user information variables.
       user-mail-address "nicksalesky@gmail.com")
 #+END_SRC 
 
-* Configure Emacs builtin packages
+* Configure builtin/core Emacs packages
 ** Saveplace: Remember your location in a file
 #+BEGIN_SRC emacs-lisp
 
@@ -280,6 +287,11 @@ I got the basic code for this from [[https://emacs.stackexchange.com/questions/3
 
 (setq backup-directory-alist
       `(("." . ,(concat user-emacs-directory "backups/"))))
+#+END_SRC
+
+** Emacs-async: Run asynchronous processes
+#+BEGIN_SRC emacs-lisp
+(use-package async)
 #+END_SRC
 
 * UI
@@ -820,6 +832,11 @@ I initially thought that this would be able to replace =perspective.el=, but it 
 
 * Keybindings and Basic Feature Configuration
 Here's where I configure some basic Emacs features with keybindings.
+
+** Enable all disabled keybindings
+#+BEGIN_SRC emacs-lisp
+(setq disabled-command-function nil)
+#+END_SRC
 
 ** Meow
 *** Keymap
@@ -1472,57 +1489,85 @@ Give Org-mode documents some extra visual polish.
 *** Treesitter
 This is a handy little hack I got from [[https://leba.dev/blog/2022/12/12/(ab)using-straightel-for-easy-tree-sitter-grammar-installations/]] to use ~Straight~ to compile and load Treesitter grammars for me
 
-**** Here's the function to compile grammars
+**** +Here's the function to compile grammars+
 
 #+BEGIN_SRC emacs-lisp
-(require 'treesit)
-(defun ns/tree-sitter-compile-grammar (destination &optional path)
-  "Compile grammar at PATH, and place the resulting shared library in DESTINATION."
-  (interactive "fWhere should we put the shared library? \nfWhat tree-sitter grammar are we compiling? \n")
-  (make-directory destination 'parents)
+;; (require 'treesit)
+;; (defun ns/tree-sitter-compile-grammar (destination &optional path)
+;;   "Compile grammar at PATH, and place the resulting shared library in DESTINATION."
+;;   (interactive "fWhere should we put the shared library? \nfWhat tree-sitter grammar are we compiling? \n")
+;;   (make-directory destination 'parents)
 
-  (let* ((default-directory
-          (expand-file-name "src/" (or path default-directory)))
-         (parser-name
-          (thread-last (expand-file-name "grammar.json" default-directory)
-                       (json-read-file)
-                       (alist-get 'name)))
-         (emacs-module-url
-          "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/emacs-module.h")
-         (tree-sitter-lang-in-url
-          "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/tree-sitter-lang.in")
-         (needs-cpp-compiler nil))
-    (message "Compiling grammar at %s" path)
+;;   (let* ((default-directory
+;;           (expand-file-name "src/" (or path default-directory)))
+;;          (parser-name
+;;           (thread-last (expand-file-name "grammar.json" default-directory)
+;;                        (json-read-file)
+;;                        (alist-get 'name)))
+;;          (emacs-module-url
+;;           "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/emacs-module.h")
+;;          (tree-sitter-lang-in-url
+;;           "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/tree-sitter-lang.in")
+;;          (needs-cpp-compiler nil))
+;;     (message "Compiling grammar at %s" path)
 
-    (url-copy-file emacs-module-url "emacs-module.h" :ok-if-already-exists)
-    (url-copy-file tree-sitter-lang-in-url "tree-sitter-lang.in" :ok-if-already-exists)
+;;     (url-copy-file emacs-module-url "emacs-module.h" :ok-if-already-exists)
+;;     (url-copy-file tree-sitter-lang-in-url "tree-sitter-lang.in" :ok-if-already-exists)
 
-    (with-temp-buffer
-      (unless
-          (zerop
-           (apply #'call-process
-                  (if (file-exists-p "scanner.cc") "c++" "cc") nil t nil
-                  "parser.c" "-I." "--shared" "-o"
-                  (expand-file-name
-                   (format "libtree-sitter-%s%s" parser-name module-file-suffix)
-                   destination)
-                  (cond ((file-exists-p "scanner.c") '("scanner.c"))
-                        ((file-exists-p "scanner.cc") '("scanner.cc")))))
-        (user-error
-         "Unable to compile grammar, please file a bug report\n%s"
-         (buffer-string))))
-    (message "Completed compilation")))
+;;     (with-temp-buffer
+;;       (unless
+;;           (zerop
+;;            (apply #'call-process
+;;                   (if (file-exists-p "scanner.cc") "c++" "cc") nil t nil
+;;                   "parser.c" "-I." "--shared" "-o"
+;;                   (expand-file-name
+;;                    (format "libtree-sitter-%s%s" parser-name module-file-suffix)
+;;                    destination)
+;;                   (cond ((file-exists-p "scanner.c") '("scanner.c"))
+;;                         ((file-exists-p "scanner.cc") '("scanner.cc")))))
+;;         (user-error
+;;          "Unable to compile grammar, please file a bug report\n%s"
+;;          (buffer-string))))
+;;     (message "Completed compilation")))
 #+END_SRC 
 
-**** And here's where I install the grammars themselves
+**** +And here's where I install the grammars themselves+
 #+BEGIN_SRC emacs-lisp
-(use-package tree-sitter-rust
-  :straight (:type git
-             :host github
-             :repo "tree-sitter/tree-sitter-rust"
-             :post-build
-             (ns/tree-sitter-compile-grammar
-              (expand-file-name "ts-grammars" user-emacs-directory))))
+;; (use-package tree-sitter-rust
+;;   :straight (:type git :host github :repo "tree-sitter/tree-sitter-rust"
+;;              :post-build
+;;              (ns/tree-sitter-compile-grammar
+;;               (expand-file-name "ts-grammars" user-emacs-directory))))
+#+END_SRC
+
+**** (/for now/) just using the bash script directly
+#+BEGIN_SRC emacs-lisp
+(require 'treesit)
+(setq treesit-extra-load-path (list (expand-file-name "ts-grammars" user-emacs-directory)))
+
+;; (defun ns/compile-tree-sitter-grammar
+;;     (language destination)
+;;   (make-directory destination 'parents)
+;;   (let ((shared-lib-name (format "libtree-sitter-%s.so" language)))
+;;     (shell-command (concat "./build.sh" language))))
+;;     ;; (f-move (concat "./dist/" shared-lib-name)
+;;     ;;         (expand-file-name shared-lib-name destination))))
+
+;; (defun ns/compile-tree-sitter-grammars
+;;     (destination)
+;;   (make-directory destination 'parents)
+  
+;;   ;; (async-start
+;;    ;; (lambda ()
+;;      (shell-command "./batch.sh")
+;;      (f-move "./dist" destination))
+
+;; (ns/compile-tree-sitter-grammars (expand-file-name "ts-grammars" user-emacs-directory))
+
+;; (use-package tree-sitter-module
+;;   :straight (:type git :host github :repo "casouri/tree-sitter-module"
+;;                    :post-build (ns/compile-tree-sitter-grammars
+;;                                 (expand-file-name "ts-grammars" user-emacs-directory))))
 #+END_SRC
 
 *** Company: Auto completion
@@ -1715,8 +1760,8 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package dockerfile-mode
-  :mode "Dockerfile\\'")
+;; (use-package dockerfile-mode
+;;   :mode "Dockerfile\\'")
 
 #+END_SRC 
 

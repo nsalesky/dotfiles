@@ -20,6 +20,8 @@
 
 (setq confirm-nonexistent-file-or-buffer nil)
 
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -83,6 +85,8 @@
 
 (setq backup-directory-alist
       `(("." . ,(concat user-emacs-directory "backups/"))))
+
+(use-package async)
 
 (setq-default frame-title-format '("%b [%m]"))
 
@@ -400,6 +404,8 @@
 (use-package emacs
   :custom
   (tab-bar-show nil))
+
+(setq disabled-command-function nil)
 
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -854,51 +860,76 @@
 ;;     (lsp-ui-doc-position 'bottom)
 ;;     (lsp-ui-doc-enable nil))
 
+;; (require 'treesit)
+;; (defun ns/tree-sitter-compile-grammar (destination &optional path)
+;;   "Compile grammar at PATH, and place the resulting shared library in DESTINATION."
+;;   (interactive "fWhere should we put the shared library? \nfWhat tree-sitter grammar are we compiling? \n")
+;;   (make-directory destination 'parents)
+
+;;   (let* ((default-directory
+;;           (expand-file-name "src/" (or path default-directory)))
+;;          (parser-name
+;;           (thread-last (expand-file-name "grammar.json" default-directory)
+;;                        (json-read-file)
+;;                        (alist-get 'name)))
+;;          (emacs-module-url
+;;           "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/emacs-module.h")
+;;          (tree-sitter-lang-in-url
+;;           "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/tree-sitter-lang.in")
+;;          (needs-cpp-compiler nil))
+;;     (message "Compiling grammar at %s" path)
+
+;;     (url-copy-file emacs-module-url "emacs-module.h" :ok-if-already-exists)
+;;     (url-copy-file tree-sitter-lang-in-url "tree-sitter-lang.in" :ok-if-already-exists)
+
+;;     (with-temp-buffer
+;;       (unless
+;;           (zerop
+;;            (apply #'call-process
+;;                   (if (file-exists-p "scanner.cc") "c++" "cc") nil t nil
+;;                   "parser.c" "-I." "--shared" "-o"
+;;                   (expand-file-name
+;;                    (format "libtree-sitter-%s%s" parser-name module-file-suffix)
+;;                    destination)
+;;                   (cond ((file-exists-p "scanner.c") '("scanner.c"))
+;;                         ((file-exists-p "scanner.cc") '("scanner.cc")))))
+;;         (user-error
+;;          "Unable to compile grammar, please file a bug report\n%s"
+;;          (buffer-string))))
+;;     (message "Completed compilation")))
+
+;; (use-package tree-sitter-rust
+;;   :straight (:type git :host github :repo "tree-sitter/tree-sitter-rust"
+;;              :post-build
+;;              (ns/tree-sitter-compile-grammar
+;;               (expand-file-name "ts-grammars" user-emacs-directory))))
+
 (require 'treesit)
-(defun ns/tree-sitter-compile-grammar (destination &optional path)
-  "Compile grammar at PATH, and place the resulting shared library in DESTINATION."
-  (interactive "fWhere should we put the shared library? \nfWhat tree-sitter grammar are we compiling? \n")
-  (make-directory destination 'parents)
+(setq treesit-extra-load-path (list (expand-file-name "ts-grammars" user-emacs-directory)))
 
-  (let* ((default-directory
-          (expand-file-name "src/" (or path default-directory)))
-         (parser-name
-          (thread-last (expand-file-name "grammar.json" default-directory)
-                       (json-read-file)
-                       (alist-get 'name)))
-         (emacs-module-url
-          "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/emacs-module.h")
-         (tree-sitter-lang-in-url
-          "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/tree-sitter-lang.in")
-         (needs-cpp-compiler nil))
-    (message "Compiling grammar at %s" path)
+;; (defun ns/compile-tree-sitter-grammar
+;;     (language destination)
+;;   (make-directory destination 'parents)
+;;   (let ((shared-lib-name (format "libtree-sitter-%s.so" language)))
+;;     (shell-command (concat "./build.sh" language))))
+;;     ;; (f-move (concat "./dist/" shared-lib-name)
+;;     ;;         (expand-file-name shared-lib-name destination))))
 
-    (url-copy-file emacs-module-url "emacs-module.h" :ok-if-already-exists)
-    (url-copy-file tree-sitter-lang-in-url "tree-sitter-lang.in" :ok-if-already-exists)
+;; (defun ns/compile-tree-sitter-grammars
+;;     (destination)
+;;   (make-directory destination 'parents)
+  
+;;   ;; (async-start
+;;    ;; (lambda ()
+;;      (shell-command "./batch.sh")
+;;      (f-move "./dist" destination))
 
-    (with-temp-buffer
-      (unless
-          (zerop
-           (apply #'call-process
-                  (if (file-exists-p "scanner.cc") "c++" "cc") nil t nil
-                  "parser.c" "-I." "--shared" "-o"
-                  (expand-file-name
-                   (format "libtree-sitter-%s%s" parser-name module-file-suffix)
-                   destination)
-                  (cond ((file-exists-p "scanner.c") '("scanner.c"))
-                        ((file-exists-p "scanner.cc") '("scanner.cc")))))
-        (user-error
-         "Unable to compile grammar, please file a bug report\n%s"
-         (buffer-string))))
-    (message "Completed compilation")))
+;; (ns/compile-tree-sitter-grammars (expand-file-name "ts-grammars" user-emacs-directory))
 
-(use-package tree-sitter-rust
-  :straight (:type git
-             :host github
-             :repo "tree-sitter/tree-sitter-rust"
-             :post-build
-             (ns/tree-sitter-compile-grammar
-              (expand-file-name "ts-grammars" user-emacs-directory))))
+;; (use-package tree-sitter-module
+;;   :straight (:type git :host github :repo "casouri/tree-sitter-module"
+;;                    :post-build (ns/compile-tree-sitter-grammars
+;;                                 (expand-file-name "ts-grammars" user-emacs-directory))))
 
 ;; (use-package company
 ;;     :hook (prog-mode . company-mode)
@@ -1020,8 +1051,8 @@
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
-(use-package dockerfile-mode
-  :mode "Dockerfile\\'")
+;; (use-package dockerfile-mode
+;;   :mode "Dockerfile\\'")
 
 (defun ns/setup-cider-format-hook
     ()
