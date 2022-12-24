@@ -164,7 +164,8 @@
     (dashboard-center-content t)
     (dashboard-set-heading-icons t)
     (dashboard-set-file-icons t)
-    (dashboard-projects-switch-function 'projectile-persp-switch-project)
+    (dashboard-projects-backend 'project-el)
+    ;; (dashboard-projects-switch-function 'projectile-persp-switch-project)
     (dashboard-items '((recents . 5)
                           (projects . 5)
                           (agenda . 5)))
@@ -218,7 +219,45 @@
 
 (use-package consult
   :bind
-  ("C-s" . consult-line))
+  (;; C-c bindings
+   ("C-c h" . consult-history)
+   ("C-c m" . consult-mode-command)
+   ("C-c k" . consult-kmacro)
+   ; M-g bindings
+   ("M-g g" . consult-goto-line)
+   ("M-g M-g" . consult-goto-line)
+
+   ; Buffers
+   ("C-x b" . consult-buffer)
+   ("C-x 4 b" . consult-buffer-otther-window)
+   ("C-x p b" . consult-project-buffer)
+
+   ; Random
+   ("C-x r b" . consult-bookmark)
+   ("M-y" . consult-yank-pop)
+
+   ; M-s bidnings (search-map)
+   ("M-s d" . consult-find)
+   ("M-s r" . consult-ripgrep)
+   ("M-s l" . consult-line)
+   ("M-s L" . consult-line-multi)
+   ("M-s k" . consult-keep-lines)
+   ("M-s u" . consult-focus-lines)
+
+   ; Isearch integration
+   ("M-s e" . consult-isearch-history)
+   :map isearch-mode-map
+   ("M-e" . consult-isearch-history)
+   ("M-s e" . consult-isearch-history)
+   ("M-s l" . consult-line)
+   ("M-s L" . consult-line-multi)
+
+   ; Minibuffer history
+   :map minibuffer-local-map
+   ("M-s" . consult-history)
+   ("M-r" . consult-history))
+  :custom
+  (consult-narrow-key (kbd "<")))
 
 (use-package orderless
   :custom
@@ -335,16 +374,16 @@
 ;;   :config
 ;;   (setq flyspell-correct-interface #'flyspell-correct-ivy))
 
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  ;; :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  ;(when (file-directory-p "~/Documents")
-    ;(setq projectile-project-search-path '("~/Documents")))
-  (setq projectile-switch-project-action #'projectile-dired))
+;; (use-package projectile
+;;   :diminish projectile-mode
+;;   :config (projectile-mode)
+;;   ;; :custom ((projectile-completion-system 'ivy))
+;;   :bind-keymap
+;;   ("C-c p" . projectile-command-map)
+;;   :init
+;;   ;(when (file-directory-p "~/Documents")
+;;     ;(setq projectile-project-search-path '("~/Documents")))
+;;   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package ripgrep)
 
@@ -358,52 +397,87 @@
   ("C-c t d" . treemacs-select-directory)
   ("C-c t B" . treemacs-bookmark)
   ("C-c t f" . treemacs-find-file))
-(use-package treemacs-projectile
-  :config
-  (treemacs-project-follow-mode 1))
+;; (use-package treemacs-projectile
+;;   :config
+;;   (treemacs-project-follow-mode 1))
 (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once))
-(use-package treemacs-perspective
-  :after (treemacs perspective))
+;; (use-package treemacs-perspective
+;;   :after (treemacs perspective))
 (use-package treemacs-magit
     :after (treemacs magit))
 (use-package treemacs-all-the-icons
   :config
   (treemacs-load-theme "all-the-icons"))
 
-(use-package perspective
-  :custom
-  (persp-mode-prefix-key (kbd "C-c w"))
-  (persp-modestring-short t)
-  :init
-  (persp-mode))
-  ;; :config
-  ;; (consult-customize consult--source-buffer :hidden t :default nil)
-  ;; (add-to-list 'consult-buffer-sources persp-consult-source))
+;; (use-package perspective
+;;   :custom
+;;   (persp-mode-prefix-key (kbd "C-c w"))
+;;   (persp-modestring-short t)
+;;   :init
+;;   (persp-mode))
+;;   ;; :config
+;;   ;; (consult-customize consult--source-buffer :hidden t :default nil)
+;;   ;; (add-to-list 'consult-buffer-sources persp-consult-source))
 
-(use-package persp-projectile)
+;; (use-package persp-projectile)
 
-(defun ns/tab-bar-switch-or-create (name func)
-  (if (ns/tab-bar-tab-exists name)
-      (tab-bar-switch-to-tab name)
-    (ns/tab-bar-new-tab name func)))
+;; (defun ns/tab-bar-switch-or-create (name func)
+;;   (if (ns/tab-bar-tab-exists name)
+;;       (tab-bar-switch-to-tab name)
+;;     (ns/tab-bar-new-tab name func)))
 
-(defun ns/tab-bar-tab-exists (name)
-  (member name
-          (mapcar #'(lambda (tab) (alist-get 'name tab))
-                  (tab-bar-tabs))))
+;; (defun ns/tab-bar-tab-exists (name)
+;;   (member name
+;;           (mapcar #'(lambda (tab) (alist-get 'name tab))
+;;                   (tab-bar-tabs))))
 
-(defun ns/tab-bar-new-tab (name func)
-  (when (eq nil tab-bar-mode)
-    (tab-bar-mode))
-  (tab-bar-new-tab)
-  (tab-bar-rename-tab name)
-  (when func ;; If func is nil, don't try to run it
-      (funcall func)))
+;; (defun ns/tab-bar-new-tab (name func)
+;;   (when (eq nil tab-bar-mode)
+;;     (tab-bar-mode))
+;;   (tab-bar-new-tab)
+;;   (tab-bar-rename-tab name)
+;;   (when func ;; If func is nil, don't try to run it
+;;       (funcall func)))
 
 (use-package emacs
   :custom
   (tab-bar-show nil))
+
+(use-package tabspaces
+  :straight (:type git :host github :repo "mclear-tools/tabspaces")
+  :hook (after-init . tabspaces-mode)
+  :commands (tabspaces-switch-or-create-workspace
+             tabspaces-open-or-create-project-and-workspace)
+  :custom
+  (tabspaces-use-filtered-buffers-as-default t)
+  (tabspaces-default-tab "Default")
+  (tabspaces-remove-to-default t)
+  (tabspaces-include-buffers '("*scratch*"))
+
+  ; sessions
+  ; (tabspaces-session t)
+  ; (tabspaces-session-auto-restore t))
+
+  ;; Filter buffers for consult-buffer
+  :config
+  (with-eval-after-load 'consult
+    ;; hide full buffer list
+    (consult-customize consult--source-buffer :hidden t :default nil)
+    ;; set consult-workspace buffer list
+    (defvar consult--source-workspace
+      (list :name     "Workspace Buffers"
+            :narrow   ?w
+            :history  'buffer-name-history
+            :category 'buffer
+            :state    #'consult--buffer-state
+            :default  t
+            :items    (lambda () (consult--buffer-query
+                                  :predicate #'tabspaces--local-buffer-p
+                                  :sort 'visibility
+                                  :as #'buffer-name)))
+      "Set workspace buffer list for consult-buffer.")
+    (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
 
 (setq disabled-command-function nil)
 
