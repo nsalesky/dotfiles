@@ -374,6 +374,15 @@
 ;;   :config
 ;;   (setq flyspell-correct-interface #'flyspell-correct-ivy))
 
+;; (defun ns/toggle-between-implementation-and-tests ()
+;;   (interactive)
+  
+;;   )
+
+;; (use-package project
+;;   :bind
+;;   ("C-x p t" . ns/toggle-between-implementation-and-tests))
+
 ;; (use-package projectile
 ;;   :diminish projectile-mode
 ;;   :config (projectile-mode)
@@ -442,7 +451,7 @@
 
 (use-package emacs
   :custom
-  (tab-bar-show nil))
+  (tab-bar-show t))
 
 (use-package tabspaces
   :straight (:type git :host github :repo "mclear-tools/tabspaces")
@@ -1147,6 +1156,12 @@
 (use-package go-mode
   :mode "\\.go\\'"
   :hook (go-mode . eglot-ensure))
+
+(defun ns/compile-tex-doc ()
+  (tex-compile (file-name-directory (buffer-file-name)) "pdflatex"))
+
+(use-package tex-mode
+  :hook (latex-mode . (lambda () (add-hook 'after-save-hook #'ns/compile-tex-doc nil t))))
 
 (use-package markdown-mode
   :mode "\\.md\\'")

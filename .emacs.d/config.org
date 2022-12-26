@@ -782,6 +782,18 @@ I took this from [[https://www.masteringemacs.org/article/iedit-interactive-mult
 * Project Management
 Tools to distinguish projects and quickly navigate inside projects and between them.
 
+** Project.el
+#+BEGIN_SRC emacs-lisp
+;; (defun ns/toggle-between-implementation-and-tests ()
+;;   (interactive)
+  
+;;   )
+
+;; (use-package project
+;;   :bind
+;;   ("C-x p t" . ns/toggle-between-implementation-and-tests))
+#+END_SRC
+
 ** +Projectile+
 #+begin_src emacs-lisp
 ;; (use-package projectile
@@ -866,7 +878,7 @@ I initially thought that this would be able to replace =perspective.el=, but it 
 
 (use-package emacs
   :custom
-  (tab-bar-show nil))
+  (tab-bar-show t))
 #+END_SRC 
 
 ** Tabspaces
@@ -1876,6 +1888,19 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
   :mode "\\.go\\'"
   :hook (go-mode . eglot-ensure))
 #+END_SRC 
+
+*** LaTeX
+Recompile LaTeX documents automatically when saved. 
+
+#+BEGIN_SRC emacs-lisp
+(defun ns/compile-tex-doc ()
+  "Asynchronously compile the current tex buffer to a pdf."
+  (start-process "pdflatex" nil "pdflatex" (buffer-file-name)))
+  ;; (async-shell-command (concat "pdflatex " (buffer-file-name))))
+
+(use-package tex-mode
+  :hook (latex-mode . (lambda () (add-hook 'after-save-hook #'ns/compile-tex-doc nil t))))
+#+END_SRC
 
 *** Markdown
 #+BEGIN_SRC emacs-lisp
