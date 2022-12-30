@@ -659,20 +659,6 @@ Give parenthases rainbow coloring depending on their nested level in all program
 
 #+END_SRC 
 
-** SmartParens: Match grouping characters
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package smartparens
-  :hook
-  (prog-mode . smartparens-mode)
-
-  :config
-  ;; Don't insert paired single quotes in Elisp mode
-  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
-
-#+END_SRC
-
 ** YASnippet: Create common snippets
 Add various templates to Emacs.
 
@@ -878,7 +864,7 @@ I initially thought that this would be able to replace =perspective.el=, but it 
 
 (use-package emacs
   :custom
-  (tab-bar-show t))
+  (tab-bar-show nil))
 #+END_SRC 
 
 ** Tabspaces

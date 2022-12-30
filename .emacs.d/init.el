@@ -308,14 +308,6 @@
 (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package smartparens
-  :hook
-  (prog-mode . smartparens-mode)
-
-  :config
-  ;; Don't insert paired single quotes in Elisp mode
-  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
-
 (use-package yasnippet
   :config
   (yas-global-mode))
@@ -451,7 +443,7 @@
 
 (use-package emacs
   :custom
-  (tab-bar-show t))
+  (tab-bar-show nil))
 
 (use-package tabspaces
   :straight (:type git :host github :repo "mclear-tools/tabspaces")
@@ -1158,7 +1150,9 @@
   :hook (go-mode . eglot-ensure))
 
 (defun ns/compile-tex-doc ()
-  (tex-compile (file-name-directory (buffer-file-name)) "pdflatex"))
+  "Asynchronously compile the current tex buffer to a pdf."
+  (start-process "pdflatex" nil "pdflatex" (buffer-file-name)))
+  ;; (async-shell-command (concat "pdflatex " (buffer-file-name))))
 
 (use-package tex-mode
   :hook (latex-mode . (lambda () (add-hook 'after-save-hook #'ns/compile-tex-doc nil t))))
