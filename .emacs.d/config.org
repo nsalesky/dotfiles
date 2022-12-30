@@ -768,6 +768,15 @@ I took this from [[https://www.masteringemacs.org/article/iedit-interactive-mult
 * Project Management
 Tools to distinguish projects and quickly navigate inside projects and between them.
 
+** Dired
+
+#+BEGIN_SRC emacs-lisp
+(use-package dired
+  :straight (:type built-in)
+  :custom
+  (dired-kill-when-opening-new-dired-buffer t))
+#+END_SRC
+
 ** Project.el
 #+BEGIN_SRC emacs-lisp
 ;; (defun ns/toggle-between-implementation-and-tests ()
@@ -793,7 +802,7 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 ;;     ;(setq projectile-project-search-path '("~/Documents")))
 ;;   (setq projectile-switch-project-action #'projectile-dired))
 
-(use-package ripgrep)
+;; (use-package ripgrep)
 #+end_src
 
 ** Treemacs: A tree layout file explorer
@@ -823,23 +832,6 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   (treemacs-load-theme "all-the-icons"))
 #+end_src
 
-** +Perspective+
-Named workspaces that isolate buffer lists.
-
-#+BEGIN_SRC emacs-lisp
-;; (use-package perspective
-;;   :custom
-;;   (persp-mode-prefix-key (kbd "C-c w"))
-;;   (persp-modestring-short t)
-;;   :init
-;;   (persp-mode))
-;;   ;; :config
-;;   ;; (consult-customize consult--source-buffer :hidden t :default nil)
-;;   ;; (add-to-list 'consult-buffer-sources persp-consult-source))
-
-;; (use-package persp-projectile)
-#+END_SRC
-
 ** Tab-bar-mode
 I initially thought that this would be able to replace =perspective.el=, but it doesn't currently have the ability to isolate buffer lists. I really like the idea of using base Emacs functionalities wherever possible, so I'm keeping this around in case it ever becomes more useful in the future. I got some help for these functions from [[https://mmk2410.org/2022/02/11/using-emacs-tab-bar-mode/]]
 
@@ -862,7 +854,8 @@ I initially thought that this would be able to replace =perspective.el=, but it 
 ;;   (when func ;; If func is nil, don't try to run it
 ;;       (funcall func)))
 
-(use-package emacs
+(use-package tab-bar
+  :straight (:type built-in)
   :custom
   (tab-bar-show nil))
 #+END_SRC 

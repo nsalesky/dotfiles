@@ -366,6 +366,11 @@
 ;;   :config
 ;;   (setq flyspell-correct-interface #'flyspell-correct-ivy))
 
+(use-package dired
+  :straight (:type built-in)
+  :custom
+  (dired-kill-when-opening-new-dired-buffer t))
+
 ;; (defun ns/toggle-between-implementation-and-tests ()
 ;;   (interactive)
   
@@ -386,7 +391,7 @@
 ;;     ;(setq projectile-project-search-path '("~/Documents")))
 ;;   (setq projectile-switch-project-action #'projectile-dired))
 
-(use-package ripgrep)
+;; (use-package ripgrep)
 
 (use-package treemacs
   :custom
@@ -411,18 +416,6 @@
   :config
   (treemacs-load-theme "all-the-icons"))
 
-;; (use-package perspective
-;;   :custom
-;;   (persp-mode-prefix-key (kbd "C-c w"))
-;;   (persp-modestring-short t)
-;;   :init
-;;   (persp-mode))
-;;   ;; :config
-;;   ;; (consult-customize consult--source-buffer :hidden t :default nil)
-;;   ;; (add-to-list 'consult-buffer-sources persp-consult-source))
-
-;; (use-package persp-projectile)
-
 ;; (defun ns/tab-bar-switch-or-create (name func)
 ;;   (if (ns/tab-bar-tab-exists name)
 ;;       (tab-bar-switch-to-tab name)
@@ -441,7 +434,8 @@
 ;;   (when func ;; If func is nil, don't try to run it
 ;;       (funcall func)))
 
-(use-package emacs
+(use-package tab-bar
+  :straight (:type built-in)
   :custom
   (tab-bar-show nil))
 
