@@ -439,6 +439,18 @@
   :custom
   (tab-bar-show nil))
 
+  ;; :config
+  ;; (setf mode-line-misc-info ;; I got this from the Hammy README.md
+  ;;       ;; When the tab-bar is active, don't show global-mode-string
+  ;;       ;; in mode-line-misc-info, because we now show that in the
+  ;;       ;; tab-bar using `tab-bar-format-align-right' and
+  ;;       ;; `tab-bar-format-global'.
+  ;;       (remove '(global-mode-string ("" global-mode-string))
+  ;;               mode-line-misc-info))
+  ;; (unless (member 'tab-bar-format-global tab-bar-format)
+  ;;   ;; Show `global-mode-string' in the tab bar.
+  ;;   (setf tab-bar-format (append tab-bar-format '(tab-bar-format-align-right tab-bar-format-global)))))
+
 (use-package tabspaces
   :straight (:type git :host github :repo "mclear-tools/tabspaces")
   :hook (after-init . tabspaces-mode)
@@ -474,7 +486,13 @@
       "Set workspace buffer list for consult-buffer.")
     (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
 
+(use-package hammy
+  :config
+  (hammy-mode 1))
+
 (setq disabled-command-function nil)
+
+(electric-pair-mode 1)
 
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -807,21 +825,6 @@
 (keymap-global-set "C-c c" 'org-capture)
 (keymap-global-set "C-c a" 'org-agenda)
 
-;; (use-package org-roam
-;;   :custom
-;;   (org-roam-directory "~/notes/roam/")
-;;   :config
-;;   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-;;   (org-roam-db-autosync-mode)
-;;   :general
-;;   (my-leader
-;;     "n r" '(:ignore t :which-key "roam")
-;;     ;;"n r" '(:keymap org-roam-mode-map :which-key "roam")
-;;     "n r f" '(org-roam-node-find :which-key "Find Node")
-;;     "n r i" '(org-roam-node-insert :which-key "Insert Node")
-;;     "n r o" '(org-roam-node-open :which-key "Open Node")
-;;     "n r g" '(org-roam-graph :which-key "Graph")))
-
 ;; (use-package org-journal
 ;;   :general
 ;;   (my-leader
@@ -879,13 +882,36 @@
 ;;     (add-hook 'org-mode-hook #'org-modern-mode)
 ;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
 
-(use-package denote
-  :straight (denote :type git :host gitlab
-                    :repo "protesilaos/denote")
+(use-package emacsql-sqlite-builtin)
+(use-package org-roam
+  :diminish
+  :bind
+  (:prefix-map ns/org-roam-prefix-map
+               :prefix "C-c n"
+               ("l" . org-roam-buffer-toggle)
+               ("f" . org-roam-node-find)
+               ("g" . org-roam-graph)
+               ("i" . org-roam-node-insert)
+               ("c" . org-roam-capture)
+               ;; Dailies
+               ("j" . org-roam-dailies-capture-today))
   :custom
-  (denote-directory "~/notes")
-  (denote-known-keywords
-    '("emacs" "personal" "journal")))
+  (org-roam-directory "~/notes/org-roam/")
+  (org-roam-db-location "~/notes/org-roam.db")
+  (org-roam-database-connector 'sqlite-builtin)
+  :init
+  (setq org-roam-v2-ack t)
+  :config
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-enable))
+
+;; (use-package denote
+;;   :straight (denote :type git :host gitlab
+;;                     :repo "protesilaos/denote")
+;;   :custom
+;;   (denote-directory "~/notes")
+;;   (denote-known-keywords
+;;     '("emacs" "personal" "journal")))
 
 (use-package term
   :custom
@@ -1022,7 +1048,8 @@
                ("f" . eglot-format-buffer))
   :custom
   (eglot-events-buffer-size 0) ; Disable the events buffer for performance
-  (eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
+  (eglot-send-changes-idle-time 0.5))
+  ;(eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
   ;; :config
   ;; (add-hook 'eglot-managed-mode-hook
             ;; (lambda ()
@@ -1030,11 +1057,14 @@
               ;; (flymake-mode -1)))) ; Disable doc popups in the minibuffer
 
 (use-package corfu
+  :straight (corfu :files (:defaults "extensions/*")
+                   :includes (corfu-info corfu-history))
   :bind
   (:map corfu-map
         ("C-n" . corfu-next)
         ("C-p" . corfu-previous)
         ("<escape>" . corfu-quit)
+        ("C-g" . corfu-quit)
         ("<return>" . corfu-insert)
         ("M-d" . corfu-show-documentation)
         ("M-l" . corfu-show-location))
@@ -1042,7 +1072,9 @@
   :custom
   (corfu-auto t)
   (corfu-auto-prefix 3) ; Minimum length of prefix for auto-complete
-  (corfu-auto-delay 0.2) ; Start auto-completion after 0.2 seconds
+  (corfu-auto-delay 0) ; Immediately start auto-completion
+
+  (corfu-popupinfo-delay 0)
 
   (corfu-min-width 80) ; Min width of popup, I like to have it consistent
   (corfu-max-width corfu-min-width) ; Always have the same width
@@ -1057,8 +1089,6 @@
   (corfu-preview-current 'insert)  ; Preview first candidate
   (corfu-preselect-first t)        ; Preselect first candidate?
 
-  (corfu-echo-documentation nil) ; Use 'corfu-doc' instead
-
   ;; Enable indentation+completion using the TAB key instead of M-TAB
   (tab-always-indent 'complete)
   ;; (completion-cycle-threshold nil)
@@ -1066,11 +1096,8 @@
   (corfu-excluded-modes '(eshell-mode))
 
   :init
-  (global-corfu-mode))
-
-  ;; :config
-  ;; (general-add-advice '(corfu--setup corfu--teardown) :after 'evil-normalize-keymaps)
-  ;; (evil-make-overriding-map corfu-map))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode))
 
 (use-package cape)
 
@@ -1079,9 +1106,6 @@
   (kind-icon-default-face 'corfu-default)
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-(use-package corfu-doc
-  :hook (corfu-mode . corfu-doc-mode))
 
 (use-package format-all)
   ;:hook
@@ -1307,9 +1331,6 @@
   (pdf-loader-install))
 
 (use-package saveplace-pdf-view)
-
-(use-package nov
-  :mode "\\.epub\\'")
 
 (use-package asm-blox)
 

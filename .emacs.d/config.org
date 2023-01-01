@@ -3,92 +3,6 @@
 #+PROPERTY: header-args:emacs-lisp :tangle init.el
 #+STARTUP: overview
 
-* Contents :TOC:
-:PROPERTIES:
-:TOC:      :include all
-:END:
-
-- [[#about][About]]
-- [[#installation][Installation]]
-- [[#emacs-initialization][Emacs Initialization]]
-  - [[#set-some-early-ui-settings][Set some early UI settings]]
-- [[#package-system-setup][Package System Setup]]
-- [[#personal-information][Personal Information]]
-- [[#configure-emacs-builtin-packages][Configure Emacs builtin packages]]
-  - [[#saveplace-remember-your-location-in-a-file][Saveplace: Remember your location in a file]]
-  - [[#savehist-keep-track-of-minibuffer-history][Savehist: Keep track of minibuffer history]]
-  - [[#time][Time]]
-  - [[#global-auto-revert-mode][Global-auto-revert-mode]]
-- [[#ui][UI]]
-  - [[#basic-emacs-appearance-settings][Basic Emacs appearance settings]]
-  - [[#fonts][Fonts]]
-  - [[#theme][Theme]]
-  - [[#modeline][Modeline]]
-  - [[#dashboard][Dashboard]]
-  - [[#smooth-scrolling][Smooth Scrolling]]
-  - [[#helpful][Helpful]]
-  - [[#hl-todo-highlight-and-navigate-todo-keywords][Hl-todo: Highlight and navigate TODO keywords]]
-  - [[#hl-line-highlight-the-current-line][Hl-line: Highlight the current line]]
-  - [[#transparent-frame][Transparent Frame]]
-- [[#vertico-minibuffer][Vertico: Minibuffer]]
-  - [[#consult-add-helpful-functions-with-completion][Consult: add helpful functions with completion]]
-  - [[#orderless-match-the-different-parts-of-completion-candidates][Orderless: match the different parts of completion candidates]]
-  - [[#all-the-icons-completion-add-icons-to-completion-candidates][All-the-icons-completion: add icons to completion candidates]]
-  - [[#embark][Embark]]
-- [[#editor][Editor]]
-  - [[#aggressive-indent-always-keep-code-properly-indented][Aggressive-indent: Always keep code properly indented]]
-  - [[#rainbow-delimiters-different-color-for-each-parenthesis-level][Rainbow-delimiters: Different color for each parenthesis level]]
-  - [[#smartparens-match-grouping-characters][SmartParens: Match grouping characters]]
-  - [[#yasnippet-create-common-snippets][YASnippet: Create common snippets]]
-  - [[#company-auto-completion][Company: Auto completion]]
-  - [[#corfu-completion-at-point][Corfu: Completion at point]]
-  - [[#which-key-list-commands-for-current-prefix][Which-key: List commands for current prefix]]
-  - [[#olivetti-centered-document-editing][Olivetti: Centered document editing]]
-  - [[#iedit-simple-multi-cursor-editing][Iedit: Simple multi-cursor editing]]
-- [[#spell-checker][Spell checker]]
-  - [[#flyspell][Flyspell]]
-  - [[#flyspell-correct-show-list-of-correct-spelling-suggestions][Flyspell-correct: Show list of correct spelling suggestions]]
-- [[#project-management][Project Management]]
-  - [[#projectile][Projectile]]
-  - [[#treemacs-a-tree-layout-file-explorer][Treemacs: A tree layout file explorer]]
-  - [[#perspective-give-projects-their-own-named-workspaces][Perspective: Give projects their own named workspaces]]
-  - [[#tab-bar-mode][Tab-bar-mode]]
-- [[#keybindings-and-basic-feature-configuration][Keybindings and Basic Feature Configuration]]
-  - [[#esc-quits-prompts][ESC quits prompts]]
-  - [[#hydra][Hydra]]
-  - [[#tabs-not-spaces][Tabs Not Spaces]]
-  - [[#files][Files]]
-  - [[#windows][Windows]]
-  - [[#search][Search]]
-  - [[#dumb-jump][Dumb-jump]]
-- [[#version-control][Version Control]]
-  - [[#magit][Magit]]
-  - [[#forge-issue-github-pull-requests-and-more][Forge: issue GitHub pull requests and more]]
-  - [[#blamer-git-blame-the-current-line][Blamer: Git blame the current line]]
-- [[#org-mode][Org Mode]]
-  - [[#basic-config][Basic config]]
-  - [[#fonts-1][Fonts]]
-  - [[#configure-babel][Configure Babel]]
-  - [[#auto-tangle-configuration-files][Auto-tangle configuration files]]
-  - [[#org-agenda-and-org-capture][Org-agenda and org-capture]]
-  - [[#org-roam][Org-roam]]
-  - [[#org-journal][Org-journal]]
-  - [[#org-present][Org-present]]
-  - [[#org-modern][Org-modern]]
-- [[#note-taking][Note Taking]]
-  - [[#denote][Denote]]
-- [[#shellsterminal-emulators][Shells/Terminal Emulators]]
-  - [[#term-mode][term-mode]]
-  - [[#vterm][Vterm]]
-- [[#programming][Programming]]
-  - [[#general-tools][General Tools]]
-  - [[#languages][Languages]]
-- [[#irc][IRC]]
-- [[#documents][Documents]]
-  - [[#pdfs][PDFs]]
-  - [[#ebooks][Ebooks]]
-- [[#elisp-libraries][Elisp Libraries]]
-
 * About
 This is my personal Emacs config that I've built with the "help" :) of many other open-source configs, blog posts, articles, etc. When possible, I try to attribute specific sections to the original source for both my benefit and anyone else's. I started using Emacs with the help of [[https://github.com/doomemacs/doomemacs][Doom Emacs]], so many of my keybindings and other settings are inspired by that.
 
@@ -226,9 +140,6 @@ Set up the basic user information variables.
   (save-place-mode))
 
 #+END_SRC 
-
-#+RESULTS:
-: t
 
 ** Savehist: Keep track of minibuffer history
 #+BEGIN_SRC emacs-lisp
@@ -858,6 +769,18 @@ I initially thought that this would be able to replace =perspective.el=, but it 
   :straight (:type built-in)
   :custom
   (tab-bar-show nil))
+
+  ;; :config
+  ;; (setf mode-line-misc-info ;; I got this from the Hammy README.md
+  ;;       ;; When the tab-bar is active, don't show global-mode-string
+  ;;       ;; in mode-line-misc-info, because we now show that in the
+  ;;       ;; tab-bar using `tab-bar-format-align-right' and
+  ;;       ;; `tab-bar-format-global'.
+  ;;       (remove '(global-mode-string ("" global-mode-string))
+  ;;               mode-line-misc-info))
+  ;; (unless (member 'tab-bar-format-global tab-bar-format)
+  ;;   ;; Show `global-mode-string' in the tab bar.
+  ;;   (setf tab-bar-format (append tab-bar-format '(tab-bar-format-align-right tab-bar-format-global)))))
 #+END_SRC 
 
 ** Tabspaces
@@ -900,12 +823,26 @@ A light wrapper around ~project.el~ and ~tab-bar-mode~ providing isolated buffer
     (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
 #+END_SRC
 
+** Hammy: Pacing myself through work
+
+#+BEGIN_SRC emacs-lisp
+(use-package hammy
+  :config
+  (hammy-mode 1))
+#+END_SRC
+
 * Keybindings and Basic Feature Configuration
 Here's where I configure some basic Emacs features with keybindings.
 
 ** Enable all disabled keybindings
 #+BEGIN_SRC emacs-lisp
 (setq disabled-command-function nil)
+#+END_SRC
+
+** Electric-pair-mode
+
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode 1)
 #+END_SRC
 
 ** Meow
@@ -1385,28 +1322,7 @@ Finally, define a keybinding for =org-capture= and opening up the =org-agenda=
 
 #+END_SRC 
 
-** Org-roam
-
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package org-roam
-;;   :custom
-;;   (org-roam-directory "~/notes/roam/")
-;;   :config
-;;   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-;;   (org-roam-db-autosync-mode)
-;;   :general
-;;   (my-leader
-;;     "n r" '(:ignore t :which-key "roam")
-;;     ;;"n r" '(:keymap org-roam-mode-map :which-key "roam")
-;;     "n r f" '(org-roam-node-find :which-key "Find Node")
-;;     "n r i" '(org-roam-node-insert :which-key "Insert Node")
-;;     "n r o" '(org-roam-node-open :which-key "Open Node")
-;;     "n r g" '(org-roam-graph :which-key "Graph")))
-
-#+END_SRC
-
-** Org-journal
+** +Org-journal+
 
 #+BEGIN_SRC emacs-lisp
 
@@ -1483,16 +1399,43 @@ Give Org-mode documents some extra visual polish.
 #+END_SRC
 
 * Note Taking
-** Denote
+** Org-roam
 
 #+BEGIN_SRC emacs-lisp
-(use-package denote
-  :straight (denote :type git :host gitlab
-                    :repo "protesilaos/denote")
+(use-package emacsql-sqlite-builtin)
+(use-package org-roam
+  :diminish
+  :bind
+  (:prefix-map ns/org-roam-prefix-map
+               :prefix "C-c n"
+               ("l" . org-roam-buffer-toggle)
+               ("f" . org-roam-node-find)
+               ("g" . org-roam-graph)
+               ("i" . org-roam-node-insert)
+               ("c" . org-roam-capture)
+               ;; Dailies
+               ("j" . org-roam-dailies-capture-today))
   :custom
-  (denote-directory "~/notes")
-  (denote-known-keywords
-    '("emacs" "personal" "journal")))
+  (org-roam-directory "~/notes/org-roam/")
+  (org-roam-db-location "~/notes/org-roam.db")
+  (org-roam-database-connector 'sqlite-builtin)
+  :init
+  (setq org-roam-v2-ack t)
+  :config
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-enable))
+#+END_SRC
+
+** +Denote+
+
+#+BEGIN_SRC emacs-lisp
+;; (use-package denote
+;;   :straight (denote :type git :host gitlab
+;;                     :repo "protesilaos/denote")
+;;   :custom
+;;   (denote-directory "~/notes")
+;;   (denote-known-keywords
+;;     '("emacs" "personal" "journal")))
 #+END_SRC 
 
 * Shells/Terminal Emulators
@@ -1672,7 +1615,8 @@ A good code-completion package. I might consider switching to Corfu at some poin
                ("f" . eglot-format-buffer))
   :custom
   (eglot-events-buffer-size 0) ; Disable the events buffer for performance
-  (eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
+  (eglot-send-changes-idle-time 0.5))
+  ;(eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
   ;; :config
   ;; (add-hook 'eglot-managed-mode-hook
             ;; (lambda ()
@@ -1686,11 +1630,14 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
 
 #+BEGIN_SRC emacs-lisp
 (use-package corfu
+  :straight (corfu :files (:defaults "extensions/*")
+                   :includes (corfu-info corfu-history))
   :bind
   (:map corfu-map
         ("C-n" . corfu-next)
         ("C-p" . corfu-previous)
         ("<escape>" . corfu-quit)
+        ("C-g" . corfu-quit)
         ("<return>" . corfu-insert)
         ("M-d" . corfu-show-documentation)
         ("M-l" . corfu-show-location))
@@ -1698,7 +1645,9 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
   :custom
   (corfu-auto t)
   (corfu-auto-prefix 3) ; Minimum length of prefix for auto-complete
-  (corfu-auto-delay 0.2) ; Start auto-completion after 0.2 seconds
+  (corfu-auto-delay 0) ; Immediately start auto-completion
+
+  (corfu-popupinfo-delay 0)
 
   (corfu-min-width 80) ; Min width of popup, I like to have it consistent
   (corfu-max-width corfu-min-width) ; Always have the same width
@@ -1713,8 +1662,6 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
   (corfu-preview-current 'insert)  ; Preview first candidate
   (corfu-preselect-first t)        ; Preselect first candidate?
 
-  (corfu-echo-documentation nil) ; Use 'corfu-doc' instead
-
   ;; Enable indentation+completion using the TAB key instead of M-TAB
   (tab-always-indent 'complete)
   ;; (completion-cycle-threshold nil)
@@ -1722,11 +1669,8 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
   (corfu-excluded-modes '(eshell-mode))
 
   :init
-  (global-corfu-mode))
-
-  ;; :config
-  ;; (general-add-advice '(corfu--setup corfu--teardown) :after 'evil-normalize-keymaps)
-  ;; (evil-make-overriding-map corfu-map))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode))
 
 (use-package cape)
 
@@ -1735,9 +1679,6 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
   (kind-icon-default-face 'corfu-default)
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-(use-package corfu-doc
-  :hook (corfu-mode . corfu-doc-mode))
 #+END_SRC 
 
 *** Format All The Code: Simple code formatting
@@ -2103,15 +2044,6 @@ Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
 
 #+END_SRC 
 
-** Ebooks
-
-#+BEGIN_SRC emacs-lisp
-
-(use-package nov
-  :mode "\\.epub\\'")
-
-#+END_SRC
-
 * Games
 ** asm-blox: a Zachtronics type puzzle game
 #+BEGIN_SRC emacs-lisp
@@ -2122,9 +2054,7 @@ Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
 Idk, these are just some libraries I'm testing our for writing in Elisp
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package request)
-
 #+END_SRC 
 
 
