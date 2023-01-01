@@ -1332,6 +1332,4 @@
 
 (use-package saveplace-pdf-view)
 
-(use-package asm-blox)
-
 (use-package request)

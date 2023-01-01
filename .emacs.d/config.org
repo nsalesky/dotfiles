@@ -2028,27 +2028,17 @@ Set up my basic IRC user info.
 ** PDFs
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package tablist)
 
 (use-package pdf-tools
   :config
   (pdf-loader-install))
-
 #+END_SRC
 
 Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
 #+BEGIN_SRC emacs-lisp
-
 (use-package saveplace-pdf-view)
-
-#+END_SRC 
-
-* Games
-** asm-blox: a Zachtronics type puzzle game
-#+BEGIN_SRC emacs-lisp
-(use-package asm-blox)
-#+END_SRC 
+#+END_SRC
 
 * Elisp Libraries
 Idk, these are just some libraries I'm testing our for writing in Elisp
