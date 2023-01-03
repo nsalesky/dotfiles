@@ -1126,21 +1126,24 @@ The very basics for Org-mode, setting up fonts and basic visual features.
 
 ;; Org Mode
 (use-package org
-    :hook (org-mode . ns/org-mode-setup)
-    :config
-    ;; (ns/org-font-setup)
-    :custom
-     ;; org-hide-emphasis-markers nil
-    (org-ellipsis "…")
-    (org-pretty-entities t)
-    (org-hide-emphasis-markers nil)
+  :straight (:type built-in)
+  :bind
+  ("C-c l" . org-store-link)
+  :hook (org-mode . ns/org-mode-setup)
+  :config
+  ;; (ns/org-font-setup)
+  :custom
+  ;; org-hide-emphasis-markers nil
+  (org-ellipsis "…")
+  (org-pretty-entities t)
+  (org-hide-emphasis-markers nil)
 
-    (org-directory "~/notes")
+  (org-directory "~/notes")
 
-    (org-src-tab-acts-natively t)
-    (org-src-preserve-indentation t)
+  (org-src-tab-acts-natively t)
+  (org-src-preserve-indentation t)
 
-    (org-todo-keywords
+  (org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
             (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
                 "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
@@ -1184,14 +1187,20 @@ Set up ~variable-pitch~ fonts.
 
 ** Configure Babel
 #+begin_src emacs-lisp
-
 (org-babel-do-load-languages 'org-babel-load-languages
     '((emacs-lisp . t)
-    (python . t)))
+      (python . t)
+      (clojure . t)
+      (C . t)
+      ;; (cpp . t)
+      (shell . t)
+      (eshell . t)
+      (java . t)
+      (js . t)
+      (ruby . t)
+      (sql . t)))
 
 (setq org-confirm-babel-evaluate nil)
-
-
 #+end_src
 
 ** Auto-tangle configuration files
@@ -1384,14 +1393,14 @@ Finally, define a keybinding for =org-capture= and opening up the =org-agenda=
 
 #+END_SRC 
 
-** Org-modern
+** +Org-modern+
 Give Org-mode documents some extra visual polish.
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package org-modern
-  :config
-  (global-org-modern-mode))
+;; (use-package org-modern
+;;   :config
+;;   (global-org-modern-mode))
 ;;     :config
 ;;     (add-hook 'org-mode-hook #'org-modern-mode)
 ;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
@@ -1403,6 +1412,7 @@ Give Org-mode documents some extra visual polish.
 
 #+BEGIN_SRC emacs-lisp
 (use-package emacsql-sqlite-builtin)
+
 (use-package org-roam
   :diminish
   :bind
@@ -1419,6 +1429,15 @@ Give Org-mode documents some extra visual polish.
   (org-roam-directory "~/notes/org-roam/")
   (org-roam-db-location "~/notes/org-roam.db")
   (org-roam-database-connector 'sqlite-builtin)
+  (org-roam-capture-templates
+   '(("d" "default" plain "%?"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+date: %U\n")
+      :unnarrowed t)
+     ("r" "recipe" plain (file "~/notes/org-roam/templates/recipe-template.org")
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+date: %U\n#+filetags: Recipe\n")
+      :unnarrowed t)))
   :init
   (setq org-roam-v2-ack t)
   :config
@@ -1960,8 +1979,8 @@ Editing in a mixed-language web format.
     ;; ("C-c h" . ns/toggle-web-mode))
 #+END_SRC 
 
-* Social
-** IRC
+* +Social+
+** +IRC+
 I use the ~erc-sasl~ implementation provided [[https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Bchat/erc/local/erc-sasl/erc-sasl.el][here]], so you'll have to download it before running this.
 
 Set up SASL for [[libera.chat]].
@@ -2013,15 +2032,15 @@ Set up my basic IRC user info.
 
 #+END_SRC
 
-** Mastodon
+** +Mastodon+
 
 #+BEGIN_SRC emacs-lisp
-(use-package mastodon
-  :custom
-  (mastodon-instance-url "https://emacs.ch")
-  (mastodon-active-user "nsalesky")
-  :config
-  (mastodon-discover))
+;; (use-package mastodon
+;;   :custom
+;;   (mastodon-instance-url "https://emacs.ch")
+;;   (mastodon-active-user "nsalesky")
+;;   :config
+;;   (mastodon-discover))
 #+END_SRC
 
 * Documents

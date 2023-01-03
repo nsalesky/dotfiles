@@ -688,21 +688,24 @@
 
 ;; Org Mode
 (use-package org
-    :hook (org-mode . ns/org-mode-setup)
-    :config
-    ;; (ns/org-font-setup)
-    :custom
-     ;; org-hide-emphasis-markers nil
-    (org-ellipsis "…")
-    (org-pretty-entities t)
-    (org-hide-emphasis-markers nil)
+  :straight (:type built-in)
+  :bind
+  ("C-c l" . org-store-link)
+  :hook (org-mode . ns/org-mode-setup)
+  :config
+  ;; (ns/org-font-setup)
+  :custom
+  ;; org-hide-emphasis-markers nil
+  (org-ellipsis "…")
+  (org-pretty-entities t)
+  (org-hide-emphasis-markers nil)
 
-    (org-directory "~/notes")
+  (org-directory "~/notes")
 
-    (org-src-tab-acts-natively t)
-    (org-src-preserve-indentation t)
+  (org-src-tab-acts-natively t)
+  (org-src-preserve-indentation t)
 
-    (org-todo-keywords
+  (org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
             (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
                 "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
@@ -737,7 +740,16 @@
 
 (org-babel-do-load-languages 'org-babel-load-languages
     '((emacs-lisp . t)
-    (python . t)))
+      (python . t)
+      (clojure . t)
+      (C . t)
+      ;; (cpp . t)
+      (shell . t)
+      (eshell . t)
+      (java . t)
+      (js . t)
+      (ruby . t)
+      (sql . t)))
 
 (setq org-confirm-babel-evaluate nil)
 
@@ -875,14 +887,15 @@
   (add-hook 'org-present-mode-hook 'ns/org-present-begin)
   (add-hook 'org-present-mode-quit-hook 'ns/org-present-end))
 
-(use-package org-modern
-  :config
-  (global-org-modern-mode))
+;; (use-package org-modern
+;;   :config
+;;   (global-org-modern-mode))
 ;;     :config
 ;;     (add-hook 'org-mode-hook #'org-modern-mode)
 ;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
 
 (use-package emacsql-sqlite-builtin)
+
 (use-package org-roam
   :diminish
   :bind
@@ -899,6 +912,15 @@
   (org-roam-directory "~/notes/org-roam/")
   (org-roam-db-location "~/notes/org-roam.db")
   (org-roam-database-connector 'sqlite-builtin)
+  (org-roam-capture-templates
+   '(("d" "default" plain "%?"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+date: %U\n")
+      :unnarrowed t)
+     ("r" "recipe" plain (file "~/notes/org-roam/templates/recipe-template.org")
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+date: %U\n#+filetags: Recipe\n")
+      :unnarrowed t)))
   :init
   (setq org-roam-v2-ack t)
   :config
@@ -1317,12 +1339,12 @@
       erc-kill-buffer-on-part t
       erc-auto-query 'bury)
 
-(use-package mastodon
-  :custom
-  (mastodon-instance-url "https://emacs.ch")
-  (mastodon-active-user "nsalesky")
-  :config
-  (mastodon-discover))
+;; (use-package mastodon
+;;   :custom
+;;   (mastodon-instance-url "https://emacs.ch")
+;;   (mastodon-active-user "nsalesky")
+;;   :config
+;;   (mastodon-discover))
 
 (use-package tablist)
 
