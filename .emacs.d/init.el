@@ -700,7 +700,7 @@
   (org-pretty-entities t)
   (org-hide-emphasis-markers nil)
 
-  (org-directory "~/notes")
+  (org-directory "~/Documents/notes")
 
   (org-src-tab-acts-natively t)
   (org-src-preserve-indentation t)
@@ -767,8 +767,7 @@
       org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
       org-log-done 'time             ; log the time when a task is *DONE*
       org-agenda-compact-blocks nil
-      org-agenda-block-separator nil
-      )
+      org-agenda-block-separator nil)
 
 (setq org-capture-templates
        `(("i" "Inbox" entry  (file "agenda/inbox.org")
@@ -837,21 +836,6 @@
 (keymap-global-set "C-c c" 'org-capture)
 (keymap-global-set "C-c a" 'org-agenda)
 
-;; (use-package org-journal
-;;   :general
-;;   (my-leader
-;;     "n j" '(:ignore t :which-key "journal")
-;;     "n j j" '(org-journal-new-entry :which-key "New entry")
-;;     "n j r" '(org-journal-read-entry :which-key "Read entry")
-;;     "n j s" '(org-journal-search :which-key "Search journal"))
-  
-;;   :custom
-;;   (org-journal-dir "~/notes/journal")
-;;   (org-journal-file-format "%Y-%m-%d.org")
-;;   (org-journal-date-format "%B %d, %Y (%A) ")
-;;   (org-journal-date-prefix "* ")
-;;   (org-journal-time-prefix "** "))
-
 (defun ns/org-present-begin ()
   (setq-local ns/olivetti-mode-enabled (bound-and-true-p olivetti-mode)) ;; remember if olivetti was already enabled or not
   (olivetti-mode 1)                                                      ;; enable olivetti-mode regardless
@@ -909,8 +893,7 @@
                ;; Dailies
                ("j" . org-roam-dailies-capture-today))
   :custom
-  (org-roam-directory "~/notes/org-roam/")
-  (org-roam-db-location "~/notes/org-roam.db")
+  (org-roam-directory "~/Documents/notes/org-roam/")
   (org-roam-database-connector 'sqlite-builtin)
   (org-roam-capture-templates
    '(("d" "default" plain "%?"

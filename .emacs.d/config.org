@@ -1138,7 +1138,7 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   (org-pretty-entities t)
   (org-hide-emphasis-markers nil)
 
-  (org-directory "~/notes")
+  (org-directory "~/Documents/notes")
 
   (org-src-tab-acts-natively t)
   (org-src-preserve-indentation t)
@@ -1203,21 +1203,6 @@ Set up ~variable-pitch~ fonts.
 (setq org-confirm-babel-evaluate nil)
 #+end_src
 
-** Auto-tangle configuration files
-Automatically tangle the =config.org= file whenever it is saved. I currently have this turned off because I prefer to be safe and run =(org-babel-tangle)= manually whenever I'm done editing this file.
-
-#+begin_src emacs-lisp
-
-(defun ns/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/.dotfiles/.emacs.d/config.org"))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
-
-#+end_src
-
 ** Org-agenda and org-capture
 Here's where I set up my agenda system. I like to keep an inbox file where I can quickly capture new items without thinking about them and then organize them into my main agenda file later when I have time. My agenda system was directly inspired by [[https://www.labri.fr/perso/nrougier/GTD/index.html][nrougier]].
 
@@ -1229,8 +1214,7 @@ Here's where I set up my agenda system. I like to keep an inbox file where I can
       org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
       org-log-done 'time             ; log the time when a task is *DONE*
       org-agenda-compact-blocks nil
-      org-agenda-block-separator nil
-      )
+      org-agenda-block-separator nil)
 
 #+END_SRC 
 
@@ -1330,28 +1314,7 @@ Finally, define a keybinding for =org-capture= and opening up the =org-agenda=
 (keymap-global-set "C-c a" 'org-agenda)
 
 #+END_SRC 
-
-** +Org-journal+
-
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package org-journal
-;;   :general
-;;   (my-leader
-;;     "n j" '(:ignore t :which-key "journal")
-;;     "n j j" '(org-journal-new-entry :which-key "New entry")
-;;     "n j r" '(org-journal-read-entry :which-key "Read entry")
-;;     "n j s" '(org-journal-search :which-key "Search journal"))
-  
-;;   :custom
-;;   (org-journal-dir "~/notes/journal")
-;;   (org-journal-file-format "%Y-%m-%d.org")
-;;   (org-journal-date-format "%B %d, %Y (%A) ")
-;;   (org-journal-date-prefix "* ")
-;;   (org-journal-time-prefix "** "))
-
-#+END_SRC 
-
+ 
 ** Org-present
 
 #+BEGIN_SRC emacs-lisp
@@ -1426,8 +1389,7 @@ Give Org-mode documents some extra visual polish.
                ;; Dailies
                ("j" . org-roam-dailies-capture-today))
   :custom
-  (org-roam-directory "~/notes/org-roam/")
-  (org-roam-db-location "~/notes/org-roam.db")
+  (org-roam-directory "~/Documents/notes/org-roam/")
   (org-roam-database-connector 'sqlite-builtin)
   (org-roam-capture-templates
    '(("d" "default" plain "%?"
