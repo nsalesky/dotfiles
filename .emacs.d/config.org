@@ -651,9 +651,9 @@ I took this from [[https://www.masteringemacs.org/article/iedit-interactive-mult
   ("C-e" . mwim-end))
 #+END_SRC
 
-* Spell checker
-** Flyspell
-#+BEGIN_SRC emacs-lisp
+* +Spell checker+
+** +Flyspell+
+#+BEGIN_SRC emacs-lisp :tangle no
 
 ;; (use-package flyspell
 ;;   :bind
@@ -665,9 +665,9 @@ I took this from [[https://www.masteringemacs.org/article/iedit-interactive-mult
 
 #+END_SRC 
 
-** Flyspell-correct: Show list of correct spelling suggestions
+** +Flyspell-correct: Show list of correct spelling suggestions+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 
 ;; (use-package flyspell-correct
 ;;   :after (flyspell)
@@ -845,9 +845,9 @@ Here's where I configure some basic Emacs features with keybindings.
 (electric-pair-mode 1)
 #+END_SRC
 
-** Meow
+** +Meow+
 *** Keymap
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
@@ -936,19 +936,19 @@ Here's where I configure some basic Emacs features with keybindings.
 #+END_SRC 
 
 *** The package itself
-#+BEGIN_SRC emacs-lisp
-;; (use-package meow
-;;   :config
-;;   (meow-setup)
-;;   (meow-global-mode 1))
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package meow
+  :config
+  (meow-setup)
+  (meow-global-mode 1))
 #+END_SRC
 
 *** jk key chord
-#+BEGIN_SRC emacs-lisp
-;; (use-package key-chord
-;;   :config
-;;   (key-chord-mode 1)
-;;   (key-chord-define meow-insert-state-keymap "jk" [escape]))
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package key-chord
+  :config
+  (key-chord-mode 1)
+  (key-chord-define meow-insert-state-keymap "jk" [escape]))
 #+END_SRC
 
 ** ESC quits prompts
@@ -1139,9 +1139,12 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   (org-hide-emphasis-markers nil)
 
   (org-directory "~/Documents/notes")
+  (org-default-notes-file "~/Documents/notes/notes.org")
 
   (org-src-tab-acts-natively t)
   (org-src-preserve-indentation t)
+
+  (org-log-done 'time)    ; log the time when a task is *DONE*
 
   (org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
@@ -1204,40 +1207,53 @@ Set up ~variable-pitch~ fonts.
 #+end_src
 
 ** Org-agenda and org-capture
-Here's where I set up my agenda system. I like to keep an inbox file where I can quickly capture new items without thinking about them and then organize them into my main agenda file later when I have time. My agenda system was directly inspired by [[https://www.labri.fr/perso/nrougier/GTD/index.html][nrougier]].
+Here's where I set up my agenda system. I like to keep an inbox file where I can quickly capture new items without thinking about them and then organize them into my main agenda file later when I have time. My agenda system was directly inspired by [[https://www.labri.fr/perso/nrougier/GTD/index.html][nrougier]] and [[https://github.com/gjstein/emacs.d/blob/master/config/gs-org-agenda.el][gjstein]].
 
+*** Specify agenda files
 #+BEGIN_SRC emacs-lisp
-
 (setq org-agenda-files (list "agenda/inbox.org"
                              "agenda/agenda.org"
                              "agenda/projects.org") ; add any files to be pulled from
-      org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
-      org-log-done 'time             ; log the time when a task is *DONE*
-      org-agenda-compact-blocks nil
-      org-agenda-block-separator nil)
-
+      ;org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
+      
+      ;; org-agenda-compact-blocks nil)
 #+END_SRC 
 
+*** Capture templates
 Now, I need to set up some capture templates to quickly add items to the agenda.
 
 #+BEGIN_SRC emacs-lisp
 
+;; (setq org-capture-templates
+;;        `(("i" "Inbox" entry  (file "agenda/inbox.org")
+;;         ,(concat "* TODO %?\n"
+;;                  "/Entered on/ %U"))
+;;          ("m" "Meeting entry" entry (file+headline "agenda.org" "Future")
+;;           ,(concat "* %? :meeting:\n"
+;;                    "<%<%Y-%m-%d %a %H:00>>"))
+;;          ("n" "Note" entry (file "notes.org")
+;;           ,(concat "* Note (%a)\n"
+;;                    "/Entered on/ %U\n" "\n" "%?"))))
+
 (setq org-capture-templates
-       `(("i" "Inbox" entry  (file "agenda/inbox.org")
-        ,(concat "* TODO %?\n"
-                 "/Entered on/ %U"))
-         ("m" "Meeting entry" entry (file+headline "agenda.org" "Future")
-          ,(concat "* %? :meeting:\n"
-                   "<%<%Y-%m-%d %a %H:00>>"))
-         ("n" "Note" entry (file "notes.org")
-          ,(concat "* Note (%a)\n"
-                   "/Entered on/ %U\n" "\n" "%?"))))
+      '(("t" "todo" entry (file+headline "agenda/inbox.org" "Todo")
+	     "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
+        ;; ("m" "Meeting" entry (file "agenda/inbox.org")
+        ;;  "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
+        ("s" "Schedule an Appointment" entry (file+headline "agenda/agenda.org" "Future")
+         "*** TODO %? \nSCHEDULED: %t")
+        ("d" "Diary" entry (file+datetree "diary.org")
+         "* %?\n%U\n" :clock-in t :clock-resume t)
+        ("i" "Idea" entry (file "agenda/inbox.org")
+         "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
+        ("n" "High Priority Task" entry (file+headline "agenda/inbox.org" "Tasks")
+         "** NEXT %? \nDEADLINE: %t") ))
 #+END_SRC 
 
+*** Refiling tasks
 Make it easier to move tasks from the inbox or other files over to ~projects.org~, and automatically save all agenda files after refiling.
 
 #+BEGIN_SRC emacs-lisp
-
 (setq org-refile-targets
       '(("agenda/projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
       org-refile-use-outline-path 'file
@@ -1257,11 +1273,10 @@ Make it easier to move tasks from the inbox or other files over to ~projects.org
 (advice-add 'org-refile :after
             (lambda (&rest _)
               (ns/org-agenda-save-buffers)))
+#+END_SRC
 
-
-#+END_SRC 
-
-Log when tasks are activated (first moved to *NEXT*) courtesy of [[https://emacs.stackexchange.com/questions/35751][Erik Anderson]]. 
+*** Log when tasks are activated
+Mark when tasks are first moved to the *NEXT* status courtesy of [[https://emacs.stackexchange.com/questions/35751][Erik Anderson]].
 
 #+BEGIN_SRC emacs-lisp
 
@@ -1274,35 +1289,158 @@ Log when tasks are activated (first moved to *NEXT*) courtesy of [[https://emacs
 
 #+END_SRC 
 
-Set up a custom agenda command (*g*)
+*** Set up custom agenda blocks and views
+I took most of the inspiration (and code) for this from [[https://github.com/gjstein/emacs.d/blob/master/config/gs-org-agenda.el]]
 
 #+BEGIN_SRC emacs-lisp
 
+(setq org-agenda-sticky t
+      org-agenda-dim-blocked-tasks nil
+      org-agenda-time-grid (quote
+                            ((daily today remove-match)
+                             (800 1200 1600 2000)
+                             "......" "----------------")))
+
+;; Variables for ignoring tasks with deadlines
+(defvar ns/hide-deadline-next-tasks t)
+(setq org-agenda-tags-todo-honor-ignore-options t
+      org-deadline-warning-days 10)
+
+;;;; Task and project filter functions
+
+(defun ns/select-with-tag-function (select-fun-p)
+  (save-restriction
+    (widen)
+    (let ((next-headline
+           (save-excursion (or (outline-next-heading)
+                               (point-max)))))
+      (if (funcall select-fun-p) nil next-headline))))
+
+;; Some helper functions for agenda views
+(defun ns/org-agenda-add-location-string ()
+  "Gets the value of the LOCATION property."
+  (let ((loc (org-entry-get (point) "LOCATION")))
+    (if (> (length loc) 0)
+        (concat "{" loc "} ")
+      "")))
+
+;;;; Agenda block definitions
+
+(defvar ns-org-agenda-block--today-schedule
+  '(agenda "" ((org-agenda-overriding-header "Today's Schedule:")
+               (org-agenda-span 'day)
+               (org-agenda-ndays 1)
+               (org-agenda-start-on-weekday nil)
+               (org-agenda-start-day "+0d")))
+  "A block showing a 1 day schedule.")
+
+(defvar ns-org-agenda-block--weekly-log
+  '(agenda "" ((org-agenda-overriding-header "Weekly Log")))
+  "A block showing my schedule and logged tasks for this week.")
+
+(defvar ns-org-agenda-block--previous-calendar-data
+  '(agenda "" ((org-agenda-overriding-header "Previous Calendar Data (last 3 weeks)")
+               (org-agenda-start-day "-21d")
+               (org-agenda-span 21)
+               (org-agenda-start-on-weekday nil)))
+  "A block showing my schedule and logged tasks for the last few weeks.")
+
+(defvar ns-org-agenda-block--upcoming-calendar-data
+  '(agenda "" ((org-agenda-overriding-header "Upcoming Calendar Data (next 2 weeks)")
+               (org-agenda-start-day "0d")
+               (org-agenda-span 14)
+               (org-agenda-start-on-weekday nil)))
+  "A block showing my schedule for the next couple weeks.")
+
+(defvar ns-org-agenda-block--refile
+  '(tags "REFILE-ARCHIVE-REFILE=\"nil\"|INFO"
+         ((org-agendda-overriding-header "Headings needing refiling or other info:")
+          (org-tags-match-list-sublevels nil)))
+  "Headings needing refiling or other info.")
+
+(defvar ns-org-agenda-block--next-tasks
+  '(tags-todo "-INACTIVE-SOMEDAY-CANCELLED-ARCHIVE/!NEXT"
+              ((org-agenda-overriding-header "Next Tasks:")
+               ))
+  "Next tasks.")
+
+(defvar ns-org-agenda-block--end-of-agenda
+  '(tags "ENDOFAGENDA"
+         ((org-agenda-overriding-header "End of Agenda")
+          (org-tags-match-list-sublevels nil)))
+  "End of the agenda.")
+
+(defvar ns-org-agenda-display-settings
+  '((org-agenda-start-with-log-mode t)
+    (org-agenda-log-mode-items '(clock))
+    (org-agenda-prefix-format '((agenda . "  %-12:c%?-12t %(ns/org-agenda-add-location-string)% s")
+				(timeline . "  % s")
+				(todo . "  %-12:c ")
+				(tags . "  %-12:c ")
+				(search . "  %i %-12:c")))
+    (org-agenda-todo-ignore-deadlines 'near)
+    (org-agenda-todo-ignore-scheduled t))
+  "Display settings for my agenda views.")
+
+(defvar ns-org-agenda-entry-display-settings
+  '(,ns-org-agenda-display-settings
+    (org-agenda-entry-text-mode t))
+  "Display settings for my agenda views with entry text.")
+
 (setq org-agenda-custom-commands
-      '(("g" "Get Things Done (GTD)"
-         ((agenda ""
-                  ((org-agenda-span 1) ; limit display to a single day
-                   (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'deadline))
-                   (org-deadline-warning-days 0)))
-          (todo "NEXT"
-                ((org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'deadline))
-                 (org-agenda-prefix-format "  %i %-12:c [%e] ")
-                 (org-agenda-overriding-header "\nTasks\n")))
-          (agenda nil
-                  ((org-agenda-entry-types '(:deadline))
-                   (org-agenda-span 1)
-                   (org-agenda-format-date "")
-                   (org-deadline-warning-days 7)
-                   (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
-                   (org-agenda-overriding-header "\nDeadlines")))
-          (tags-todo "inbox"
-                     ((org-agenda-prefix-format "  %?-12t% s")
-                      (org-agenda-overriding-header "\nInbox\n")))
-          (tags "CLOSED>=\"<today>\""
-                ((org-agenda-overriding-header "\nCompleted today\n")))))))
+      `((" " "Export Schedule"
+         (,ns-org-agenda-block--today-schedule
+          ,ns-org-agenda-block--refile
+          ,ns-org-agenda-block--next-tasks
+          ,ns-org-agenda-block--end-of-agenda)
+          ,ns-org-agenda-display-settings)
+        ("L" "Weekly Log"
+         (,ns-org-agenda-block--weekly-log)
+         ,ns-org-agenda-display-settings)
+        ("r " "Agenda Review (all)"
+         (,ns-org-agenda-block--next-tasks
+          ,ns-org-agenda-block--refile
+          ,ns-org-agenda-block--end-of-agenda)
+         ,ns-org-agenda-display-settings)
+        ("rn" "Agenda Review (next tasks)"
+         (,ns-org-agenda-block--next-tasks
+          ,ns-org-agenda-block--end-of-agenda)
+         ,ns-org-agenda-display-settings)
+        ("rp" "Agenda Review (previous calendar data)"
+         (,ns-org-agenda-block--previous-calendar-data
+          ,ns-org-agenda-block--end-of-agenda)
+         ,ns-org-agenda-display-settings)
+        ("ru" "Agenda Review (upcoming calendar data)"
+         (,ns-org-agenda-block--upcoming-calendar-data
+          ,ns-org-agenda-block--end-of-agenda)
+         ,ns-org-agenda-display-settings)
+        ))
+
+;; (setq org-agenda-custom-commands
+;;       '(("g" "Get Things Done (GTD)"
+;;          ((agenda ""
+;;                   ((org-agenda-span 1) ; limit display to a single day
+;;                    (org-agenda-skip-function
+;;                     '(org-agenda-skip-entry-if 'deadline))
+;;                    (org-deadline-warning-days 0)))
+;;           (todo "NEXT"
+;;                 ((org-agenda-skip-function
+;;                   '(org-agenda-skip-entry-if 'deadline))
+;;                  (org-agenda-prefix-format "  %i %-12:c [%e] ")
+;;                  (org-agenda-overriding-header "\nTasks\n")))
+;;           (agenda nil
+;;                   ((org-agenda-entry-types '(:deadline))
+;;                    (org-agenda-span 1)
+;;                    (org-agenda-format-date "")
+;;                    (org-deadline-warning-days 7)
+;;                    (org-agenda-skip-function
+;;                     '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
+;;                    (org-agenda-overriding-header "\nDeadlines")))
+;;           (tags-todo "inbox"
+;;                      ((org-agenda-prefix-format "  %?-12t% s")
+;;                       (org-agenda-overriding-header "\nInbox\n")))
+;;           (tags "CLOSED>=\"<today>\""
+;;                 ((org-agenda-overriding-header "\nCompleted today\n")))))))
 
 #+END_SRC 
 
@@ -1359,7 +1497,7 @@ Finally, define a keybinding for =org-capture= and opening up the =org-agenda=
 ** +Org-modern+
 Give Org-mode documents some extra visual polish.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 
 ;; (use-package org-modern
 ;;   :config
@@ -1409,7 +1547,7 @@ Give Org-mode documents some extra visual polish.
 
 ** +Denote+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 ;; (use-package denote
 ;;   :straight (denote :type git :host gitlab
 ;;                     :repo "protesilaos/denote")

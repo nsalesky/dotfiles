@@ -353,19 +353,6 @@
   ("C-a" . mwim-beginning)
   ("C-e" . mwim-end))
 
-;; (use-package flyspell
-;;   :bind
-;;   (:map flyspell-mode-map
-;;         ("C-;" . nil)) ;; unbind this key so I can use it for iedit-dwim
-  
-;;   :hook ((prog-mode . flyspell-prog-mode)
-;;         ((org-mode markdown-mode) . flyspell-mode)))
-
-;; (use-package flyspell-correct
-;;   :after (flyspell)
-;;   :config
-;;   (setq flyspell-correct-interface #'flyspell-correct-ivy))
-
 (use-package dired
   :straight (:type built-in)
   :custom
@@ -494,102 +481,6 @@
 
 (electric-pair-mode 1)
 
-(defun meow-setup ()
-  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-  (meow-motion-overwrite-define-key
-   '("j" . meow-next)
-   '("k" . meow-prev)
-   '("<escape>" . ignore))
-  (meow-leader-define-key
-   ;; SPC j/k will run the original command in MOTION state.
-   '("j" . "H-j")
-   '("k" . "H-k")
-   ;; Use SPC (0-9) for digit arguments.
-   '("1" . meow-digit-argument)
-   '("2" . meow-digit-argument)
-   '("3" . meow-digit-argument)
-   '("4" . meow-digit-argument)
-   '("5" . meow-digit-argument)
-   '("6" . meow-digit-argument)
-   '("7" . meow-digit-argument)
-   '("8" . meow-digit-argument)
-   '("9" . meow-digit-argument)
-   '("0" . meow-digit-argument)
-   '("/" . meow-keypad-describe-key)
-   '("?" . meow-cheatsheet))
-  (meow-normal-define-key
-   '("0" . meow-expand-0)
-   '("9" . meow-expand-9)
-   '("8" . meow-expand-8)
-   '("7" . meow-expand-7)
-   '("6" . meow-expand-6)
-   '("5" . meow-expand-5)
-   '("4" . meow-expand-4)
-   '("3" . meow-expand-3)
-   '("2" . meow-expand-2)
-   '("1" . meow-expand-1)
-   '("-" . negative-argument)
-   '(";" . meow-reverse)
-   '("," . meow-inner-of-thing)
-   '("." . meow-bounds-of-thing)
-   '("[" . meow-beginning-of-thing)
-   '("]" . meow-end-of-thing)
-   '("a" . meow-append)
-   '("A" . meow-open-below)
-   '("b" . meow-back-word)
-   '("B" . meow-back-symbol)
-   '("c" . meow-change)
-   '("d" . meow-delete)
-   '("D" . meow-backward-delete)
-   '("e" . meow-next-word)
-   '("E" . meow-next-symbol)
-   '("f" . meow-find)
-   '("g" . meow-cancel-selection)
-   '("G" . meow-grab)
-   '("h" . meow-left)
-   '("H" . meow-left-expand)
-   '("i" . meow-insert)
-   '("I" . meow-open-above)
-   '("j" . meow-next)
-   '("J" . meow-next-expand)
-   '("k" . meow-prev)
-   '("K" . meow-prev-expand)
-   '("l" . meow-right)
-   '("L" . meow-right-expand)
-   '("m" . meow-join)
-   '("n" . meow-search)
-   '("o" . meow-block)
-   '("O" . meow-to-block)
-   '("p" . meow-yank)
-   ;; '("q" . meow-quit)
-   '("Q" . meow-goto-line)
-   '("r" . meow-replace)
-   '("R" . meow-swap-grab)
-   '("s" . meow-kill)
-   '("t" . meow-till)
-   '("u" . meow-undo)
-   '("U" . meow-undo-in-selection)
-   '("v" . meow-visit)
-   '("w" . meow-mark-word)
-   '("W" . meow-mark-symbol)
-   '("x" . meow-line)
-   '("X" . meow-goto-line)
-   '("y" . meow-save)
-   '("Y" . meow-sync-grab)
-   '("z" . meow-pop-selection)
-   '("'" . repeat)
-   '("<escape>" . ignore)))
-
-;; (use-package meow
-;;   :config
-;;   (meow-setup)
-;;   (meow-global-mode 1))
-
-;; (use-package key-chord
-;;   :config
-;;   (key-chord-mode 1)
-;;   (key-chord-define meow-insert-state-keymap "jk" [escape]))
-
 ;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (global-unset-key (kbd "ESC ESC"))
@@ -701,9 +592,12 @@
   (org-hide-emphasis-markers nil)
 
   (org-directory "~/Documents/notes")
+  (org-default-notes-file "~/Documents/notes/notes.org")
 
   (org-src-tab-acts-natively t)
   (org-src-preserve-indentation t)
+
+  (org-log-done 'time)    ; log the time when a task is *DONE*
 
   (org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
@@ -753,32 +647,37 @@
 
 (setq org-confirm-babel-evaluate nil)
 
-(defun ns/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/.dotfiles/.emacs.d/config.org"))
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-;(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'ns/org-babel-tangle-config)))
-
 (setq org-agenda-files (list "agenda/inbox.org"
                              "agenda/agenda.org"
                              "agenda/projects.org") ; add any files to be pulled from
-      org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
-      org-log-done 'time             ; log the time when a task is *DONE*
-      org-agenda-compact-blocks nil
-      org-agenda-block-separator nil)
+      ;org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
+      
+      ;; org-agenda-compact-blocks nil)
+
+;; (setq org-capture-templates
+;;        `(("i" "Inbox" entry  (file "agenda/inbox.org")
+;;         ,(concat "* TODO %?\n"
+;;                  "/Entered on/ %U"))
+;;          ("m" "Meeting entry" entry (file+headline "agenda.org" "Future")
+;;           ,(concat "* %? :meeting:\n"
+;;                    "<%<%Y-%m-%d %a %H:00>>"))
+;;          ("n" "Note" entry (file "notes.org")
+;;           ,(concat "* Note (%a)\n"
+;;                    "/Entered on/ %U\n" "\n" "%?"))))
 
 (setq org-capture-templates
-       `(("i" "Inbox" entry  (file "agenda/inbox.org")
-        ,(concat "* TODO %?\n"
-                 "/Entered on/ %U"))
-         ("m" "Meeting entry" entry (file+headline "agenda.org" "Future")
-          ,(concat "* %? :meeting:\n"
-                   "<%<%Y-%m-%d %a %H:00>>"))
-         ("n" "Note" entry (file "notes.org")
-          ,(concat "* Note (%a)\n"
-                   "/Entered on/ %U\n" "\n" "%?"))))
+      '(("t" "todo" entry (file+headline "agenda/inbox.org" "Todo")
+	     "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
+        ;; ("m" "Meeting" entry (file "agenda/inbox.org")
+        ;;  "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
+        ("s" "Schedule an Appointment" entry (file+headline "agenda/agenda.org" "Future")
+         "*** TODO %? \nSCHEDULED: %t")
+        ("d" "Diary" entry (file+datetree "diary.org")
+         "* %?\n%U\n" :clock-in t :clock-resume t)
+        ("i" "Idea" entry (file "agenda/inbox.org")
+         "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
+        ("n" "High Priority Task" entry (file+headline "agenda/inbox.org" "Tasks")
+         "** NEXT %? \nDEADLINE: %t") ))
 
 (setq org-refile-targets
       '(("agenda/projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
@@ -807,31 +706,153 @@
     (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
 (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
 
+(setq org-agenda-sticky t
+      org-agenda-dim-blocked-tasks nil
+      org-agenda-time-grid (quote
+                            ((daily today remove-match)
+                             (800 1200 1600 2000)
+                             "......" "----------------")))
+
+;; Variables for ignoring tasks with deadlines
+(defvar ns/hide-deadline-next-tasks t)
+(setq org-agenda-tags-todo-honor-ignore-options t
+      org-deadline-warning-days 10)
+
+;;;; Task and project filter functions
+
+(defun ns/select-with-tag-function (select-fun-p)
+  (save-restriction
+    (widen)
+    (let ((next-headline
+           (save-excursion (or (outline-next-heading)
+                               (point-max)))))
+      (if (funcall select-fun-p) nil next-headline))))
+
+;; Some helper functions for agenda views
+(defun ns/org-agenda-add-location-string ()
+  "Gets the value of the LOCATION property."
+  (let ((loc (org-entry-get (point) "LOCATION")))
+    (if (> (length loc) 0)
+        (concat "{" loc "} ")
+      "")))
+
+;;;; Agenda block definitions
+
+(defvar ns-org-agenda-block--today-schedule
+  '(agenda "" ((org-agenda-overriding-header "Today's Schedule:")
+               (org-agenda-span 'day)
+               (org-agenda-ndays 1)
+               (org-agenda-start-on-weekday nil)
+               (org-agenda-start-day "+0d")))
+  "A block showing a 1 day schedule.")
+
+(defvar ns-org-agenda-block--weekly-log
+  '(agenda "" ((org-agenda-overriding-header "Weekly Log")))
+  "A block showing my schedule and logged tasks for this week.")
+
+(defvar ns-org-agenda-block--previous-calendar-data
+  '(agenda "" ((org-agenda-overriding-header "Previous Calendar Data (last 3 weeks)")
+               (org-agenda-start-day "-21d")
+               (org-agenda-span 21)
+               (org-agenda-start-on-weekday nil)))
+  "A block showing my schedule and logged tasks for the last few weeks.")
+
+(defvar ns-org-agenda-block--upcoming-calendar-data
+  '(agenda "" ((org-agenda-overriding-header "Upcoming Calendar Data (next 2 weeks)")
+               (org-agenda-start-day "0d")
+               (org-agenda-span 14)
+               (org-agenda-start-on-weekday nil)))
+  "A block showing my schedule for the next couple weeks.")
+
+(defvar ns-org-agenda-block--refile
+  '(tags "REFILE-ARCHIVE-REFILE=\"nil\"|INFO"
+         ((org-agendda-overriding-header "Headings needing refiling or other info:")
+          (org-tags-match-list-sublevels nil)))
+  "Headings needing refiling or other info.")
+
+(defvar ns-org-agenda-block--next-tasks
+  '(tags-todo "-INACTIVE-SOMEDAY-CANCELLED-ARCHIVE/!NEXT"
+              ((org-agenda-overriding-header "Next Tasks:")
+               ))
+  "Next tasks.")
+
+(defvar ns-org-agenda-block--end-of-agenda
+  '(tags "ENDOFAGENDA"
+         ((org-agenda-overriding-header "End of Agenda")
+          (org-tags-match-list-sublevels nil)))
+  "End of the agenda.")
+
+(defvar ns-org-agenda-display-settings
+  '((org-agenda-start-with-log-mode t)
+    (org-agenda-log-mode-items '(clock))
+    (org-agenda-prefix-format '((agenda . "  %-12:c%?-12t %(ns/org-agenda-add-location-string)% s")
+				(timeline . "  % s")
+				(todo . "  %-12:c ")
+				(tags . "  %-12:c ")
+				(search . "  %i %-12:c")))
+    (org-agenda-todo-ignore-deadlines 'near)
+    (org-agenda-todo-ignore-scheduled t))
+  "Display settings for my agenda views.")
+
+(defvar ns-org-agenda-entry-display-settings
+  '(,ns-org-agenda-display-settings
+    (org-agenda-entry-text-mode t))
+  "Display settings for my agenda views with entry text.")
+
 (setq org-agenda-custom-commands
-      '(("g" "Get Things Done (GTD)"
-         ((agenda ""
-                  ((org-agenda-span 1) ; limit display to a single day
-                   (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'deadline))
-                   (org-deadline-warning-days 0)))
-          (todo "NEXT"
-                ((org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'deadline))
-                 (org-agenda-prefix-format "  %i %-12:c [%e] ")
-                 (org-agenda-overriding-header "\nTasks\n")))
-          (agenda nil
-                  ((org-agenda-entry-types '(:deadline))
-                   (org-agenda-span 1)
-                   (org-agenda-format-date "")
-                   (org-deadline-warning-days 7)
-                   (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
-                   (org-agenda-overriding-header "\nDeadlines")))
-          (tags-todo "inbox"
-                     ((org-agenda-prefix-format "  %?-12t% s")
-                      (org-agenda-overriding-header "\nInbox\n")))
-          (tags "CLOSED>=\"<today>\""
-                ((org-agenda-overriding-header "\nCompleted today\n")))))))
+      `((" " "Export Schedule"
+         (,ns-org-agenda-block--today-schedule
+          ,ns-org-agenda-block--refile
+          ,ns-org-agenda-block--next-tasks
+          ,ns-org-agenda-block--end-of-agenda)
+          ,ns-org-agenda-display-settings)
+        ("L" "Weekly Log"
+         (,ns-org-agenda-block--weekly-log)
+         ,ns-org-agenda-display-settings)
+        ("r " "Agenda Review (all)"
+         (,ns-org-agenda-block--next-tasks
+          ,ns-org-agenda-block--refile
+          ,ns-org-agenda-block--end-of-agenda)
+         ,ns-org-agenda-display-settings)
+        ("rn" "Agenda Review (next tasks)"
+         (,ns-org-agenda-block--next-tasks
+          ,ns-org-agenda-block--end-of-agenda)
+         ,ns-org-agenda-display-settings)
+        ("rp" "Agenda Review (previous calendar data)"
+         (,ns-org-agenda-block--previous-calendar-data
+          ,ns-org-agenda-block--end-of-agenda)
+         ,ns-org-agenda-display-settings)
+        ("ru" "Agenda Review (upcoming calendar data)"
+         (,ns-org-agenda-block--upcoming-calendar-data
+          ,ns-org-agenda-block--end-of-agenda)
+         ,ns-org-agenda-display-settings)
+        ))
+
+;; (setq org-agenda-custom-commands
+;;       '(("g" "Get Things Done (GTD)"
+;;          ((agenda ""
+;;                   ((org-agenda-span 1) ; limit display to a single day
+;;                    (org-agenda-skip-function
+;;                     '(org-agenda-skip-entry-if 'deadline))
+;;                    (org-deadline-warning-days 0)))
+;;           (todo "NEXT"
+;;                 ((org-agenda-skip-function
+;;                   '(org-agenda-skip-entry-if 'deadline))
+;;                  (org-agenda-prefix-format "  %i %-12:c [%e] ")
+;;                  (org-agenda-overriding-header "\nTasks\n")))
+;;           (agenda nil
+;;                   ((org-agenda-entry-types '(:deadline))
+;;                    (org-agenda-span 1)
+;;                    (org-agenda-format-date "")
+;;                    (org-deadline-warning-days 7)
+;;                    (org-agenda-skip-function
+;;                     '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
+;;                    (org-agenda-overriding-header "\nDeadlines")))
+;;           (tags-todo "inbox"
+;;                      ((org-agenda-prefix-format "  %?-12t% s")
+;;                       (org-agenda-overriding-header "\nInbox\n")))
+;;           (tags "CLOSED>=\"<today>\""
+;;                 ((org-agenda-overriding-header "\nCompleted today\n")))))))
 
 (keymap-global-set "C-c c" 'org-capture)
 (keymap-global-set "C-c a" 'org-agenda)
@@ -871,13 +892,6 @@
   (add-hook 'org-present-mode-hook 'ns/org-present-begin)
   (add-hook 'org-present-mode-quit-hook 'ns/org-present-end))
 
-;; (use-package org-modern
-;;   :config
-;;   (global-org-modern-mode))
-;;     :config
-;;     (add-hook 'org-mode-hook #'org-modern-mode)
-;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
-
 (use-package emacsql-sqlite-builtin)
 
 (use-package org-roam
@@ -909,14 +923,6 @@
   :config
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-enable))
-
-;; (use-package denote
-;;   :straight (denote :type git :host gitlab
-;;                     :repo "protesilaos/denote")
-;;   :custom
-;;   (denote-directory "~/notes")
-;;   (denote-known-keywords
-;;     '("emacs" "personal" "journal")))
 
 (use-package term
   :custom
