@@ -586,10 +586,9 @@
   :config
   ;; (ns/org-font-setup)
   :custom
-  ;; org-hide-emphasis-markers nil
   (org-ellipsis "…")
   (org-pretty-entities t)
-  (org-hide-emphasis-markers nil)
+  (org-hide-emphasis-markers t)
 
   (org-directory "~/Documents/notes")
   (org-default-notes-file "~/Documents/notes/notes.org")
@@ -603,6 +602,10 @@
         '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
             (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
                 "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
+
+(use-package org-appear
+  :straight (org-appear :type git :host github :repo "awth13/org-appear")
+  :hook (org-mode . org-appear-mode))
 
 (add-hook 'org-mode-hook 'variable-pitch-mode)
 
@@ -647,9 +650,9 @@
 
 (setq org-confirm-babel-evaluate nil)
 
-(setq org-agenda-files (list "agenda/inbox.org"
-                             "agenda/agenda.org"
-                             "agenda/projects.org") ; add any files to be pulled from
+(setq org-agenda-files (list "inbox.org"
+                             "agenda.org"
+                             "projects.org"))
       ;org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
       
       ;; org-agenda-compact-blocks nil)
@@ -666,21 +669,21 @@
 ;;                    "/Entered on/ %U\n" "\n" "%?"))))
 
 (setq org-capture-templates
-      '(("t" "todo" entry (file+headline "agenda/inbox.org" "Todo")
+      '(("t" "todo" entry (file+headline "inbox.org" "Todo")
 	     "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
         ;; ("m" "Meeting" entry (file "agenda/inbox.org")
         ;;  "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
-        ("s" "Schedule an Appointment" entry (file+headline "agenda/agenda.org" "Future")
+        ("s" "Schedule an Appointment" entry (file+headline "agenda.org" "Future")
          "*** TODO %? \nSCHEDULED: %t")
         ("d" "Diary" entry (file+datetree "diary.org")
          "* %?\n%U\n" :clock-in t :clock-resume t)
-        ("i" "Idea" entry (file "agenda/inbox.org")
+        ("i" "Idea" entry (file "inbox.org")
          "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
-        ("n" "High Priority Task" entry (file+headline "agenda/inbox.org" "Tasks")
+        ("n" "High Priority Task" entry (file+headline "inbox.org" "Tasks")
          "** NEXT %? \nDEADLINE: %t") ))
 
 (setq org-refile-targets
-      '(("agenda/projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
+      '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
       org-refile-use-outline-path 'file
       org-outline-path-complete-in-steps nil)
 
@@ -1154,6 +1157,9 @@
 ;; (add-hook 'c++-mode-hook 'lsp)
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
+
+(use-package d-mode
+  :mode "\\.d\\'")
 
 ;; (use-package dockerfile-mode
 ;;   :mode "Dockerfile\\'")

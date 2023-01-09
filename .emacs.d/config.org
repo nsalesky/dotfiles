@@ -1133,10 +1133,9 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   :config
   ;; (ns/org-font-setup)
   :custom
-  ;; org-hide-emphasis-markers nil
   (org-ellipsis "…")
   (org-pretty-entities t)
-  (org-hide-emphasis-markers nil)
+  (org-hide-emphasis-markers t)
 
   (org-directory "~/Documents/notes")
   (org-default-notes-file "~/Documents/notes/notes.org")
@@ -1152,6 +1151,14 @@ The very basics for Org-mode, setting up fonts and basic visual features.
                 "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
 
 #+end_src
+
+** Org-appear: auto-reveal emphasis markers at point
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-appear
+  :straight (org-appear :type git :host github :repo "awth13/org-appear")
+  :hook (org-mode . org-appear-mode))
+#+END_SRC
 
 ** Fonts
 Set up ~variable-pitch~ fonts.
@@ -1211,9 +1218,9 @@ Here's where I set up my agenda system. I like to keep an inbox file where I can
 
 *** Specify agenda files
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-files (list "agenda/inbox.org"
-                             "agenda/agenda.org"
-                             "agenda/projects.org") ; add any files to be pulled from
+(setq org-agenda-files (list "inbox.org"
+                             "agenda.org"
+                             "projects.org"))
       ;org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
       
       ;; org-agenda-compact-blocks nil)
@@ -1236,17 +1243,17 @@ Now, I need to set up some capture templates to quickly add items to the agenda.
 ;;                    "/Entered on/ %U\n" "\n" "%?"))))
 
 (setq org-capture-templates
-      '(("t" "todo" entry (file+headline "agenda/inbox.org" "Todo")
+      '(("t" "todo" entry (file+headline "inbox.org" "Todo")
 	     "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
         ;; ("m" "Meeting" entry (file "agenda/inbox.org")
         ;;  "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
-        ("s" "Schedule an Appointment" entry (file+headline "agenda/agenda.org" "Future")
+        ("s" "Schedule an Appointment" entry (file+headline "agenda.org" "Future")
          "*** TODO %? \nSCHEDULED: %t")
         ("d" "Diary" entry (file+datetree "diary.org")
          "* %?\n%U\n" :clock-in t :clock-resume t)
-        ("i" "Idea" entry (file "agenda/inbox.org")
+        ("i" "Idea" entry (file "inbox.org")
          "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
-        ("n" "High Priority Task" entry (file+headline "agenda/inbox.org" "Tasks")
+        ("n" "High Priority Task" entry (file+headline "inbox.org" "Tasks")
          "** NEXT %? \nDEADLINE: %t") ))
 #+END_SRC 
 
@@ -1255,7 +1262,7 @@ Make it easier to move tasks from the inbox or other files over to ~projects.org
 
 #+BEGIN_SRC emacs-lisp
 (setq org-refile-targets
-      '(("agenda/projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
+      '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
       org-refile-use-outline-path 'file
       org-outline-path-complete-in-steps nil)
 
@@ -1884,6 +1891,12 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
 #+end_src
+
+*** D
+#+BEGIN_SRC emacs-lisp
+(use-package d-mode
+  :mode "\\.d\\'") 
+#+END_SRC
 
 *** Docker
 Adds syntax highlighting and other small features for ~Dockerfile~ files.
