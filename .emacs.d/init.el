@@ -473,9 +473,9 @@
       "Set workspace buffer list for consult-buffer.")
     (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
 
-(use-package hammy
-  :config
-  (hammy-mode 1))
+;; (use-package hammy
+;;   :config
+;;   (hammy-mode 1))
 
 (setq disabled-command-function nil)
 
@@ -599,9 +599,9 @@
   (org-log-done 'time)    ; log the time when a task is *DONE*
 
   (org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
-            (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-                "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
+        '((sequence "TODO(t)" "NEXT(n)" "ACTIVE(a!)" "HOLD(h)" "|" "DONE(d!)"))))
+            ;; (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
+                ;; "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
 
 (use-package org-appear
   :straight (org-appear :type git :host github :repo "awth13/org-appear")
@@ -900,7 +900,7 @@
 (use-package org-roam
   :diminish
   :bind
-  (:prefix-map ns/org-roam-prefix-map
+  (:prefix-map ns/notes-prefix-map
                :prefix "C-c n"
                ("l" . org-roam-buffer-toggle)
                ("f" . org-roam-node-find)
@@ -1159,7 +1159,9 @@
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
 (use-package d-mode
-  :mode "\\.d\\'")
+  :mode "\\.d\\'"
+  :config
+  (add-to-list 'org-src-lang-modes '("d" . c)))
 
 ;; (use-package dockerfile-mode
 ;;   :mode "Dockerfile\\'")
@@ -1294,6 +1296,26 @@
             ("\\.sgml\\'" . web-mode)))
     ;; :bind
     ;; ("C-c h" . ns/toggle-web-mode))
+
+(require 'transient)
+
+(define-prefix-command 'ns/files-map)
+(keymap-global-set "C-c f" 'ns/files-map)
+
+(transient-define-prefix ns/visit-note-transient ()
+  "Visit common note files."
+  ["Visit common note files"
+   ["Agenda"
+    ("a" "agenda.org" (lambda () (interactive) (find-file (expand-file-name "agenda.org" org-directory))))
+    ("p" "projects.org" (lambda () (interactive) (find-file (expand-file-name "projects.org" org-directory))))
+    ("i" "inbox.org" (lambda () (interactive) (find-file (expand-file-name "inbox.org" org-directory))))
+    ]
+   ["Config"
+    ("c" "config.org" (lambda () (interactive) (find-file (expand-file-name "config.org" user-emacs-directory))))
+    ]
+   ])
+
+(define-key 'ns/files-map (kbd "f") 'ns/visit-note-transient)
 
 ;; (require 'erc-sasl)
 

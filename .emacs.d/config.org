@@ -826,9 +826,9 @@ A light wrapper around ~project.el~ and ~tab-bar-mode~ providing isolated buffer
 ** Hammy: Pacing myself through work
 
 #+BEGIN_SRC emacs-lisp
-(use-package hammy
-  :config
-  (hammy-mode 1))
+;; (use-package hammy
+;;   :config
+;;   (hammy-mode 1))
 #+END_SRC
 
 * Keybindings and Basic Feature Configuration
@@ -1146,9 +1146,9 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   (org-log-done 'time)    ; log the time when a task is *DONE*
 
   (org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)")
-            (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-                "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
+        '((sequence "TODO(t)" "NEXT(n)" "ACTIVE(a!)" "HOLD(h)" "|" "DONE(d!)"))))
+            ;; (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
+                ;; "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
 
 #+end_src
 
@@ -1524,7 +1524,7 @@ Give Org-mode documents some extra visual polish.
 (use-package org-roam
   :diminish
   :bind
-  (:prefix-map ns/org-roam-prefix-map
+  (:prefix-map ns/notes-prefix-map
                :prefix "C-c n"
                ("l" . org-roam-buffer-toggle)
                ("f" . org-roam-node-find)
@@ -1895,7 +1895,9 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
 *** D
 #+BEGIN_SRC emacs-lisp
 (use-package d-mode
-  :mode "\\.d\\'") 
+  :mode "\\.d\\'"
+  :config
+  (add-to-list 'org-src-lang-modes '("d" . c)))
 #+END_SRC
 
 *** Docker
@@ -2091,6 +2093,35 @@ Editing in a mixed-language web format.
     ;; :bind
     ;; ("C-c h" . ns/toggle-web-mode))
 #+END_SRC 
+
+* Utilities
+** Visit Important files
+A little transient function for visiting my common files that aren't accessible through ~org-roam~.
+
+#+BEGIN_SRC emacs-lisp
+
+(require 'transient)
+
+(define-prefix-command 'ns/files-map)
+(keymap-global-set "C-c f" 'ns/files-map)
+
+(transient-define-prefix ns/visit-note-transient ()
+  "Visit common note files."
+  ["Visit common note files"
+   ["Agenda"
+    ("a" "agenda.org" (lambda () (interactive) (find-file (expand-file-name "agenda.org" org-directory))))
+    ("p" "projects.org" (lambda () (interactive) (find-file (expand-file-name "projects.org" org-directory))))
+    ("i" "inbox.org" (lambda () (interactive) (find-file (expand-file-name "inbox.org" org-directory))))
+    ]
+   ["Config"
+    ("c" "config.org" (lambda () (interactive) (find-file (expand-file-name "config.org" user-emacs-directory))))
+    ("I" "init.el" (lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))))
+    ]
+   ])
+
+(define-key 'ns/files-map (kbd "f") 'ns/visit-note-transient)
+
+#+END_SRC
 
 * +Social+
 ** +IRC+
