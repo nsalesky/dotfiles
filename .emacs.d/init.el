@@ -485,7 +485,10 @@
   :custom
   (lispy-compat '(edebug cider magit-blame-mode)))
 
-(electric-pair-mode 1)
+(let ((electric-pair-modes '(rustic-mode
+                             go-mode)))
+  (seq-do (lambda (mode) (add-hook mode (lambda () (electric-pair-mode 1)) nil nil))
+          electric-pair-modes))
 
 ;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
