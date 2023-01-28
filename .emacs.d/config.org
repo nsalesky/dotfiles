@@ -853,10 +853,11 @@ Here's where I configure some basic Emacs features with keybindings.
 Turn on ~electric-pair-mode~ for a select subset of modes. 
 
 #+BEGIN_SRC emacs-lisp
-(let ((electric-pair-modes '(rustic-mode
-                             go-mode)))
-  (seq-do (lambda (mode) (add-hook mode (lambda () (electric-pair-mode 1)) nil nil))
-          electric-pair-modes))
+(electric-pair-mode 1)
+(setq electric-pair-inhibit-predicate
+      (lambda (char)
+        (not (member major-mode '(rustic-mode
+                                  go-mode)))))
 #+END_SRC
 
 ** +Meow+
