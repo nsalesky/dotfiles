@@ -839,6 +839,16 @@ Here's where I configure some basic Emacs features with keybindings.
 (setq disabled-command-function nil)
 #+END_SRC
 
+** Lispy: short and sweet Lisp editing
+
+#+BEGIN_SRC emacs-lisp 
+(use-package lispy
+  :hook ((emacs-lisp-mode . lispy-mode)
+         (clojure-mode . lispy-mode))
+  :custom
+  (lispy-compat '(edebug cider magit-blame-mode)))
+#+END_SRC
+
 ** Electric-pair-mode
 
 #+BEGIN_SRC emacs-lisp

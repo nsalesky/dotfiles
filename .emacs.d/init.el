@@ -479,6 +479,12 @@
 
 (setq disabled-command-function nil)
 
+(use-package lispy
+  :hook ((emacs-lisp-mode . lispy-mode)
+         (clojure-mode . lispy-mode))
+  :custom
+  (lispy-compat '(edebug cider magit-blame-mode)))
+
 (electric-pair-mode 1)
 
 ;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -1312,6 +1318,7 @@
     ]
    ["Config"
     ("c" "config.org" (lambda () (interactive) (find-file (expand-file-name "config.org" user-emacs-directory))))
+    ("I" "init.el" (lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))))
     ]
    ])
 
