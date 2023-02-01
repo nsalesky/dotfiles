@@ -326,22 +326,6 @@
   ;; :hook
   ;; (org-mode . olivetti-mode))
 
-(use-package iedit)
-  ;; :config
-  ;; (defun iedit-dwim (arg)
-  ;;   "Starts iedit but uses \\[narrow-to-defun] to limit its scope."
-  ;;   (interactive "P")
-  ;;   (if arg
-  ;;       (iedit-mode)
-  ;;     (save-excursion
-  ;;       (save-restriction
-  ;;         (widen)
-  ;;         (if (bound-and-true-p iedit-mode)
-  ;;             (iedit-done)
-  ;;           (narrow-to-defun)
-  ;;           (iedit-start (current-word) (point-min) (point-max)))))))
-  ;; (keymap-global-set "C-;" 'iedit-dwim))
-
 (setq tramp-default-method "ssh") ;; Use SSH by default for remote files
 
 (use-package expand-region
@@ -352,6 +336,16 @@
   :bind
   ("C-a" . mwim-beginning)
   ("C-e" . mwim-end))
+
+(use-package flyspell
+  :hook ((prog-mode . flyspell-prog-mode)
+        ((org-mode markdown-mode) . flyspell-mode)))
+
+(use-package flyspell-correct
+  :after (flyspell)
+  :bind
+  (:map flyspell-mode-map
+        ("C-;" . flyspell-correct-wrapper)))
 
 (use-package dired
   :straight (:type built-in)
@@ -685,7 +679,7 @@
         ;;  "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
         ("s" "Schedule an Appointment" entry (file+headline "agenda.org" "Future")
          "*** TODO %? \nSCHEDULED: %t")
-        ("d" "Diary" entry (file+datetree "diary.org")
+        ("d" "Diary" entry (file+olp+datetree "diary.org")
          "* %?\n%U\n" :clock-in t :clock-resume t)
         ("i" "Idea" entry (file "inbox.org")
          "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
@@ -949,6 +943,18 @@
   :custom
   (vterm-shell "fish")
   (vterm-max-scrollback 10000))
+
+(use-package multi-vterm
+  :bind
+  (:prefix-map ns/multi-vterm-prefix-map
+               :prefix "C-c v"
+               ("v" . multi-vterm)
+               ("C-p" . multi-vterm-prev)
+               ("p" . multi-vterm-prev)
+               ("C-n" . multi-vterm-next)
+               ("n" . multi-vterm-next)
+               ("t" . multi-vterm-dedicated-toggle)
+               ("p" . multi-vterm-project)))
 
 ;; (use-package lsp-mode
 ;;     :commands (lsp lsp-deferred)
