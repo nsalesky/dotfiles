@@ -212,7 +212,8 @@ Set up all the fancy user-interface elements to make Emacs look nice.
 Set the window title to display the current file and major mode.
 
 #+BEGIN_SRC emacs-lisp
-(setq-default frame-title-format '("%b [%m]"))
+;; (setq-default frame-title-format '("%b [%m]"))
+(setq-default frame-title-format '("GNU Emacs"))
 #+END_SRC 
 
 
@@ -835,7 +836,8 @@ Turn on ~electric-pair-mode~ for a select subset of modes.
 (setq electric-pair-inhibit-predicate
       (lambda (char)
         (not (member major-mode '(rustic-mode
-                                  go-mode)))))
+                                  go-mode
+                                  python-mode)))))
 #+END_SRC
 
 ** +Meow+
@@ -1545,6 +1547,19 @@ Give Org-mode documents some extra visual polish.
   (org-roam-db-autosync-enable))
 #+END_SRC
 
+** Org-roam-ui
+#+BEGIN_SRC emacs-lisp
+(use-package org-roam-ui
+  :straight
+    (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+    :after org-roam
+;;  :hook (after-init . org-roam-ui-mode)
+    :custom
+    (org-roam-ui-sync-theme t)
+    (org-roam-ui-follow t)
+    (org-roam-ui-update-on-save t)
+    (org-roam-ui-open-on-start t))
+#+END_SRC
 ** +Denote+
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1985,6 +2000,8 @@ Recompile LaTeX documents automatically when saved.
 ;; (require 'lsp-pyright)
 ;; (require 'dap-python)
 
+(use-package pipenv
+  :hook (python-mode . pipenv-mode))
 
 #+END_SRC
 

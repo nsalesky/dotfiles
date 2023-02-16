@@ -88,7 +88,8 @@
 
 (use-package async)
 
-(setq-default frame-title-format '("%b [%m]"))
+;; (setq-default frame-title-format '("%b [%m]"))
+(setq-default frame-title-format '("GNU Emacs"))
 
 (global-visual-line-mode 1)
 
@@ -483,7 +484,8 @@
 (setq electric-pair-inhibit-predicate
       (lambda (char)
         (not (member major-mode '(rustic-mode
-                                  go-mode)))))
+                                  go-mode
+                                  python-mode)))))
 
 ;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -931,6 +933,17 @@
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-enable))
 
+(use-package org-roam-ui
+  :straight
+    (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+    :after org-roam
+;;  :hook (after-init . org-roam-ui-mode)
+    :custom
+    (org-roam-ui-sync-theme t)
+    (org-roam-ui-follow t)
+    (org-roam-ui-update-on-save t)
+    (org-roam-ui-open-on-start t))
+
 (use-package term
   :custom
   (explicit-shell-file-name "/usr/bin/fish"))
@@ -1226,6 +1239,9 @@
 
 ;; (require 'lsp-pyright)
 ;; (require 'dap-python)
+
+(use-package pipenv
+  :hook (python-mode . pipenv-mode))
 
 (use-package typescript-mode
   :mode ("\\.ts\\'" "\\.tsx\\'" "\\.js\\'" "\\.jsx\\'")

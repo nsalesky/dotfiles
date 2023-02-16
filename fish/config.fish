@@ -128,6 +128,8 @@ function fish_prompt --description 'Write out the prompt; do not replace this. I
     vterm_prompt_end
 end
 
-bass source "$GUIX_PROFILE/etc/profile"
+# bass source "$GUIX_PROFILE/etc/profile"
+
+direnv hook fish | source
 
 rvm default
