@@ -35,6 +35,9 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(setq straight-host-usernames
+      '((github . "nsalesky")))
+
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
@@ -1188,9 +1191,14 @@
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
 (use-package d-mode
+  :straight (:type git :host github :repo "nsalesky/Emacs-D-Mode")
+  :after eglot
   :mode "\\.d\\'"
+  :hook
+  (d-mode . eglot-ensure)
   :config
-  (add-to-list 'org-src-lang-modes '("d" . c)))
+  (add-to-list 'org-src-lang-modes '("d" . c))
+  (add-to-list 'eglot-server-programs '(d-mode . ("/home/nsalesky/bin/serve-d"))))
 
 ;; (use-package dockerfile-mode
 ;;   :mode "Dockerfile\\'")

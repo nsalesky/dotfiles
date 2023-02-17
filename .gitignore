@@ -22,7 +22,10 @@
 /.emacs.d/nov-places
 /.emacs.d/places
 /.emacs.d/request/
-/.emacs.d/straight/
+/.emacs.d/straight/build/
+/.emacs.d/straight/build-cache.el
+/.emacs.d/straight/modified/
+/.emacs.d/straight/repos/
 /.emacs.d/url/
 /.emacs.d/history
 /.emacs.d/games/
