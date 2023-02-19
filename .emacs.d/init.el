@@ -488,7 +488,8 @@
       (lambda (char)
         (not (member major-mode '(rustic-mode
                                   go-mode
-                                  python-mode)))))
+                                  python-mode
+                                  d-mode)))))
 
 ;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
