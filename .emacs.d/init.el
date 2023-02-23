@@ -484,12 +484,15 @@
   (lispy-compat '(edebug cider magit-blame-mode)))
 
 (electric-pair-mode 1)
+;; (setq electric-pair-inhibit-predicate
+;;       (lambda (char)
+;;         (not (member major-mode '(rustic-mode
+;;                                   go-mode
+;;                                   python-mode
+;;                                   d-mode)))))
 (setq electric-pair-inhibit-predicate
       (lambda (char)
-        (not (member major-mode '(rustic-mode
-                                  go-mode
-                                  python-mode
-                                  d-mode)))))
+        (not (member major-mode '(org-mode)))))
 
 ;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -971,7 +974,8 @@
                ("C-n" . multi-vterm-next)
                ("n" . multi-vterm-next)
                ("t" . multi-vterm-dedicated-toggle)
-               ("p" . multi-vterm-project)))
+               ("p" . multi-vterm-project)
+               ("r" . multi-vterm-rename-buffer)))
 
 ;; (use-package lsp-mode
 ;;     :commands (lsp lsp-deferred)

@@ -1612,7 +1612,8 @@ Give Org-mode documents some extra visual polish.
                ("C-n" . multi-vterm-next)
                ("n" . multi-vterm-next)
                ("t" . multi-vterm-dedicated-toggle)
-               ("p" . multi-vterm-project)))
+               ("p" . multi-vterm-project)
+               ("r" . multi-vterm-rename-buffer)))
 
 #+END_SRC 
 
