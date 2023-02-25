@@ -111,19 +111,24 @@
         ))
 (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
-(set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 120)
-(set-face-attribute 'variable-pitch nil :font "Iosevka Aile" :height 140)
+(defvar ns/default-font "JetBrains Mono"
+  "My custom default font choice.")
+
+(defvar ns/fixed-pitch-font "JetBrainsMono"
+  "My custom fixed pitch font choice.")
+
+(defvar ns/variable-pitch-font "Iosevka Aile"
+  "My custom variable pitch font choice.")
+
+(set-face-attribute 'default nil :font ns/default-font :height 120)
+(set-face-attribute 'fixed-pitch nil :font ns/fixed-pitch-font :height 120)
+(set-face-attribute 'variable-pitch nil :font ns/variable-pitch-font :height 140)
 
 ;; (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 ;; (set-face-attribute 'default nil :font "Rec Mono Semi Casual" :height 120)
 ;; (set-face-attribute 'fixed-pitch nil :font "Rec Mono Semi Casual" :height 120)
 
 (use-package all-the-icons)
-
-;; (use-package emojify
-;;   :config
-;;   (global-emojify-mode))
 
 (use-package autothemer)
 
@@ -580,16 +585,6 @@
                         '(font-lock-comment-face fixed-pitch))
     (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
-;; Got this from https://stackoverflow.com/questions/10969617/hiding-markup-elements-in-org-mode
-;; (defun ns/org-toggle-emphasis ()
-;;   "Toggle hiding/showing of org emphasis markers"
-;;   (interactive)
-;;   (if org-hide-emphasis-markers
-;;       (set-variable 'org-hide-emphasis-markers nil)
-;;     (set-variable 'org-hide-emphasis-markers t)))
-
-;; (use-package org-contrib)
-
 ;; Org Mode
 (use-package org
   :straight (:type built-in)
@@ -633,10 +628,10 @@
                 (org-level-6 . 1.1)
                 (org-level-7 . 1.1)
                 (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font "Iosevka Aile" :weight 'medium :height (cdr face)))
+  (set-face-attribute (car face) nil :font ns/variable-pitch-font :weight 'medium :height (cdr face)))
 
 ;; Make the document title a bit bigger
-(set-face-attribute 'org-document-title nil :font "Iosevka Aile" :weight 'bold :height 1.3)
+(set-face-attribute 'org-document-title nil :font ns/variable-pitch-font :weight 'bold :height 1.3)
 
 ;; Make sure certain org faces continue to use fixed-pitch face even whenn variable-pitch-mode is on
 (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
