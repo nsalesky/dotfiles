@@ -35,3 +35,10 @@
 /.emacs.d/**/*#
 /.emacs.d/**/*~
 /.emacs.d/*.plstore
+/.emacs.d/emacs.png
+/.emacs.d/forge-database.sqlite
+/.emacs.d/multisession/
+/.emacs.d/persist/
+/.emacs.d/projects
+/.emacs.d/tabsession.el
+/.emacs.d/ts-grammars/
