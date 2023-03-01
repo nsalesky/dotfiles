@@ -1,0 +1,1 @@
+cd /home/nsalesky/Documents/notes && git add -A && git commit -m "Updates on $(date)" && git push 

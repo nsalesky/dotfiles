@@ -1,0 +1,5 @@
+# To set this up, run `anacron -t /home/nsalesky/.dotfiles/cron/anacrontab -S /home/nsalesky/.var/spool/anacron`
+SHELL=/usr/bin/fish
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/home/nsalesky/bin
+1 10 cron.nsalesky run-parts /home/nsalesky/.dotfiles/cron/daily/
+1 10 cron.nsalesky run-parts /home/nsalesky/.dotfiles/cron/weekly/
