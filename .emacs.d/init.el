@@ -607,7 +607,7 @@
   (org-log-done 'time)    ; log the time when a task is *DONE*
 
   (org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "ACTIVE(a!)" "HOLD(h)" "|" "DONE(d!)"))))
+        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)"))))
             ;; (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
                 ;; "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
 
@@ -1001,6 +1001,16 @@
 ;;     (lsp-ui-doc-position 'bottom)
 ;;     (lsp-ui-doc-enable nil))
 
+(use-package treesit-auto
+  :straight (:type git :host github :repo "renzmann/treesit-auto")
+  :custom
+  (treesit-auto-install 'prompt)
+  :init
+  (setq python-ts-mode-hook python-mode-hook
+        rust-ts-mode-hook rust-mode-hook)
+  :config
+  (global-treesit-auto-mode))
+
 ;; (require 'treesit)
 ;; (defun ns/tree-sitter-compile-grammar (destination &optional path)
 ;;   "Compile grammar at PATH, and place the resulting shared library in DESTINATION."
@@ -1045,8 +1055,8 @@
 ;;              (ns/tree-sitter-compile-grammar
 ;;               (expand-file-name "ts-grammars" user-emacs-directory))))
 
-(require 'treesit)
-(setq treesit-extra-load-path (list (expand-file-name "ts-grammars" user-emacs-directory)))
+;; (require 'treesit)
+;; (setq treesit-extra-load-path (list (expand-file-name "ts-grammars" user-emacs-directory)))
 
 ;; (defun ns/compile-tree-sitter-grammar
 ;;     (language destination)
@@ -1094,7 +1104,12 @@
                ("f" . eglot-format-buffer))
   :custom
   (eglot-events-buffer-size 0) ; Disable the events buffer for performance
-  (eglot-send-changes-idle-time 0.5))
+  (eglot-send-changes-idle-time 0.5)
+
+  ;; TODO: (hopefully) temporary hack for Treesitter support
+  :config
+  (add-to-list 'eglot-server-programs
+               '(python-ts-mode . ("python-language-server"))))
   ;(eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
   ;; :config
   ;; (add-hook 'eglot-managed-mode-hook
