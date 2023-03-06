@@ -602,14 +602,7 @@
   (org-default-notes-file "~/Documents/notes/notes.org")
 
   (org-src-tab-acts-natively t)
-  (org-src-preserve-indentation t)
-
-  (org-log-done 'time)    ; log the time when a task is *DONE*
-
-  (org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d!)"))))
-            ;; (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)"
-                ;; "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)"))))
+  (org-src-preserve-indentation t))
 
 (use-package org-appear
   :straight (org-appear :type git :host github :repo "awth13/org-appear")
@@ -658,23 +651,24 @@
 
 (setq org-confirm-babel-evaluate nil)
 
-(setq org-agenda-files (list "inbox.org"
-                             "agenda.org"
-                             "projects.org"))
-      ;org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
-      
-      ;; org-agenda-compact-blocks nil)
+(setq
+ org-agenda-files (directory-files-recursively "~/Documents/notes/" "\\.org$")
 
-;; (setq org-capture-templates
-;;        `(("i" "Inbox" entry  (file "agenda/inbox.org")
-;;         ,(concat "* TODO %?\n"
-;;                  "/Entered on/ %U"))
-;;          ("m" "Meeting entry" entry (file+headline "agenda.org" "Future")
-;;           ,(concat "* %? :meeting:\n"
-;;                    "<%<%Y-%m-%d %a %H:00>>"))
-;;          ("n" "Note" entry (file "notes.org")
-;;           ,(concat "* Note (%a)\n"
-;;                    "/Entered on/ %U\n" "\n" "%?"))))
+ org-agenda-todo-ignore-scheduled 'all
+ org-agenda-todo-ignore-deadlines 'all
+ org-agenda-todo-ignore-with-date 'all
+ org-agenda-tags-todo-honor-ignore-options t
+
+ org-todo-keywords '((sequence "TODO(t@/!)" "WIP(w@/!)" "HOLD(h@/!)" "|" "DONE(d@/!)" "KILL(@k/!)"))
+
+ org-log-done 'time    ; log the time when a task is *DONE*
+ org-log-reschedule 'time
+ org-log-redeadline 'time
+
+ org-agenda-deadline-leaders '("DUE:       " "In %3d d.: " "%2d d. ago: ")
+ org-agenda-scheduled-leaders '("DO:       " "Sched. %2dx: "))
+      
+      ;org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
 
 (setq org-capture-templates
       '(("t" "todo" entry (file+headline "inbox.org" "Todo")
@@ -717,6 +711,12 @@
     (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
 (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
 
+(use-package org-super-agenda
+  :after org
+  :defer t
+  :config
+  (org-agenda nil "u"))
+
 (setq org-agenda-sticky t
       org-agenda-dim-blocked-tasks nil
       org-agenda-time-grid (quote
@@ -724,146 +724,80 @@
                              (800 1200 1600 2000)
                              "......" "----------------")))
 
-;; Variables for ignoring tasks with deadlines
-(defvar ns/hide-deadline-next-tasks t)
-(setq org-agenda-tags-todo-honor-ignore-options t
-      org-deadline-warning-days 10)
+(require 'cl)
+(defun cmp-date-property-stamp (prop)
+  "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
+If a is before b, return -1. If a is after b, return 1. If they
+are equal return nil."
+  (lexical-let ((prop prop))
+	           #'(lambda (a b)
 
-;;;; Task and project filter functions
-
-(defun ns/select-with-tag-function (select-fun-p)
-  (save-restriction
-    (widen)
-    (let ((next-headline
-           (save-excursion (or (outline-next-heading)
-                               (point-max)))))
-      (if (funcall select-fun-p) nil next-headline))))
-
-;; Some helper functions for agenda views
-(defun ns/org-agenda-add-location-string ()
-  "Gets the value of the LOCATION property."
-  (let ((loc (org-entry-get (point) "LOCATION")))
-    (if (> (length loc) 0)
-        (concat "{" loc "} ")
-      "")))
-
-;;;; Agenda block definitions
-
-(defvar ns-org-agenda-block--today-schedule
-  '(agenda "" ((org-agenda-overriding-header "Today's Schedule:")
-               (org-agenda-span 'day)
-               (org-agenda-ndays 1)
-               (org-agenda-start-on-weekday nil)
-               (org-agenda-start-day "+0d")))
-  "A block showing a 1 day schedule.")
-
-(defvar ns-org-agenda-block--weekly-log
-  '(agenda "" ((org-agenda-overriding-header "Weekly Log")))
-  "A block showing my schedule and logged tasks for this week.")
-
-(defvar ns-org-agenda-block--previous-calendar-data
-  '(agenda "" ((org-agenda-overriding-header "Previous Calendar Data (last 3 weeks)")
-               (org-agenda-start-day "-21d")
-               (org-agenda-span 21)
-               (org-agenda-start-on-weekday nil)))
-  "A block showing my schedule and logged tasks for the last few weeks.")
-
-(defvar ns-org-agenda-block--upcoming-calendar-data
-  '(agenda "" ((org-agenda-overriding-header "Upcoming Calendar Data (next 2 weeks)")
-               (org-agenda-start-day "0d")
-               (org-agenda-span 14)
-               (org-agenda-start-on-weekday nil)))
-  "A block showing my schedule for the next couple weeks.")
-
-(defvar ns-org-agenda-block--refile
-  '(tags "REFILE-ARCHIVE-REFILE=\"nil\"|INFO"
-         ((org-agendda-overriding-header "Headings needing refiling or other info:")
-          (org-tags-match-list-sublevels nil)))
-  "Headings needing refiling or other info.")
-
-(defvar ns-org-agenda-block--next-tasks
-  '(tags-todo "-INACTIVE-SOMEDAY-CANCELLED-ARCHIVE/!NEXT"
-              ((org-agenda-overriding-header "Next Tasks:")
-               ))
-  "Next tasks.")
-
-(defvar ns-org-agenda-block--end-of-agenda
-  '(tags "ENDOFAGENDA"
-         ((org-agenda-overriding-header "End of Agenda")
-          (org-tags-match-list-sublevels nil)))
-  "End of the agenda.")
-
-(defvar ns-org-agenda-display-settings
-  '((org-agenda-start-with-log-mode t)
-    (org-agenda-log-mode-items '(clock))
-    (org-agenda-prefix-format '((agenda . "  %-12:c%?-12t %(ns/org-agenda-add-location-string)% s")
-				(timeline . "  % s")
-				(todo . "  %-12:c ")
-				(tags . "  %-12:c ")
-				(search . "  %i %-12:c")))
-    (org-agenda-todo-ignore-deadlines 'near)
-    (org-agenda-todo-ignore-scheduled t))
-  "Display settings for my agenda views.")
-
-(defvar ns-org-agenda-entry-display-settings
-  '(,ns-org-agenda-display-settings
-    (org-agenda-entry-text-mode t))
-  "Display settings for my agenda views with entry text.")
+		           (let* ((a-pos (get-text-property 0 'org-marker a))
+					      (b-pos (get-text-property 0 'org-marker b))
+					      (a-date (or (org-entry-get a-pos prop)
+									  (format "<%s>" (org-read-date t nil "now"))))
+					      (b-date (or (org-entry-get b-pos prop)
+									  (format "<%s>" (org-read-date t nil "now"))))
+					      (cmp (compare-strings a-date nil nil b-date nil nil))
+					      )
+			         (if (eq cmp t) nil (signum cmp))
+			         ))))
 
 (setq org-agenda-custom-commands
-      `((" " "Export Schedule"
-         (,ns-org-agenda-block--today-schedule
-          ,ns-org-agenda-block--refile
-          ,ns-org-agenda-block--next-tasks
-          ,ns-org-agenda-block--end-of-agenda)
-          ,ns-org-agenda-display-settings)
-        ("L" "Weekly Log"
-         (,ns-org-agenda-block--weekly-log)
-         ,ns-org-agenda-display-settings)
-        ("r " "Agenda Review (all)"
-         (,ns-org-agenda-block--next-tasks
-          ,ns-org-agenda-block--refile
-          ,ns-org-agenda-block--end-of-agenda)
-         ,ns-org-agenda-display-settings)
-        ("rn" "Agenda Review (next tasks)"
-         (,ns-org-agenda-block--next-tasks
-          ,ns-org-agenda-block--end-of-agenda)
-         ,ns-org-agenda-display-settings)
-        ("rp" "Agenda Review (previous calendar data)"
-         (,ns-org-agenda-block--previous-calendar-data
-          ,ns-org-agenda-block--end-of-agenda)
-         ,ns-org-agenda-display-settings)
-        ("ru" "Agenda Review (upcoming calendar data)"
-         (,ns-org-agenda-block--upcoming-calendar-data
-          ,ns-org-agenda-block--end-of-agenda)
-         ,ns-org-agenda-display-settings)
-        ))
-
-;; (setq org-agenda-custom-commands
-;;       '(("g" "Get Things Done (GTD)"
-;;          ((agenda ""
-;;                   ((org-agenda-span 1) ; limit display to a single day
-;;                    (org-agenda-skip-function
-;;                     '(org-agenda-skip-entry-if 'deadline))
-;;                    (org-deadline-warning-days 0)))
-;;           (todo "NEXT"
-;;                 ((org-agenda-skip-function
-;;                   '(org-agenda-skip-entry-if 'deadline))
-;;                  (org-agenda-prefix-format "  %i %-12:c [%e] ")
-;;                  (org-agenda-overriding-header "\nTasks\n")))
-;;           (agenda nil
-;;                   ((org-agenda-entry-types '(:deadline))
-;;                    (org-agenda-span 1)
-;;                    (org-agenda-format-date "")
-;;                    (org-deadline-warning-days 7)
-;;                    (org-agenda-skip-function
-;;                     '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
-;;                    (org-agenda-overriding-header "\nDeadlines")))
-;;           (tags-todo "inbox"
-;;                      ((org-agenda-prefix-format "  %?-12t% s")
-;;                       (org-agenda-overriding-header "\nInbox\n")))
-;;           (tags "CLOSED>=\"<today>\""
-;;                 ((org-agenda-overriding-header "\nCompleted today\n")))))))
+      '(("u" "Super view"
+         ((agenda "" ( (org-agenda-span 1)
+                       (org-super-agenda-groups
+                        '(
+                          (:name "Today"
+                                 :tag ("bday" "ann" "hols" "cal" "today")
+                                 :time-grid t
+                                 :todo ("WIP")
+                                 :deadline today
+                                 :scheduled today)
+                          (:name "Overdue"
+                                 :deadline past)
+                          (:name "Reschedule"
+                                 :scheduled past)
+                          (:name "Perso"
+                                 :tag "perso")
+                          (:name "Due Soon"
+                                 :deadline future
+                                 :scheduled future)
+                          ))))
+          (tags (concat "w"
+                        (format-time-string "%V"))
+                ((org-agenda-overriding-header
+                  (concat "--\nTodos Week " (format-time-string "%V")))
+                 (org-super-agenda-groups
+                  '((:discard (:deadline t))
+                    (:discard (:scheduled t))
+                    (:discard (:todo ("DONE")))
+                    (:name "Ticklers"
+                           :tag "someday")
+                    (:name "Perso"
+                           :and (:tag "perso" :not (:tag "someday")))
+                    (:name "UH"
+                           :and (:tag "uh" :not (:tag "someday")))
+                    ))))
+          ))
+        ("r" "Resonance Cal" tags "Type={.}"
+	     ((org-agenda-files
+		   (directory-files-recursively
+			"~/Documents/notes/refs/rez" "\\.org$"))
+	      (org-overriding-columns-format
+		   "%35Item %Type %Start %Fin %Rating")
+	      (org-agenda-cmp-user-defined
+		   (cmp-date-property-stamp "Start"))
+	      (org-agenda-sorting-strategy
+		   '(user-defined-down))
+          (org-agenda-overriding-header "C-u r to re-run Type={.}")
+          (org-agenda-mode-hook
+	       (lambda ()
+	         (visual-line-mode -1)
+	         (setq truncate-lines 1)
+	         (setq display-line-numbers-offset -1)
+	         (display-line-numbers-mode 1)))
+	      (org-agenda-view-columns-initially t)))))
 
 (keymap-global-set "C-c c" 'org-capture)
 (keymap-global-set "C-c a" 'org-agenda)
@@ -918,16 +852,16 @@
                ;; Dailies
                ("j" . org-roam-dailies-capture-today))
   :custom
-  (org-roam-directory "~/Documents/notes/org-roam/")
+  (org-roam-directory (file-truename "~/Documents/notes/"))
+  (org-roam-file-extensions '("org" "md"))
+  (org-roam-dailies-directory "logs")
   (org-roam-database-connector 'sqlite-builtin)
   (org-roam-capture-templates
-   '(("d" "default" plain "%?"
-      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                         "#+title: ${title}\n#+date: %U\n")
+   '(("d" "default" plain (file "~/Documents/notes/capture-templates/default.org")
+      :target (file "${slug}.org")
       :unnarrowed t)
-     ("r" "recipe" plain (file "~/notes/org-roam/templates/recipe-template.org")
-      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                         "#+title: ${title}\n#+date: %U\n#+filetags: Recipe\n")
+     ("r" "Rez" plain (file "~/Documents/notes/capture-templates/rez.org")
+      :target (file "refs/rez/${slug}.org")
       :unnarrowed t)))
   :init
   (setq org-roam-v2-ack t)
