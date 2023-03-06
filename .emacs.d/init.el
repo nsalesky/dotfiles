@@ -935,6 +935,30 @@
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-enable))
 
+(use-package consult-org-roam
+   :after org-roam
+   :init
+   (require 'consult-org-roam)
+   (consult-org-roam-mode 1)
+   :custom
+   (consult-org-roam-grep-func #'consult-ripgrep)
+   ;; Configure a custom narrow key for `consult-buffer'
+   (consult-org-roam-buffer-narrow-key ?r)
+   ;; Display org-roam buffers right after non-org-roam buffers
+   ;; in consult-buffer (and not down at the bottom)
+   (consult-org-roam-buffer-after-buffers t)
+   :config
+   ;; Eventually suppress previewing for certain functions
+   (consult-customize
+    consult-org-roam-forward-links
+    :preview-key (kbd "M-."))
+   :bind
+   ;; Define some convenient keybindings as an addition
+   ("C-c n f" . consult-org-roam-file-find)
+   ("C-c n b" . consult-org-roam-backlinks)
+   ("C-c n l" . consult-org-roam-forward-links)
+   ("C-c n s" . consult-org-roam-search))
+
 (use-package org-roam-ui
   :straight
     (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
@@ -1109,7 +1133,7 @@
   ;; TODO: (hopefully) temporary hack for Treesitter support
   :config
   (add-to-list 'eglot-server-programs
-               '(python-ts-mode . ("python-language-server"))))
+               '(python-ts-mode . ("pylsp"))))
   ;(eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
   ;; :config
   ;; (add-hook 'eglot-managed-mode-hook
@@ -1304,29 +1328,34 @@
 
 (use-package inf-ruby) ;; Interact with a Ruby REPL
 
+(defun ns/setup-eglot-rust ()
+  (setq-local eglot-workspace-configuration
+              '(:rust-analyzer
+                (:procMacro (:attributes (:enable t)
+                                         :enable t)
+                            :cargo (:buildScripts (:enable t))
+                            :diagnostics (:disabled ["unresolved-proc-macro"
+                                                     "unresolved-macro-call"])))))
+
+(defclass eglot-rust-analyzer (eglot-lsp-server) ()
+  :documentation "A custom class for rust-analyzer.")
+
+(cl-defmethod eglot-initialization-options ((server eglot-rust-analyzer))
+  eglot-workspace-configuration)
+
 (use-package rustic
-  ;; :hook (rustic-mode . eglot-ensure)
   :custom
   (rustic-lsp-client 'eglot)
   :hook
   (rustic-mode . (lambda () (flycheck-mode -1)))
-  (rustic-mode . eglot-ensure))
-
-  ;; ;;uncomment for less flashiness
-  ;; (setq lsp-eldoc-hook nil)
-  ;; (setq lsp-enable-symbol-highlighting nil)
-  ;; (setq lsp-signature-auto-activate nil)
+  (rustic-mode . ns/setup-eglot-rust)
+  (rustic-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+               '(rustic-mode . (eglot-rust-analyzer "rust-analyzer"))))
 
   ;comment to disable rustfmt on save
   ;(setq rustic-format-on-save t))
-
-;; TODO set up keybindings
-;; (use-package rust-auto-use)
-  
-
-;; (use-package rust-mode
-;;   :mode "\\.rs\\'"
-;;   :hook (rust-mode . eglot-ensure))
 
 ;; (defun ns/toggle-web-mode ()
 ;;   "Toggles web-mode on or off, switching back to the previous major mode when disabled."
