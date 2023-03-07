@@ -711,11 +711,11 @@
     (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
 (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
 
-(use-package org-super-agenda
-  :after org
-  :defer t
-  :config
-  (org-agenda nil "u"))
+;; (use-package org-super-agenda
+;;   :after org
+;;   :defer t
+;;   :config
+;;   (org-super-agenda-mode 1))
 
 (setq org-agenda-sticky t
       org-agenda-dim-blocked-tasks nil
@@ -730,56 +730,54 @@
 If a is before b, return -1. If a is after b, return 1. If they
 are equal return nil."
   (lexical-let ((prop prop))
-	           #'(lambda (a b)
+	#'(lambda (a b)
 
-		           (let* ((a-pos (get-text-property 0 'org-marker a))
-					      (b-pos (get-text-property 0 'org-marker b))
-					      (a-date (or (org-entry-get a-pos prop)
-									  (format "<%s>" (org-read-date t nil "now"))))
-					      (b-date (or (org-entry-get b-pos prop)
-									  (format "<%s>" (org-read-date t nil "now"))))
-					      (cmp (compare-strings a-date nil nil b-date nil nil))
-					      )
-			         (if (eq cmp t) nil (signum cmp))
-			         ))))
+		(let* ((a-pos (get-text-property 0 'org-marker a))
+			   (b-pos (get-text-property 0 'org-marker b))
+			   (a-date (or (org-entry-get a-pos prop)
+						   (format "<%s>" (org-read-date t nil "now"))))
+			   (b-date (or (org-entry-get b-pos prop)
+						   (format "<%s>" (org-read-date t nil "now"))))
+			   (cmp (compare-strings a-date nil nil b-date nil nil))
+			   )
+		  (if (eq cmp t) nil (signum cmp))
+		  ))))
+
+;; (setq org-super-agenda-groups
+;;       '(
+;;         (:name "Today"
+;;                :tag ("bday" "ann" "hols" "cal" "today")
+;;                :time-grid nil
+;;                :todo ("TODO" "WIP")
+;;                :deadline today
+;;                :scheduled today)
+;;         (:name "Overdue"
+;;                :deadline past)
+;;         (:name "Reschedule"
+;;                :scheduled past)
+;;         (:name "Perso"
+;;                :tag "perso")
+;;         (:name "Due Soon"
+;;                :deadline future
+;;                :scheduled future)
+;;         (:discard (:deadline t))
+;;         (:discard (:scheduled t))
+;;         (:discard (:todo ("DONE")))
+;;         (:name "Ticklers"
+;;                :tag "someday")
+;;         (:name "Perso"
+;;                :and (:tag "perso" :not (:tag "someday")))
+;;         (:name "UH"
+;;                :and (:tag "uh" :not (:tag "someday")))))
+
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" plain
+         (file "~/Documents/notes/capture-templates/daily.org")
+         ;; (f-read-text "~/Documents/notes/capture-templates/daily.org")
+         :target (file "%<%Y-%m-%d>.org"))))
 
 (setq org-agenda-custom-commands
-      '(("u" "Super view"
-         ((agenda "" ( (org-agenda-span 1)
-                       (org-super-agenda-groups
-                        '(
-                          (:name "Today"
-                                 :tag ("bday" "ann" "hols" "cal" "today")
-                                 :time-grid t
-                                 :todo ("WIP")
-                                 :deadline today
-                                 :scheduled today)
-                          (:name "Overdue"
-                                 :deadline past)
-                          (:name "Reschedule"
-                                 :scheduled past)
-                          (:name "Perso"
-                                 :tag "perso")
-                          (:name "Due Soon"
-                                 :deadline future
-                                 :scheduled future)
-                          ))))
-          (tags (concat "w"
-                        (format-time-string "%V"))
-                ((org-agenda-overriding-header
-                  (concat "--\nTodos Week " (format-time-string "%V")))
-                 (org-super-agenda-groups
-                  '((:discard (:deadline t))
-                    (:discard (:scheduled t))
-                    (:discard (:todo ("DONE")))
-                    (:name "Ticklers"
-                           :tag "someday")
-                    (:name "Perso"
-                           :and (:tag "perso" :not (:tag "someday")))
-                    (:name "UH"
-                           :and (:tag "uh" :not (:tag "someday")))
-                    ))))
-          ))
+      '(
         ("r" "Resonance Cal" tags "Type={.}"
 	     ((org-agenda-files
 		   (directory-files-recursively
@@ -797,7 +795,14 @@ are equal return nil."
 	         (setq truncate-lines 1)
 	         (setq display-line-numbers-offset -1)
 	         (display-line-numbers-mode 1)))
-	      (org-agenda-view-columns-initially t)))))
+	      (org-agenda-view-columns-initially t)))
+        ("u" "Super view"
+         ((agenda "" ( (org-agenda-span 1))
+                  (tags (concat "w"
+                                (format-time-string "%V"))
+                        ((org-agenda-overriding-header
+                          (concat "--\nTodos Week " (format-time-string "%V")))
+                  )))))))
 
 (keymap-global-set "C-c c" 'org-capture)
 (keymap-global-set "C-c a" 'org-agenda)
@@ -1262,27 +1267,27 @@ are equal return nil."
 
 (use-package inf-ruby) ;; Interact with a Ruby REPL
 
-(defun ns/setup-eglot-rust ()
-  (setq-local eglot-workspace-configuration
-              '(:rust-analyzer
-                (:procMacro (:attributes (:enable t)
-                                         :enable t)
-                            :cargo (:buildScripts (:enable t))
-                            :diagnostics (:disabled ["unresolved-proc-macro"
-                                                     "unresolved-macro-call"])))))
+;; (defun ns/setup-eglot-rust ()
+;;   (setq-local eglot-workspace-configuration
+;;               '(:rust-analyzer
+;;                 (:procMacro (:attributes (:enable t)
+;;                                          :enable t)
+;;                             :cargo (:buildScripts (:enable t))
+;;                             :diagnostics (:disabled ["unresolved-proc-macro"
+;;                                                      "unresolved-macro-call"])))))
 
-(defclass eglot-rust-analyzer (eglot-lsp-server) ()
-  :documentation "A custom class for rust-analyzer.")
+;; (defclass eglot-rust-analyzer (eglot-lsp-server) ()
+;;   :documentation "A custom class for rust-analyzer.")
 
-(cl-defmethod eglot-initialization-options ((server eglot-rust-analyzer))
-  eglot-workspace-configuration)
+;; (cl-defmethod eglot-initialization-options ((server eglot-rust-analyzer))
+;;   eglot-workspace-configuration)
 
 (use-package rustic
   :custom
   (rustic-lsp-client 'eglot)
   :hook
   (rustic-mode . (lambda () (flycheck-mode -1)))
-  (rustic-mode . ns/setup-eglot-rust)
+  ;; (rustic-mode . ns/setup-eglot-rust)
   (rustic-mode . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
