@@ -711,11 +711,19 @@
     (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
 (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
 
-;; (use-package org-super-agenda
-;;   :after org
-;;   :defer t
-;;   :config
-;;   (org-super-agenda-mode 1))
+(use-package org-super-agenda
+  :after org-agenda
+  :init
+  ;; (setq org-agenda-skip-scheduled-if-done t
+  ;;       org-agenda-skip-deadline-if-done t
+  ;;       org-agenda-include-deadlines t
+  ;;       org-agenda-block-separator nil
+  ;;       org-agenda-compact-blocks t
+  ;;       org-agenda-start-day nil
+  ;;       org-agenda-span 1
+  ;;       org-agenda-start-on-weekday nil)
+  :config
+  (org-super-agenda-mode))
 
 (setq org-agenda-sticky t
       org-agenda-dim-blocked-tasks nil
@@ -742,33 +750,6 @@ are equal return nil."
 			   )
 		  (if (eq cmp t) nil (signum cmp))
 		  ))))
-
-;; (setq org-super-agenda-groups
-;;       '(
-;;         (:name "Today"
-;;                :tag ("bday" "ann" "hols" "cal" "today")
-;;                :time-grid nil
-;;                :todo ("TODO" "WIP")
-;;                :deadline today
-;;                :scheduled today)
-;;         (:name "Overdue"
-;;                :deadline past)
-;;         (:name "Reschedule"
-;;                :scheduled past)
-;;         (:name "Perso"
-;;                :tag "perso")
-;;         (:name "Due Soon"
-;;                :deadline future
-;;                :scheduled future)
-;;         (:discard (:deadline t))
-;;         (:discard (:scheduled t))
-;;         (:discard (:todo ("DONE")))
-;;         (:name "Ticklers"
-;;                :tag "someday")
-;;         (:name "Perso"
-;;                :and (:tag "perso" :not (:tag "someday")))
-;;         (:name "UH"
-;;                :and (:tag "uh" :not (:tag "someday")))))
 
 (setq org-roam-dailies-capture-templates
       '(("d" "default" plain
@@ -797,15 +778,63 @@ are equal return nil."
 	         (display-line-numbers-mode 1)))
 	      (org-agenda-view-columns-initially t)))
         ("u" "Super view"
-         ((agenda "" ( (org-agenda-span 1))
-                  (tags (concat "w"
-                                (format-time-string "%V"))
-                        ((org-agenda-overriding-header
-                          (concat "--\nTodos Week " (format-time-string "%V")))
-                  )))))))
+         ((agenda "" ((org-agenda-span 'day)
+                      (org-agenda-overriding-header "Today")
+                      (org-super-agenda-groups
+                       '(
+                         (:name "Today"
+                                ;; :tag ("bday" "ann" "hols" "cal" "today")
+                                :time-grid t
+                                :todo ("WIP" "TODO")
+                                :scheduled today
+                                :order 0)
+                         (:name "Due Today"
+                                :deadline today
+                                :order 2)
+                         (:name "Overdue"
+                                :deadline past)
+                         (:name "Reschedule"
+                                :scheduled past)
+                         (:name "Personal"
+                                :tag "perso")
+                         (:name "Due Soon"
+                                :deadline future
+                                :scheduled future)
+                         ))))
+          (tags
+           (concat "w" (format-time-string "%V"))
+           ((org-agenda-overriding-header
+                        (concat "--\nTodos Week " (format-time-string "%V")))
+                    (org-super-agenda-groups
+                     '(
+                       (:discard (:deadline t))
+                       (:discard (:scheduled t))
+                       (:discard (:todo ("DONE")))
+                       (:name "Someday" :tag "someday")
+                       (:name "Personal"
+                              :and (:tag "perso" :not (:tag "someday")))
+                       (:name "School"
+                              :and (:tag "school" :not (:tag "someday")))
+                       (:name "Work"
+                              :and (:tag "work" :not (:tag "someday")))
+                       ))))))
+        ("t" "Todo View"
+         (
+          (todo "" ((org-agenda-overriding-header "")
+                    (org-super-agenda-groups
+                     '(
+                       (:auto-category t :order 9)
+                       ))))))))
 
 (keymap-global-set "C-c c" 'org-capture)
 (keymap-global-set "C-c a" 'org-agenda)
+
+(defun ns/org-agenda-reload-files ()
+  (interactive)
+  (message "Reloading agenda files")
+  (setq org-agenda-files (directory-files-recursively "~/Documents/notes/" "\\.org$")))
+
+(keymap-global-set "C-c r" 'ns/org-agenda-reload-files)
 
 (defun ns/org-present-begin ()
   (setq-local ns/olivetti-mode-enabled (bound-and-true-p olivetti-mode)) ;; remember if olivetti was already enabled or not
@@ -855,7 +884,7 @@ are equal return nil."
                ("i" . org-roam-node-insert)
                ("c" . org-roam-capture)
                ;; Dailies
-               ("j" . org-roam-dailies-capture-today))
+               ("j" . org-roam-dailies-goto-today))
   :custom
   (org-roam-directory (file-truename "~/Documents/notes/"))
   (org-roam-file-extensions '("org" "md"))
