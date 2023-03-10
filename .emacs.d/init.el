@@ -666,43 +666,120 @@
  org-log-redeadline 'time
 
  org-agenda-deadline-leaders '("DUE:       " "In %3d d.: " "%2d d. ago: ")
- org-agenda-scheduled-leaders '("DO:       " "Sched. %2dx: "))
+ org-agenda-scheduled-leaders '("DO:       " "Sched. %2dx: ")
+
+ org-agenda-sticky t
+ org-agenda-dim-blocked-tasks nil
+ org-agenda-time-grid (quote
+                       ((daily today remove-match)
+                        (800 1200 1600 2000)
+                        "......" "----------------")))
       
       ;org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
 
-(setq org-capture-templates
-      '(("t" "todo" entry (file+headline "inbox.org" "Todo")
-	     "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
-        ;; ("m" "Meeting" entry (file "agenda/inbox.org")
-        ;;  "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
-        ("s" "Schedule an Appointment" entry (file+headline "agenda.org" "Future")
-         "*** TODO %? \nSCHEDULED: %t")
-        ("d" "Diary" entry (file+olp+datetree "diary.org")
-         "* %?\n%U\n" :clock-in t :clock-resume t)
-        ("i" "Idea" entry (file "inbox.org")
-         "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
-        ("n" "High Priority Task" entry (file+headline "inbox.org" "Tasks")
-         "** NEXT %? \nDEADLINE: %t") ))
+(add-to-list 'org-tags-exclude-from-inheritance "project")
+(add-to-list 'org-tags-exclude-from-inheritance "rez")
 
-(setq org-refile-targets
-      '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
-      org-refile-use-outline-path 'file
-      org-outline-path-complete-in-steps nil)
+(require 'cl)
+(defun cmp-date-property-stamp (prop)
+  "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
+If a is before b, return -1. If a is after b, return 1. If they
+are equal return nil."
+  (lexical-let ((prop prop))
+	#'(lambda (a b)
 
-(defun ns/org-agenda-save-buffers ()
-  "Save `org-agenda-files` buffers without user confirmation."
-  (interactive)
-  (message "Saving org-agenda-files buffers...")
-  (save-some-buffers t
-                     (lambda ()
-                       (when (member (buffer-file-name) (org-agenda-files))
-                         t)))
-  (message "Saving org-agenda-files buffers... done"))
+		(let* ((a-pos (get-text-property 0 'org-marker a))
+			   (b-pos (get-text-property 0 'org-marker b))
+			   (a-date (or (org-entry-get a-pos prop)
+						   (format "<%s>" (org-read-date t nil "now"))))
+			   (b-date (or (org-entry-get b-pos prop)
+						   (format "<%s>" (org-read-date t nil "now"))))
+			   (cmp (compare-strings a-date nil nil b-date nil nil))
+			   )
+		  (if (eq cmp t) nil (signum cmp))
+		  ))))
 
-;; Automatically save after refile
-(advice-add 'org-refile :after
-            (lambda (&rest _)
-              (ns/org-agenda-save-buffers)))
+(with-eval-after-load "org-roam"
+  ;; Got this from https://d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5.html
+  (defun ns/org-roam-files-by-tag (tag)
+    "Finds the org roam files with the given TAG."
+    (seq-uniq
+     (seq-map
+      #'car
+      (org-roam-db-query
+       [:select [nodes:file]
+                :from tags
+                :left-join nodes
+                :on (= tags:node_id nodes:id)
+                :where (= tag $s1)]
+       tag))))
+
+  (setq org-agenda-custom-commands
+        '(
+          ("r" "Resonance Cal" tags "Type={.}"
+	       ((org-agenda-files (ns/org-roam-files-by-tag "rez"))
+	        (org-overriding-columns-format
+		     "%35Item %Type %Start %Fin %Rating")
+	        (org-agenda-cmp-user-defined
+		     (cmp-date-property-stamp "Start"))
+	        (org-agenda-sorting-strategy
+		     '(user-defined-down))
+            (org-agenda-overriding-header "C-u r to re-run Type={.}")
+            (org-agenda-mode-hook
+	         (lambda ()
+	           (visual-line-mode -1)
+	           (setq truncate-lines 1)
+	           (setq display-line-numbers-offset -1)
+	           (display-line-numbers-mode 1)))
+	        (org-agenda-view-columns-initially t)))
+          ("u" "Super view"
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-agenda-overriding-header "Today")
+                        (org-super-agenda-groups
+                         '(
+                           (:name "Today"
+                                  ;; :tag ("bday" "ann" "hols" "cal" "today")
+                                  :time-grid t
+                                  :todo ("WIP" "TODO")
+                                  :scheduled today
+                                  :order 0)
+                           (:name "Due Today"
+                                  :deadline today
+                                  :order 2)
+                           (:name "Overdue"
+                                  :deadline past)
+                           (:name "Reschedule"
+                                  :scheduled past)
+                           (:name "Personal"
+                                  :tag "perso")
+                           (:name "Due Soon"
+                                  :deadline future
+                                  :scheduled future)
+                           ))))
+            (tags
+             (concat "w" (format-time-string "%V"))
+             ((org-agenda-overriding-header
+               (concat "--\nTodos Week " (format-time-string "%V")))
+              (org-super-agenda-groups
+               '(
+                 (:discard (:deadline t))
+                 (:discard (:scheduled t))
+                 (:discard (:todo ("DONE")))
+                 (:name "Someday" :tag "someday")
+                 (:name "Personal"
+                        :and (:tag "perso" :not (:tag "someday")))
+                 (:name "School"
+                        :and (:tag "school" :not (:tag "someday")))
+                 (:name "Work"
+                        :and (:tag "work" :not (:tag "someday")))
+                 ))))))
+          ("t" "Todo View"
+           (
+            (todo "" ((org-agenda-overriding-header "")
+                      (org-super-agenda-groups
+                       '(
+                         (:auto-category t :order 9)
+                         )))))))))
 
 (defun log-todo-next-creation-date (&rest ignore)
   "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
@@ -724,107 +801,6 @@
   ;;       org-agenda-start-on-weekday nil)
   :config
   (org-super-agenda-mode))
-
-(setq org-agenda-sticky t
-      org-agenda-dim-blocked-tasks nil
-      org-agenda-time-grid (quote
-                            ((daily today remove-match)
-                             (800 1200 1600 2000)
-                             "......" "----------------")))
-
-(require 'cl)
-(defun cmp-date-property-stamp (prop)
-  "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
-If a is before b, return -1. If a is after b, return 1. If they
-are equal return nil."
-  (lexical-let ((prop prop))
-	#'(lambda (a b)
-
-		(let* ((a-pos (get-text-property 0 'org-marker a))
-			   (b-pos (get-text-property 0 'org-marker b))
-			   (a-date (or (org-entry-get a-pos prop)
-						   (format "<%s>" (org-read-date t nil "now"))))
-			   (b-date (or (org-entry-get b-pos prop)
-						   (format "<%s>" (org-read-date t nil "now"))))
-			   (cmp (compare-strings a-date nil nil b-date nil nil))
-			   )
-		  (if (eq cmp t) nil (signum cmp))
-		  ))))
-
-(setq org-roam-dailies-capture-templates
-      '(("d" "default" plain
-         (file "~/Documents/notes/capture-templates/daily.org")
-         ;; (f-read-text "~/Documents/notes/capture-templates/daily.org")
-         :target (file "%<%Y-%m-%d>.org"))))
-
-(setq org-agenda-custom-commands
-      '(
-        ("r" "Resonance Cal" tags "Type={.}"
-	     ((org-agenda-files
-		   (directory-files-recursively
-			"~/Documents/notes/refs/rez" "\\.org$"))
-	      (org-overriding-columns-format
-		   "%35Item %Type %Start %Fin %Rating")
-	      (org-agenda-cmp-user-defined
-		   (cmp-date-property-stamp "Start"))
-	      (org-agenda-sorting-strategy
-		   '(user-defined-down))
-          (org-agenda-overriding-header "C-u r to re-run Type={.}")
-          (org-agenda-mode-hook
-	       (lambda ()
-	         (visual-line-mode -1)
-	         (setq truncate-lines 1)
-	         (setq display-line-numbers-offset -1)
-	         (display-line-numbers-mode 1)))
-	      (org-agenda-view-columns-initially t)))
-        ("u" "Super view"
-         ((agenda "" ((org-agenda-span 'day)
-                      (org-agenda-overriding-header "Today")
-                      (org-super-agenda-groups
-                       '(
-                         (:name "Today"
-                                ;; :tag ("bday" "ann" "hols" "cal" "today")
-                                :time-grid t
-                                :todo ("WIP" "TODO")
-                                :scheduled today
-                                :order 0)
-                         (:name "Due Today"
-                                :deadline today
-                                :order 2)
-                         (:name "Overdue"
-                                :deadline past)
-                         (:name "Reschedule"
-                                :scheduled past)
-                         (:name "Personal"
-                                :tag "perso")
-                         (:name "Due Soon"
-                                :deadline future
-                                :scheduled future)
-                         ))))
-          (tags
-           (concat "w" (format-time-string "%V"))
-           ((org-agenda-overriding-header
-                        (concat "--\nTodos Week " (format-time-string "%V")))
-                    (org-super-agenda-groups
-                     '(
-                       (:discard (:deadline t))
-                       (:discard (:scheduled t))
-                       (:discard (:todo ("DONE")))
-                       (:name "Someday" :tag "someday")
-                       (:name "Personal"
-                              :and (:tag "perso" :not (:tag "someday")))
-                       (:name "School"
-                              :and (:tag "school" :not (:tag "someday")))
-                       (:name "Work"
-                              :and (:tag "work" :not (:tag "someday")))
-                       ))))))
-        ("t" "Todo View"
-         (
-          (todo "" ((org-agenda-overriding-header "")
-                    (org-super-agenda-groups
-                     '(
-                       (:auto-category t :order 9)
-                       ))))))))
 
 (keymap-global-set "C-c c" 'org-capture)
 (keymap-global-set "C-c a" 'org-agenda)
@@ -884,7 +860,7 @@ are equal return nil."
                ("i" . org-roam-node-insert)
                ("c" . org-roam-capture)
                ;; Dailies
-               ("j" . org-roam-dailies-goto-today))
+               ("d" . org-roam-dailies-goto-today))
   :custom
   (org-roam-directory (file-truename "~/Documents/notes/"))
   (org-roam-file-extensions '("org" "md"))
@@ -895,13 +871,24 @@ are equal return nil."
       :target (file "${slug}.org")
       :unnarrowed t)
      ("r" "Rez" plain (file "~/Documents/notes/capture-templates/rez.org")
-      :target (file "refs/rez/${slug}.org")
+      :target (file "${slug}.org")
+      :unnarrowed t)
+     ("p" "Project" plain (file "~/Documents/notes/capture-templates/project.org")
+      :target (file "${slug}.org")
+      :unnarrowed t)
+     ("7" "Weekly" plain (file "~/Documents/notes/capture-templates/weekly.org")
+      :target (file "logs/${slug}.org")
       :unnarrowed t)))
+  (org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         (file "~/Documents/notes/capture-templates/daily.org")
+         :target (file "%<%Y-%m-%d>.org"))))
   :init
   (setq org-roam-v2-ack t)
   :config
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-enable))
+(require 'org-roam) ;; Force org-roam to load
 
 (use-package consult-org-roam
    :after org-roam
