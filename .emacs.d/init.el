@@ -733,29 +733,32 @@ are equal return nil."
                         (org-agenda-overriding-header "Today")
                         (org-super-agenda-groups
                          '(
+                           (:discard (:todo ("DONE")))
                            (:name "Today"
-                                  ;; :tag ("bday" "ann" "hols" "cal" "today")
-                                  :time-grid t
-                                  :todo ("WIP" "TODO")
+                                  :tag ("bday" "ann" "hols" "cal" "today")
                                   :scheduled today
+                                  :time-grid t
+                                  ;; :todo ("WIP" "TODO")
                                   :order 0)
-                           (:name "Due Today"
-                                  :deadline today
-                                  :order 2)
-                           (:name "Overdue"
-                                  :deadline past)
-                           (:name "Reschedule"
-                                  :scheduled past)
+                           ;; (:name "Due Today"
+                           ;;        :deadline today
+                           ;;        :order 2)
+                           ;; (:name "Overdue"
+                           ;;        :deadline past)
+                           ;; (:name "Reschedule"
+                           ;;        :scheduled past)
                            (:name "Personal"
                                   :tag "perso")
-                           (:name "Due Soon"
-                                  :deadline future
-                                  :scheduled future)
-                           ))))
+                           (:name "School"
+                                  :tag "school")))))
+                           ;; (:name "Due Soon"
+                           ;;        :deadline future
+                           ;;        :scheduled future)
+                           ;; ))))
             (tags
              (concat "w" (format-time-string "%V"))
              ((org-agenda-overriding-header
-               (concat "--\nTodos Week " (format-time-string "%V")))
+               (concat "Todos Week " (format-time-string "%V")))
               (org-super-agenda-groups
                '(
                  (:discard (:deadline t))
@@ -876,7 +879,7 @@ are equal return nil."
       :target (file "logs/${slug}.org")
       :unnarrowed t)))
   (org-roam-dailies-capture-templates
-      '(("d" "default" entry
+      '(("d" "default" plain
          (file "~/Documents/notes/capture-templates/daily.org")
          :target (file "%<%Y-%m-%d>.org"))))
   :init
