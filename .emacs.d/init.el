@@ -98,18 +98,14 @@
 
 ;; Enable line numbers
 (column-number-mode)
-(global-display-line-numbers-mode t)
+;; (global-display-line-numbers-mode t)
 
 ;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-        term-mode-hook
-        shell-mode-hook
-        eshell-mode-hook
-        treemacs-mode-hook
-        pdf-view-mode-hook
-        vterm-mode-hook
+(dolist (mode
+         '(prog-mode-hook
+           markdown-mode-hook
         ))
-(add-hook mode (lambda () (display-line-numbers-mode 0))))
+(add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 (defvar ns/default-font "JetBrains Mono"
   "My custom default font choice.")
