@@ -203,11 +203,20 @@ I got the basic code for this from [[https://emacs.stackexchange.com/questions/3
       `(("." . ,(concat user-emacs-directory "backups/"))))
 #+END_SRC
 
-** Emacs-async: Run asynchronous processes
-#+BEGIN_SRC emacs-lisp
+** +Emacs-async: Run asynchronous processes+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package async)
 #+END_SRC
 
+** Winner-mode: undo/redo window configuration changes
+| Command     | Keybinding | Description                               |
+|-------------+------------+-------------------------------------------|
+| ~winner-undo~ | C-c left   | Undo the most recent window config change |
+| ~winner-redo~ | C-c right  | Redo the most recent window config change |
+
+#+BEGIN_SRC emacs-lisp
+(winner-mode 1)
+#+END_SRC
 * UI
 Set up all the fancy user-interface elements to make Emacs look nice.
 

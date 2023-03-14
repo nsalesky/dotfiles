@@ -89,7 +89,7 @@
 (setq backup-directory-alist
       `(("." . ,(concat user-emacs-directory "backups/"))))
 
-(use-package async)
+(winner-mode 1)
 
 ;; (setq-default frame-title-format '("%b [%m]"))
 (setq-default frame-title-format '("GNU Emacs"))
