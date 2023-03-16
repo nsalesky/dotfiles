@@ -1077,7 +1077,13 @@ Keybindings for searching within different contexts.
 ** Magit
 
 #+begin_src emacs-lisp
-(use-package magit)
+(use-package magit
+  :after blamer
+  :bind
+  (:prefix-map ns/git-prefix-map
+               :prefix "C-x g"
+               ("g" . magit-status)
+               ("b" . blamer-mode)))
 #+end_src
 
 ** Magit-todos: view project TODOs in the Magit status buffer
