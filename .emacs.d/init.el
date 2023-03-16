@@ -556,6 +556,10 @@
 
 (use-package magit)
 
+(use-package magit-todos
+  :config
+  (magit-todos-mode))
+
 ;; (use-package forge
 ;;   :after magit)
 ;; TODO set up personal access token personal to work with pull requests from Emacs  :after magit)
@@ -730,7 +734,7 @@ are equal return nil."
 	        (org-agenda-view-columns-initially t)))
           ("u" "Super view"
            ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-overriding-header "Today")
+                        (org-agenda-overriding-header "Time-Sensitive")
                         (org-super-agenda-groups
                          '(
                            (:discard (:todo ("DONE")))
@@ -750,7 +754,9 @@ are equal return nil."
                            (:name "Personal"
                                   :tag "perso")
                            (:name "School"
-                                  :tag "school")))))
+                                  :tag "school")
+                           (:name "Work"
+                                  :tag "work")))))
                            ;; (:name "Due Soon"
                            ;;        :deadline future
                            ;;        :scheduled future)
@@ -1156,7 +1162,7 @@ are equal return nil."
         ("M-p" . flymake-goto-prev-error)
         ("M-n" . flymake-goto-next-error)))
 
-;; (use-package realgud)
+(use-package realgud)
 
 (use-package verb
   :after (org)

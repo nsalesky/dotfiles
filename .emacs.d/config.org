@@ -1080,6 +1080,13 @@ Keybindings for searching within different contexts.
 (use-package magit)
 #+end_src
 
+** Magit-todos: view project TODOs in the Magit status buffer
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit-todos
+  :config
+  (magit-todos-mode))
+#+END_SRC
 ** Forge: issue GitHub pull requests and more
 
 #+BEGIN_SRC emacs-lisp
@@ -1295,7 +1302,7 @@ are equal return nil."
 	        (org-agenda-view-columns-initially t)))
           ("u" "Super view"
            ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-overriding-header "Today")
+                        (org-agenda-overriding-header "Time-Sensitive")
                         (org-super-agenda-groups
                          '(
                            (:discard (:todo ("DONE")))
@@ -1315,7 +1322,9 @@ are equal return nil."
                            (:name "Personal"
                                   :tag "perso")
                            (:name "School"
-                                  :tag "school")))))
+                                  :tag "school")
+                           (:name "Work"
+                                  :tag "work")))))
                            ;; (:name "Due Soon"
                            ;;        :deadline future
                            ;;        :scheduled future)
@@ -1892,12 +1901,10 @@ A simple code formatting system for a ton of languages.
         ("M-n" . flymake-goto-next-error)))
 #+END_SRC 
 
-*** Realgud: Alternative Debugger
+*** Realgud: Improved Grand Unified Debugger (GUD)
 
 #+BEGIN_SRC emacs-lisp
-
-;; (use-package realgud)
-
+(use-package realgud)
 #+END_SRC 
 
 *** Verb
