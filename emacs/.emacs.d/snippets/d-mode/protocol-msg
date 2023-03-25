@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: Create new protocol message type
+# key: >msg
+# --
+struct $1Msg {
+    immutable BaseMsg base;
+    $2
+
+    this($3) {
+        this.base = BaseMsg($4);
+        $0
+    }
+}
