@@ -602,6 +602,7 @@
   :custom
   (org-ellipsis "…")
   (org-pretty-entities t)
+  (org-pretty-entities-include-sub-superscripts nil)
   (org-hide-emphasis-markers t)
 
   (org-directory "~/Documents/notes")
@@ -665,7 +666,7 @@
  org-agenda-todo-ignore-with-date 'all
  org-agenda-tags-todo-honor-ignore-options t
 
- org-todo-keywords '((sequence "TODO(t@/!)" "WIP(w@/!)" "HOLD(h@/!)" "|" "DONE(d@/!)" "KILL(@k/!)"))
+ org-todo-keywords '((sequence "TODO(t)" "WIP(w!)" "HOLD(h!)" "|" "DONE(d!)" "KILL(k!)"))
 
  org-log-done 'time    ; log the time when a task is *DONE*
  org-log-reschedule 'time
@@ -791,13 +792,6 @@ are equal return nil."
                        '(
                          (:auto-category t :order 9)
                          )))))))))
-
-(defun log-todo-next-creation-date (&rest ignore)
-  "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
-  (when (and (string= (org-get-todo-state) "NEXT")
-             (not (org-entry-get nil "ACTIVATED")))
-    (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
-(add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
 
 (use-package org-super-agenda
   :after org-agenda
@@ -995,9 +989,6 @@ are equal return nil."
   :straight (:type git :host github :repo "renzmann/treesit-auto")
   :custom
   (treesit-auto-install 'prompt)
-  :init
-  (setq python-ts-mode-hook python-mode-hook
-        rust-ts-mode-hook rust-mode-hook)
   :config
   (global-treesit-auto-mode))
 
@@ -1158,6 +1149,10 @@ are equal return nil."
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
+;; (use-package eldoc-box
+;;   :hook
+;;   (prog-mode . eglot-box-hover-at-point-mode))
+
 (use-package format-all)
   ;:hook
   ;(prog-mode . format-all-mode)
@@ -1202,7 +1197,7 @@ are equal return nil."
   :hook
   (d-mode . eglot-ensure)
   :config
-  (add-to-list 'org-src-lang-modes '("d" . c))
+  (add-to-list 'org-src-lang-modes '("d" . d))
   (add-to-list 'eglot-server-programs '(d-mode . ("/home/nsalesky/bin/serve-d"))))
 
 ;; (use-package dockerfile-mode
@@ -1239,7 +1234,8 @@ are equal return nil."
 (use-package markdown-mode
   :mode "\\.md\\'")
 
-;; (use-package lsp-pyright)
+(use-package protobuf-mode
+  :mode "\\.proto\\'")
 
 (use-package python-mode
   :hook (python-mode . eglot-ensure)
@@ -1247,11 +1243,9 @@ are equal return nil."
                          ;; (eglot-ensure)
                          ;; (setq tab-width 4)))
   :custom
-  (python-shell-interpreter "python3"))
-  ;;(dap-python-debugger 'debugpy))
-
-;; (require 'lsp-pyright)
-;; (require 'dap-python)
+  (python-shell-interpreter "python3")
+  :config
+  (setq python-ts-mode-hook python-mode-hook))
 
 (use-package pipenv
   :hook (python-mode . pipenv-mode))
@@ -1346,6 +1340,9 @@ are equal return nil."
             ("\\.sgml\\'" . web-mode)))
     ;; :bind
     ;; ("C-c h" . ns/toggle-web-mode))
+
+(use-package yuck-mode
+  :mode "\\.yuck\\'")
 
 (require 'transient)
 

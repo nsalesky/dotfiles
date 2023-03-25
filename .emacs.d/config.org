@@ -217,6 +217,7 @@ I got the basic code for this from [[https://emacs.stackexchange.com/questions/3
 #+BEGIN_SRC emacs-lisp
 (winner-mode 1)
 #+END_SRC
+
 * UI
 Set up all the fancy user-interface elements to make Emacs look nice.
 
@@ -1144,6 +1145,7 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   :custom
   (org-ellipsis "…")
   (org-pretty-entities t)
+  (org-pretty-entities-include-sub-superscripts nil)
   (org-hide-emphasis-markers t)
 
   (org-directory "~/Documents/notes")
@@ -1228,7 +1230,7 @@ Here's where I set up my agenda system. I like to keep an inbox file where I can
  org-agenda-todo-ignore-with-date 'all
  org-agenda-tags-todo-honor-ignore-options t
 
- org-todo-keywords '((sequence "TODO(t@/!)" "WIP(w@/!)" "HOLD(h@/!)" "|" "DONE(d@/!)" "KILL(@k/!)"))
+ org-todo-keywords '((sequence "TODO(t)" "WIP(w!)" "HOLD(h!)" "|" "DONE(d!)" "KILL(k!)"))
 
  org-log-done 'time    ; log the time when a task is *DONE*
  org-log-reschedule 'time
@@ -1404,20 +1406,6 @@ Make it easier to move tasks from the inbox or other files over to ~projects.org
 (advice-add 'org-refile :after
             (lambda (&rest _)
               (ns/org-agenda-save-buffers)))
-#+END_SRC
-
-*** Log when tasks are activated
-Mark when tasks are first moved to the *NEXT* status courtesy of [[https://emacs.stackexchange.com/questions/35751][Erik Anderson]].
-
-#+BEGIN_SRC emacs-lisp
-
-(defun log-todo-next-creation-date (&rest ignore)
-  "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
-  (when (and (string= (org-get-todo-state) "NEXT")
-             (not (org-entry-get nil "ACTIVATED")))
-    (org-entry-put nil "ACTIVATED" (format-time-string "[%Y-%m-%d]"))))
-(add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
-
 #+END_SRC 
 
 *** org-super-agenda
@@ -1696,9 +1684,6 @@ This is a handy little hack I got from [[https://leba.dev/blog/2022/12/12/(ab)us
   :straight (:type git :host github :repo "renzmann/treesit-auto")
   :custom
   (treesit-auto-install 'prompt)
-  :init
-  (setq python-ts-mode-hook python-mode-hook
-        rust-ts-mode-hook rust-mode-hook)
   :config
   (global-treesit-auto-mode))
 #+END_SRC
@@ -1887,6 +1872,13 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 #+END_SRC 
 
+*** Eldoc-box: move eldoc into child frames
+#+BEGIN_SRC emacs-lisp
+;; (use-package eldoc-box
+;;   :hook
+;;   (prog-mode . eglot-box-hover-at-point-mode))
+#+END_SRC 
+
 *** Format All The Code: Simple code formatting
 A simple code formatting system for a ton of languages.
 
@@ -1981,7 +1973,7 @@ Set up basic syntax highlighting and Eglot LSP support with ~serve-d~
   :hook
   (d-mode . eglot-ensure)
   :config
-  (add-to-list 'org-src-lang-modes '("d" . c))
+  (add-to-list 'org-src-lang-modes '("d" . d))
   (add-to-list 'eglot-server-programs '(d-mode . ("/home/nsalesky/bin/serve-d"))))
 #+END_SRC
 
@@ -2047,27 +2039,26 @@ Recompile LaTeX documents automatically when saved.
   :mode "\\.md\\'")
 #+END_SRC 
 
-*** Python
-
+*** Protobuf
 #+BEGIN_SRC emacs-lisp
+(use-package protobuf-mode
+  :mode "\\.proto\\'")
+#+END_SRC
 
-;; (use-package lsp-pyright)
-
+*** Python
+#+BEGIN_SRC emacs-lisp
 (use-package python-mode
   :hook (python-mode . eglot-ensure)
   ;; :hook (python-mode . (lambda ()
                          ;; (eglot-ensure)
                          ;; (setq tab-width 4)))
   :custom
-  (python-shell-interpreter "python3"))
-  ;;(dap-python-debugger 'debugpy))
-
-;; (require 'lsp-pyright)
-;; (require 'dap-python)
+  (python-shell-interpreter "python3")
+  :config
+  (setq python-ts-mode-hook python-mode-hook))
 
 (use-package pipenv
   :hook (python-mode . pipenv-mode))
-
 #+END_SRC
 
 *** Typescript
@@ -2186,6 +2177,13 @@ Editing in a mixed-language web format.
     ;; :bind
     ;; ("C-c h" . ns/toggle-web-mode))
 #+END_SRC 
+
+*** Yuck (Eww)
+
+#+BEGIN_SRC emacs-lisp
+(use-package yuck-mode
+  :mode "\\.yuck\\'")
+#+END_SRC
 
 * Utilities
 ** Visit Important files
