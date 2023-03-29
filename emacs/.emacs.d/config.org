@@ -1518,7 +1518,8 @@ Give Org-mode documents some extra visual polish.
                ("i" . org-roam-node-insert)
                ("c" . org-roam-capture)
                ;; Dailies
-               ("d" . org-roam-dailies-goto-today))
+               ("d" . org-roam-dailies-goto-today)
+               ("j" . org-roam-dailies-capture-today))
   :custom
   (org-roam-directory (file-truename "~/Documents/notes/"))
   (org-roam-file-extensions '("org" "md"))
