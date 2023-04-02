@@ -472,11 +472,98 @@
       "Set workspace buffer list for consult-buffer.")
     (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
 
-;; (use-package hammy
-;;   :config
-;;   (hammy-mode 1))
-
 (setq disabled-command-function nil)
+
+(defun meow-setup ()
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (meow-motion-overwrite-define-key
+   '("j" . meow-next)
+   '("k" . meow-prev)
+   '("<escape>" . ignore))
+  (meow-leader-define-key
+   ;; SPC j/k will run the original command in MOTION state.
+   '("j" . "H-j")
+   '("k" . "H-k")
+   ;; Use SPC (0-9) for digit arguments.
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument)
+   '("/" . meow-keypad-describe-key)
+   '("?" . meow-cheatsheet))
+  (meow-normal-define-key
+   '("0" . meow-expand-0)
+   '("9" . meow-expand-9)
+   '("8" . meow-expand-8)
+   '("7" . meow-expand-7)
+   '("6" . meow-expand-6)
+   '("5" . meow-expand-5)
+   '("4" . meow-expand-4)
+   '("3" . meow-expand-3)
+   '("2" . meow-expand-2)
+   '("1" . meow-expand-1)
+   '("-" . negative-argument)
+   '(";" . meow-reverse)
+   '("," . meow-inner-of-thing)
+   '("." . meow-bounds-of-thing)
+   '("[" . meow-beginning-of-thing)
+   '("]" . meow-end-of-thing)
+   '("a" . meow-append)
+   '("A" . meow-open-below)
+   '("b" . meow-back-word)
+   '("B" . meow-back-symbol)
+   '("c" . meow-change)
+   '("d" . meow-delete)
+   '("D" . meow-backward-delete)
+   '("e" . meow-next-word)
+   '("E" . meow-next-symbol)
+   '("f" . meow-find)
+   '("g" . meow-cancel-selection)
+   '("G" . meow-grab)
+   '("h" . meow-left)
+   '("H" . meow-left-expand)
+   '("i" . meow-insert)
+   '("I" . meow-open-above)
+   '("j" . meow-next)
+   '("J" . meow-next-expand)
+   '("k" . meow-prev)
+   '("K" . meow-prev-expand)
+   '("l" . meow-right)
+   '("L" . meow-right-expand)
+   '("m" . meow-join)
+   '("n" . meow-search)
+   '("o" . meow-block)
+   '("O" . meow-to-block)
+   '("p" . meow-yank)
+   '("q" . meow-quit)
+   '("Q" . meow-goto-line)
+   '("r" . meow-replace)
+   '("R" . meow-swap-grab)
+   '("s" . meow-kill)
+   '("t" . meow-till)
+   '("u" . meow-undo)
+   '("U" . meow-undo-in-selection)
+   '("v" . meow-visit)
+   '("w" . meow-mark-word)
+   '("W" . meow-mark-symbol)
+   '("x" . meow-line)
+   '("X" . meow-goto-line)
+   '("y" . meow-save)
+   '("Y" . meow-sync-grab)
+   '("z" . meow-pop-selection)
+   '("'" . repeat)
+   '("<escape>" . ignore)))
+
+(use-package meow
+  :config
+  (meow-setup)
+  (meow-global-mode 1))
 
 (use-package lispy
   :hook ((emacs-lisp-mode . lispy-mode)
@@ -485,17 +572,9 @@
   (lispy-compat '(edebug cider magit-blame-mode)))
 
 (electric-pair-mode 1)
-;; (setq electric-pair-inhibit-predicate
-;;       (lambda (char)
-;;         (not (member major-mode '(rustic-mode
-;;                                   go-mode
-;;                                   python-mode
-;;                                   d-mode)))))
 (setq electric-pair-inhibit-predicate
       (lambda (char)
         (not (member major-mode '(org-mode)))))
-
-;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (global-unset-key (kbd "ESC ESC"))
 
@@ -520,26 +599,6 @@
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 
 (define-key global-map (kbd "M-o") 'ace-window)
-
-; TODO: convert this to Emacs keybindings
-
-;; (general-define-key
-;;  :states 'normal
-;;  "s" 'avy-goto-char-timer
-;;  "S" 'avy-pop-mark)
-
-;; (general-define-key
-;;  :states '(normal emacs)
-;;  "C-s" 'consult-line)
-
-;; (my-leader
-;;   "s" '(:ignore t :which-key "search")
-;;   "s b" '(consult-line :which-key "Search buffer"))
-
-;; (use-package ag
-;;   :general
-;;   (my-leader
-;;     "s p" '(projectile-ag :which-key "Search project")))
 
 (use-package dumb-jump
   :config
@@ -865,7 +924,8 @@ are equal return nil."
                ("i" . org-roam-node-insert)
                ("c" . org-roam-capture)
                ;; Dailies
-               ("d" . org-roam-dailies-goto-today))
+               ("d" . org-roam-dailies-goto-today)
+               ("j" . org-roam-dailies-capture-today))
   :custom
   (org-roam-directory (file-truename "~/Documents/notes/"))
   (org-roam-file-extensions '("org" "md"))
@@ -1177,6 +1237,8 @@ are equal return nil."
 (use-package ws-butler
   :hook
   (prog-mode . ws-butler-mode))
+
+(use-package imenu-list)
 
 (use-package re-builder
   :custom

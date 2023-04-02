@@ -810,14 +810,6 @@ A light wrapper around ~project.el~ and ~tab-bar-mode~ providing isolated buffer
     (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
 #+END_SRC
 
-** Hammy: Pacing myself through work
-
-#+BEGIN_SRC emacs-lisp
-;; (use-package hammy
-;;   :config
-;;   (hammy-mode 1))
-#+END_SRC
-
 * Keybindings and Basic Feature Configuration
 Here's where I configure some basic Emacs features with keybindings.
 
@@ -826,35 +818,9 @@ Here's where I configure some basic Emacs features with keybindings.
 (setq disabled-command-function nil)
 #+END_SRC
 
-** Lispy: short and sweet Lisp editing
-
-#+BEGIN_SRC emacs-lisp 
-(use-package lispy
-  :hook ((emacs-lisp-mode . lispy-mode)
-         (clojure-mode . lispy-mode))
-  :custom
-  (lispy-compat '(edebug cider magit-blame-mode)))
-#+END_SRC
-
-** Electric-pair-mode
-Disable ~electric-pair-mode~ for a select subset of modes. 
+** Meow: modal editing
 
 #+BEGIN_SRC emacs-lisp
-(electric-pair-mode 1)
-;; (setq electric-pair-inhibit-predicate
-;;       (lambda (char)
-;;         (not (member major-mode '(rustic-mode
-;;                                   go-mode
-;;                                   python-mode
-;;                                   d-mode)))))
-(setq electric-pair-inhibit-predicate
-      (lambda (char)
-        (not (member major-mode '(org-mode)))))
-#+END_SRC
-
-** +Meow+
-*** Keymap
-#+BEGIN_SRC emacs-lisp :tangle no
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
@@ -922,7 +888,7 @@ Disable ~electric-pair-mode~ for a select subset of modes.
    '("o" . meow-block)
    '("O" . meow-to-block)
    '("p" . meow-yank)
-   ;; '("q" . meow-quit)
+   '("q" . meow-quit)
    '("Q" . meow-goto-line)
    '("r" . meow-replace)
    '("R" . meow-swap-grab)
@@ -940,36 +906,39 @@ Disable ~electric-pair-mode~ for a select subset of modes.
    '("z" . meow-pop-selection)
    '("'" . repeat)
    '("<escape>" . ignore)))
-#+END_SRC 
 
-*** The package itself
-#+BEGIN_SRC emacs-lisp :tangle no
 (use-package meow
   :config
   (meow-setup)
   (meow-global-mode 1))
 #+END_SRC
 
-*** jk key chord
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package key-chord
-  :config
-  (key-chord-mode 1)
-  (key-chord-define meow-insert-state-keymap "jk" [escape]))
+** Lispy: short and sweet Lisp editing
+
+#+BEGIN_SRC emacs-lisp 
+(use-package lispy
+  :hook ((emacs-lisp-mode . lispy-mode)
+         (clojure-mode . lispy-mode))
+  :custom
+  (lispy-compat '(edebug cider magit-blame-mode)))
 #+END_SRC
 
-** ESC quits prompts
-Make ESC quit prompts.
+** Electric-pair-mode
+Disable ~electric-pair-mode~ for a select subset of modes. 
 
-#+begin_src emacs-lisp
-;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-#+end_src
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode 1)
+(setq electric-pair-inhibit-predicate
+      (lambda (char)
+        (not (member major-mode '(org-mode)))))
+#+END_SRC
 
 ** Disable ESC ESC ESC
 
 #+BEGIN_SRC emacs-lisp
 (global-unset-key (kbd "ESC ESC"))
-#+END_SRC 
+#+END_SRC
+
 ** Replace selected text
 Enable =delete-selection-mode= so that if there is a marked region, typing in text replaces it
 
@@ -1020,40 +989,6 @@ Keybindings for operating windows.
 #+BEGIN_SRC emacs-lisp
 (define-key global-map (kbd "M-o") 'ace-window)
 #+END_SRC
-
-** Search
-Keybindings for searching within different contexts.
-
-| COMMAND             | DESCRIPTION                                     | KEYBINDING |
-|---------------------+-------------------------------------------------+------------|
-| avy-goto-char-timer | Start typing some chars on screen, jump to them | s          |
-| avy-pop-mark        | Jump back from last =avy= search                | S          |
-| swiper              | Search the current buffer                       | SPC s b    |
-
-#+BEGIN_SRC emacs-lisp
-
-; TODO: convert this to Emacs keybindings
-
-;; (general-define-key
-;;  :states 'normal
-;;  "s" 'avy-goto-char-timer
-;;  "S" 'avy-pop-mark)
-
-;; (general-define-key
-;;  :states '(normal emacs)
-;;  "C-s" 'consult-line)
-
-;; (my-leader
-;;   "s" '(:ignore t :which-key "search")
-;;   "s b" '(consult-line :which-key "Search buffer"))
-
-;; (use-package ag
-;;   :general
-;;   (my-leader
-;;     "s p" '(projectile-ag :which-key "Search project")))
-#+END_SRC
-
-#+RESULTS:
 
 ** Dumb-jump
 
@@ -1933,6 +1868,11 @@ Wakatime makes it easy for me to keep track of how much time I'm spending on var
   (prog-mode . ws-butler-mode))
 #+END_SRC
 
+*** imenu-list
+
+#+BEGIN_SRC emacs-lisp
+(use-package imenu-list)
+#+END_SRC 
 *** RE-Builder
 A pretty useful tool for debugging regular expressions. I use the ~string~ mode so that I don't have to backslash the backslashes.
 
