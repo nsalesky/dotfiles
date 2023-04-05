@@ -107,40 +107,19 @@
         ))
 (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
-(defvar ns/default-font "JetBrains Mono"
+(defvar ns/default-font "JetBrainsMono Nerd Font"
   "My custom default font choice.")
 
-(defvar ns/fixed-pitch-font "JetBrainsMono"
+(defvar ns/fixed-pitch-font "JetBrainsMono Nerd Font"
   "My custom fixed pitch font choice.")
 
 (defvar ns/variable-pitch-font "Iosevka Aile"
   "My custom variable pitch font choice.")
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'"))
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :extend nil :stipple nil :background "#292D3E" :foreground "#EEFFFF" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight regular :height 120 :width normal :foundry "JB  " :family "JetBrainsMono Nerd Font"))))
- '(fixed-pitch ((t (:family "JetBrainsMono Nerd Font"))))
- '(variable-pitch ((t (:family "Iosevka Aile")))))
-
-;; (set-face-attribute 'default nil :font ns/default-font :height 120)
-;; ;; (set-frame-font ns/default-font nil t)
-;; (set-face-attribute 'fixed-pitch nil :font ns/fixed-pitch-font :height 120)
-;; (set-face-attribute 'variable-pitch nil :font ns/variable-pitch-font :height 140)
-
-;; (add-to-list 'default-frame-alist '(font . "JetBrains Mono"))
-
-;; (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
-;; (set-face-attribute 'default nil :font "Rec Mono Semi Casual" :height 120)
-;; (set-face-attribute 'fixed-pitch nil :font "Rec Mono Semi Casual" :height 120)
+ `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 120 :width normal :foundry "JB  "))))
+ `(fixed-pitch ((t (:family ,ns/fixed-pitch-font))))
+ `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
 
 (use-package all-the-icons)
 
