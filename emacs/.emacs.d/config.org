@@ -267,9 +267,27 @@ Here are my current font settings
 (defvar ns/variable-pitch-font "Iosevka Aile"
   "My custom variable pitch font choice.")
 
-(set-face-attribute 'default nil :font ns/default-font :height 120)
-(set-face-attribute 'fixed-pitch nil :font ns/fixed-pitch-font :height 120)
-(set-face-attribute 'variable-pitch nil :font ns/variable-pitch-font :height 140)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'"))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "#292D3E" :foreground "#EEFFFF" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight regular :height 120 :width normal :foundry "JB  " :family "JetBrainsMono Nerd Font"))))
+ '(fixed-pitch ((t (:family "JetBrainsMono Nerd Font"))))
+ '(variable-pitch ((t (:family "Iosevka Aile")))))
+
+;; (set-face-attribute 'default nil :font ns/default-font :height 120)
+;; ;; (set-frame-font ns/default-font nil t)
+;; (set-face-attribute 'fixed-pitch nil :font ns/fixed-pitch-font :height 120)
+;; (set-face-attribute 'variable-pitch nil :font ns/variable-pitch-font :height 140)
+
+;; (add-to-list 'default-frame-alist '(font . "JetBrains Mono"))
 #+END_SRC 
 
 Here are some of my older settings that I'm keeping around in case I ever want to switch back.
@@ -818,9 +836,9 @@ Here's where I configure some basic Emacs features with keybindings.
 (setq disabled-command-function nil)
 #+END_SRC
 
-** Meow: modal editing
+** +Meow: modal editing+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
@@ -1537,6 +1555,11 @@ Give Org-mode documents some extra visual polish.
 #+END_SRC 
 
 * Shells/Terminal Emulators
+** with-editor-async-shell-command
+#+BEGIN_SRC emacs-lisp
+(keymap-global-set "M-&" 'with-editor-async-shell-command)
+#+END_SRC
+
 ** term-mode
 
 #+BEGIN_SRC emacs-lisp
