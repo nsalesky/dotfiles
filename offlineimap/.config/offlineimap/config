@@ -1,0 +1,30 @@
+# Sample minimal config file.  Copy this to ~/.offlineimaprc and edit to
+# get started fast.
+
+[general]
+accounts = gmail
+pythonfile = ~/.config/offlineimap/offlineimap.py
+
+[Account gmail]
+localrepository = gmail_local
+remoterepository = gmail_remote
+synclabels = yes
+utf8foldernames = yes
+
+postsynchook = ~/.email/postsync.sh
+
+[Repository gmail_local]
+type = GmailMaildir
+localfolders = ~/.email/nicksalesky@gmail.com
+
+[Repository gmail_remote]
+type = Gmail
+remoteuser = nicksalesky@gmail.com
+remotepasseval = get_pass("nicksalesky@gmail.com")
+# remotepass = REaAUexfWv6YF8M4TckmZ2EoyknNut
+ssl = yes
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
+readonly = true
+
+folderfilter = lambda foldername: foldername in ['[Gmail]/All Mail']
+nametrans = lambda foldername: re.sub('^\[Gmail\]/All Mail$', 'all',foldername)

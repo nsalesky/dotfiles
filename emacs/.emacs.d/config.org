@@ -253,6 +253,13 @@ Enable line numbers globally for most modes, except the ones explicitly disabled
 
 #+END_SRC 
 
+** Diminish: keeping the modeline uncluttered
+#+BEGIN_SRC emacs-lisp
+(use-package diminish
+  :config
+  (diminish 'buffer-face-mode))
+#+END_SRC 
+
 ** Fonts
 Set up the fonts for text rendering, pretty self explanatory :)
 
@@ -290,20 +297,20 @@ Give Emacs a nice color scheme! Other themes that I like include:
 
 #+BEGIN_SRC emacs-lisp
 
-(use-package autothemer)
+;; (use-package autothemer)
 
 (use-package doom-themes
   :config
-  (load-theme 'doom-palenight t))
+  (load-theme 'doom-moonlight t))
 
 (use-package ef-themes)
   ;; :config
   ;; (load-theme 'ef-summer t))
 
-(use-package catppuccin-theme
-  :straight (:type git :host github
-                   :repo "catppuccin/emacs")
-  :after autothemer)
+;; (use-package catppuccin-theme
+;;   :straight (:type git :host github
+;;                    :repo "catppuccin/emacs")
+;;   :after autothemer)
   ;; :config (load-theme 'catppuccin-macchiato t))
 
 (use-package modus-themes)
@@ -373,24 +380,11 @@ Make Emacs scroll more consistently with a small margin at the bottom.
 Make the Emacs help pages more "helpful".
 
 #+begin_src emacs-lisp
-
 (use-package helpful
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key)))
-
-
-  
-  ;; :custom
-  ;; (counsel-describe-function-function #'helpful-callable)
-  ;; (counsel-describe-variable-function #'helpful-variable)
-  ;; :bind
-  ;; ([remap describe-function] . counsel-describe-function)
-  ;; ([remap describe-command] . helpful-command)
-  ;; ([remap describe-variable] . counsel-describe-variable)
-  ;; ([remap describe-key] . helpful-key))
-
 #+end_src
 
 ** Hl-todo: Highlight and navigate TODO keywords
@@ -444,7 +438,6 @@ Sets up minibuffer completion with Vertico.
 ** Consult: add helpful functions with completion
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package consult
   :bind
   (;; C-c bindings
@@ -464,7 +457,11 @@ Sets up minibuffer completion with Vertico.
    ("C-x r b" . consult-bookmark)
    ("M-y" . consult-yank-pop)
 
-   ; M-s bidnings (search-map)
+   ; Special search bindings
+   ("C-c q" . consult-line)
+   ("C-c w" . consult-ripgrep)
+   
+   ; M-s bindings (search-map)
    ("M-s d" . consult-find)
    ("M-s r" . consult-ripgrep)
    ("M-s l" . consult-line)
@@ -486,7 +483,6 @@ Sets up minibuffer completion with Vertico.
    ("M-r" . consult-history))
   :custom
   (consult-narrow-key (kbd "<")))
-
 #+END_SRC 
 
 ** Orderless: match the different parts of completion candidates
@@ -578,11 +574,10 @@ Give parenthases rainbow coloring depending on their nested level in all program
 Add various templates to Emacs.
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package yasnippet
+  :diminish yas-minor-mode
   :config
   (yas-global-mode))
-
 #+END_SRC
 
 ** Which-key: List commands for current prefix
@@ -611,18 +606,18 @@ Add various templates to Emacs.
 
 #+END_SRC
 
-** +Iedit: Simple multi-cursor editing+
+** Iedit: Simple multi-cursor editing
 
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package iedit)
+#+BEGIN_SRC emacs-lisp
+(use-package iedit
+  :bind
+  ("C-;" . iedit-mode))
 #+END_SRC
 
 ** TRAMP: Edit remote files
-
+*** Basic configuration
 #+BEGIN_SRC emacs-lisp
-
 (setq tramp-default-method "ssh") ;; Use SSH by default for remote files
-
 #+END_SRC
 
 ** expand-region
@@ -640,9 +635,55 @@ Add various templates to Emacs.
   ("C-e" . mwim-end))
 #+END_SRC
 
+* Email
+** Basic configuration
+Taken from [[https://firminmartin.com/en/posts/2020/10/read_email_in_emacs_with_notmuch/]]
+
+#+BEGIN_SRC emacs-lisp
+(setq mail-user-agent 'message-user-agent
+      user-mail-address "nicksalesky@gmail.com"
+      user-full-name "Nicholas Salesky"
+      )
+#+END_SRC
+
+** smtpmail-multi
+#+BEGIN_SRC emacs-lisp
+(use-package smtpmail-multi
+  :config
+  (setq smtpmail-multi-accounts
+        '((gmail-main . ("nicksalesky@gmail.com" "smtp.gmail.com" 587 "nicksalesky@gmail.com" nil nil nil nil))))
+
+  (setq smtpmail-multi-associations
+        '(("nicksalesky@gmail.com" gmail-main)))
+
+  (setq smtpmail-multi-default-account 'gmail-main)
+  (setq message-send-mail-function 'smtpmail-multi-send-it)
+
+  (setq smtpmail-debug-info t)
+  (setq smtpmail-debug-verbose t)
+
+  (when (>= emacs-major-version 25)
+    (setq smtpmail-local-domain (car (split-string (shell-command-to-string "hostname -f")))))
+#+END_SRC 
+
+** notmuch-el
+#+BEGIN_SRC emacs-lisp
+(use-package notmuch)
+#+END_SRC
+
+** auth-source-pass
+Make Emacs read credentials through ~pass~
+
+#+BEGIN_SRC emacs-lisp
+(use-package auth-source-pass
+  :diminish t
+  :config
+  (auth-source-pass-enable))
+#+END_SRC 
+
 * Spell checker
 ** Flyspell
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package flyspell
   :hook ((prog-mode . flyspell-prog-mode)
         ((org-mode markdown-mode) . flyspell-mode)))
@@ -650,7 +691,7 @@ Add various templates to Emacs.
 
 ** Flyspell-correct: Show list of correct spelling suggestions
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package flyspell-correct
   :after (flyspell)
   :bind
@@ -780,6 +821,9 @@ A light wrapper around ~project.el~ and ~tab-bar-mode~ providing isolated buffer
   (tabspaces-remove-to-default t)
   (tabspaces-include-buffers '("*scratch*"))
 
+  :bind (:map tabspaces-mode-map
+            ("C-c TAB r" . tab-bar-rename-tab))
+
   ; sessions
   ; (tabspaces-session t)
   ; (tabspaces-session-auto-restore t))
@@ -813,7 +857,7 @@ Here's where I configure some basic Emacs features with keybindings.
 (setq disabled-command-function nil)
 #+END_SRC
 
-** +Meow: modal editing+
+** Meow: modal editing
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (defun meow-setup ()
@@ -883,7 +927,7 @@ Here's where I configure some basic Emacs features with keybindings.
    '("o" . meow-block)
    '("O" . meow-to-block)
    '("p" . meow-yank)
-   '("q" . meow-quit)
+   ;; '("q" . meow-quit)
    '("Q" . meow-goto-line)
    '("r" . meow-replace)
    '("R" . meow-swap-grab)
@@ -905,7 +949,9 @@ Here's where I configure some basic Emacs features with keybindings.
 (use-package meow
   :config
   (meow-setup)
-  (meow-global-mode 1))
+  (meow-global-mode 1)
+  :hook
+  (vterm-mode . (lambda () (meow-mode 0))))
 #+END_SRC
 
 ** Lispy: short and sweet Lisp editing
@@ -925,7 +971,7 @@ Disable ~electric-pair-mode~ for a select subset of modes.
 (electric-pair-mode 1)
 (setq electric-pair-inhibit-predicate
       (lambda (char)
-        (not (member major-mode '(org-mode)))))
+        (member major-mode '(org-mode))))
 #+END_SRC
 
 ** Disable ESC ESC ESC
@@ -1017,9 +1063,9 @@ Keybindings for operating windows.
                ("b" . blamer-mode)))
 #+end_src
 
-** Magit-todos: view project TODOs in the Magit status buffer
+** +Magit-todos: view project TODOs in the Magit status buffer+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package magit-todos
   :config
   (magit-todos-mode))
@@ -1077,6 +1123,8 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   (org-pretty-entities t)
   (org-pretty-entities-include-sub-superscripts nil)
   (org-hide-emphasis-markers t)
+
+  (org-use-property-inheritance t)
 
   (org-directory "~/Documents/notes")
   (org-default-notes-file "~/Documents/notes/notes.org")
@@ -1743,12 +1791,6 @@ A good code-completion package. I might consider switching to Corfu at some poin
   :config
   (add-to-list 'eglot-server-programs
                '(python-ts-mode . ("pylsp"))))
-  ;(eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
-  ;; :config
-  ;; (add-hook 'eglot-managed-mode-hook
-            ;; (lambda ()
-              ;; (eldoc-mode -1)
-              ;; (flymake-mode -1)))) ; Disable doc popups in the minibuffer
 #+END_SRC 
 
 *** Corfu: Completion at point
@@ -1810,9 +1852,9 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
 
 *** Eldoc-box: move eldoc into child frames
 #+BEGIN_SRC emacs-lisp
-;; (use-package eldoc-box
-;;   :hook
-;;   (prog-mode . eglot-box-hover-at-point-mode))
+(use-package eldoc-box
+  :hook
+  (eglot-managed-mode . eldoc-box-hover-mode))
 #+END_SRC 
 
 *** Format All The Code: Simple code formatting
@@ -1854,16 +1896,16 @@ A simple code formatting system for a ton of languages.
 Wakatime makes it easy for me to keep track of how much time I'm spending on various projects.
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package wakatime-mode
+  :diminish wakatime-mode
   :config
   (global-wakatime-mode))
-
 #+END_SRC
 
 *** ws-butler
 #+BEGIN_SRC emacs-lisp
 (use-package ws-butler
+  :diminish ws-butler-mode
   :hook
   (prog-mode . ws-butler-mode))
 #+END_SRC
@@ -1909,7 +1951,6 @@ Set up basic syntax highlighting and Eglot LSP support with ~serve-d~
 #+BEGIN_SRC emacs-lisp
 (use-package d-mode
   :straight (:type git :host github :repo "nsalesky/Emacs-D-Mode")
-  :after eglot
   :mode "\\.d\\'"
   :hook
   (d-mode . eglot-ensure)
@@ -2080,10 +2121,10 @@ Most Rustic keybindings begin with =C-c C-c=
   :hook
   (rustic-mode . (lambda () (flycheck-mode -1)))
   ;; (rustic-mode . ns/setup-eglot-rust)
-  (rustic-mode . eglot-ensure)
-  :config
-  (add-to-list 'eglot-server-programs
-               '(rustic-mode . (eglot-rust-analyzer "rust-analyzer"))))
+  (rustic-mode . eglot-ensure))
+  ;; :config
+  ;; (add-to-list 'eglot-server-programs
+  ;;              '(rustic-mode . (eglot-rust-analyzer "rust-analyzer"))))
 
   ;comment to disable rustfmt on save
   ;(setq rustic-format-on-save t))

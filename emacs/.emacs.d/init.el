@@ -107,6 +107,10 @@
         ))
 (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
+(use-package diminish
+  :config
+  (diminish 'buffer-face-mode))
+
 (defvar ns/default-font "JetBrainsMono Nerd Font"
   "My custom default font choice.")
 
@@ -123,20 +127,20 @@
 
 (use-package all-the-icons)
 
-(use-package autothemer)
+;; (use-package autothemer)
 
 (use-package doom-themes
   :config
-  (load-theme 'doom-palenight t))
+  (load-theme 'doom-moonlight t))
 
 (use-package ef-themes)
   ;; :config
   ;; (load-theme 'ef-summer t))
 
-(use-package catppuccin-theme
-  :straight (:type git :host github
-                   :repo "catppuccin/emacs")
-  :after autothemer)
+;; (use-package catppuccin-theme
+;;   :straight (:type git :host github
+;;                    :repo "catppuccin/emacs")
+;;   :after autothemer)
   ;; :config (load-theme 'catppuccin-macchiato t))
 
 (use-package modus-themes)
@@ -185,17 +189,6 @@
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key)))
 
-
-  
-  ;; :custom
-  ;; (counsel-describe-function-function #'helpful-callable)
-  ;; (counsel-describe-variable-function #'helpful-variable)
-  ;; :bind
-  ;; ([remap describe-function] . counsel-describe-function)
-  ;; ([remap describe-command] . helpful-command)
-  ;; ([remap describe-variable] . counsel-describe-variable)
-  ;; ([remap describe-key] . helpful-key))
-
 (use-package hl-todo
   :config
   (global-hl-todo-mode))
@@ -238,7 +231,11 @@
    ("C-x r b" . consult-bookmark)
    ("M-y" . consult-yank-pop)
 
-   ; M-s bidnings (search-map)
+   ; Special search bindings
+   ("C-c q" . consult-line)
+   ("C-c w" . consult-ripgrep)
+   
+   ; M-s bindings (search-map)
    ("M-s d" . consult-find)
    ("M-s r" . consult-ripgrep)
    ("M-s l" . consult-line)
@@ -311,6 +308,7 @@
     :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package yasnippet
+  :diminish yas-minor-mode
   :config
   (yas-global-mode))
 
@@ -328,6 +326,10 @@
   ;; :hook
   ;; (org-mode . olivetti-mode))
 
+(use-package iedit
+  :bind
+  ("C-;" . iedit-mode))
+
 (setq tramp-default-method "ssh") ;; Use SSH by default for remote files
 
 (use-package expand-region
@@ -339,15 +341,34 @@
   ("C-a" . mwim-beginning)
   ("C-e" . mwim-end))
 
-(use-package flyspell
-  :hook ((prog-mode . flyspell-prog-mode)
-        ((org-mode markdown-mode) . flyspell-mode)))
+(setq mail-user-agent 'message-user-agent
+      user-mail-address "nicksalesky@gmail.com"
+      user-full-name "Nicholas Salesky"
+      )
 
-(use-package flyspell-correct
-  :after (flyspell)
-  :bind
-  (:map flyspell-mode-map
-        ("C-;" . flyspell-correct-wrapper)))
+(use-package smtpmail-multi
+  :config
+  (setq smtpmail-multi-accounts
+        '((gmail-main . ("nicksalesky@gmail.com" "smtp.gmail.com" 587 "nicksalesky@gmail.com" nil nil nil nil))))
+
+  (setq smtpmail-multi-associations
+        '(("nicksalesky@gmail.com" gmail-main)))
+
+  (setq smtpmail-multi-default-account 'gmail-main)
+  (setq message-send-mail-function 'smtpmail-multi-send-it)
+
+  (setq smtpmail-debug-info t)
+  (setq smtpmail-debug-verbose t)
+
+  (when (>= emacs-major-version 25)
+    (setq smtpmail-local-domain (car (split-string (shell-command-to-string "hostname -f")))))
+
+(use-package notmuch)
+
+(use-package auth-source-pass
+  :diminish t
+  :config
+  (auth-source-pass-enable))
 
 (use-package dired
   :straight (:type built-in)
@@ -445,6 +466,9 @@
   (tabspaces-remove-to-default t)
   (tabspaces-include-buffers '("*scratch*"))
 
+  :bind (:map tabspaces-mode-map
+            ("C-c TAB r" . tab-bar-rename-tab))
+
   ; sessions
   ; (tabspaces-session t)
   ; (tabspaces-session-auto-restore t))
@@ -480,7 +504,7 @@
 (electric-pair-mode 1)
 (setq electric-pair-inhibit-predicate
       (lambda (char)
-        (not (member major-mode '(org-mode)))))
+        (member major-mode '(org-mode))))
 
 (global-unset-key (kbd "ESC ESC"))
 
@@ -527,10 +551,6 @@
                ("g" . magit-status)
                ("b" . blamer-mode)))
 
-(use-package magit-todos
-  :config
-  (magit-todos-mode))
-
 ;; (use-package forge
 ;;   :after magit)
 ;; TODO set up personal access token personal to work with pull requests from Emacs  :after magit)
@@ -569,6 +589,8 @@
   (org-pretty-entities t)
   (org-pretty-entities-include-sub-superscripts nil)
   (org-hide-emphasis-markers t)
+
+  (org-use-property-inheritance t)
 
   (org-directory "~/Documents/notes")
   (org-default-notes-file "~/Documents/notes/notes.org")
@@ -1059,12 +1081,6 @@ are equal return nil."
   :config
   (add-to-list 'eglot-server-programs
                '(python-ts-mode . ("pylsp"))))
-  ;(eglot-send-changes-idle-time (* 60 60))) ; Delay the automatic syntax checking to improve lag and stutters while typing
-  ;; :config
-  ;; (add-hook 'eglot-managed-mode-hook
-            ;; (lambda ()
-              ;; (eldoc-mode -1)
-              ;; (flymake-mode -1)))) ; Disable doc popups in the minibuffer
 
 (use-package corfu
   :straight (corfu :files (:defaults "extensions/*")
@@ -1117,9 +1133,9 @@ are equal return nil."
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-;; (use-package eldoc-box
-;;   :hook
-;;   (prog-mode . eglot-box-hover-at-point-mode))
+(use-package eldoc-box
+  :hook
+  (eglot-managed-mode . eldoc-box-hover-mode))
 
 (use-package format-all)
   ;:hook
@@ -1139,10 +1155,12 @@ are equal return nil."
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
 
 (use-package wakatime-mode
+  :diminish wakatime-mode
   :config
   (global-wakatime-mode))
 
 (use-package ws-butler
+  :diminish ws-butler-mode
   :hook
   (prog-mode . ws-butler-mode))
 
@@ -1162,7 +1180,6 @@ are equal return nil."
 
 (use-package d-mode
   :straight (:type git :host github :repo "nsalesky/Emacs-D-Mode")
-  :after eglot
   :mode "\\.d\\'"
   :hook
   (d-mode . eglot-ensure)
@@ -1279,10 +1296,10 @@ are equal return nil."
   :hook
   (rustic-mode . (lambda () (flycheck-mode -1)))
   ;; (rustic-mode . ns/setup-eglot-rust)
-  (rustic-mode . eglot-ensure)
-  :config
-  (add-to-list 'eglot-server-programs
-               '(rustic-mode . (eglot-rust-analyzer "rust-analyzer"))))
+  (rustic-mode . eglot-ensure))
+  ;; :config
+  ;; (add-to-list 'eglot-server-programs
+  ;;              '(rustic-mode . (eglot-rust-analyzer "rust-analyzer"))))
 
   ;comment to disable rustfmt on save
   ;(setq rustic-format-on-save t))
