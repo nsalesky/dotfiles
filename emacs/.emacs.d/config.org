@@ -663,7 +663,7 @@ Taken from [[https://firminmartin.com/en/posts/2020/10/read_email_in_emacs_with_
   (setq smtpmail-debug-verbose t)
 
   (when (>= emacs-major-version 25)
-    (setq smtpmail-local-domain (car (split-string (shell-command-to-string "hostname -f")))))
+    (setq smtpmail-local-domain (car (split-string (shell-command-to-string "hostname -f"))))))
 #+END_SRC 
 
 ** notmuch-el

@@ -361,7 +361,7 @@
   (setq smtpmail-debug-verbose t)
 
   (when (>= emacs-major-version 25)
-    (setq smtpmail-local-domain (car (split-string (shell-command-to-string "hostname -f")))))
+    (setq smtpmail-local-domain (car (split-string (shell-command-to-string "hostname -f"))))))
 
 (use-package notmuch)
 
@@ -557,7 +557,7 @@
 
 (use-package blamer)
 
- (defun ns/org-mode-setup ()
+(defun ns/org-mode-setup ()
    (org-indent-mode)
    ;; (variable-pitch-mode 1)
    (visual-line-mode 1))
