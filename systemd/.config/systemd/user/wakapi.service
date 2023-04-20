@@ -1,0 +1,22 @@
+[Unit]
+Description=Wakapi
+# StartLimitIntervalSec=400
+# StartLimitBurst=3
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/podman start -a wakapi
+ExecStop=/usr/bin/podman stop -t 2 wakapi
+
+[Install]
+WantedBy=default.target
+
+# Installation Instructions
+#
+# podman volume create wakapi
+podman run \
+  -p 3000:3000 \
+  -v ~/.config/wakapi/config.yml:/app/config.yml:ro \
+  -v wakapi-data:/data \
+  --name wakapi \
+  ghcr.io/muety/wakapi:latest
