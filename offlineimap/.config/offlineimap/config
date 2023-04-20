@@ -10,7 +10,6 @@ localrepository = gmail_local
 remoterepository = gmail_remote
 synclabels = yes
 utf8foldernames = yes
-
 postsynchook = ~/.email/postsync.sh
 
 [Repository gmail_local]
@@ -21,7 +20,6 @@ localfolders = ~/.email/nicksalesky@gmail.com
 type = Gmail
 remoteuser = nicksalesky@gmail.com
 remotepasseval = get_pass("nicksalesky@gmail.com")
-# remotepass = REaAUexfWv6YF8M4TckmZ2EoyknNut
 ssl = yes
 sslcacertfile = /etc/ssl/certs/ca-certificates.crt
 readonly = true
