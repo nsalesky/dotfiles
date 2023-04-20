@@ -668,7 +668,9 @@ Taken from [[https://firminmartin.com/en/posts/2020/10/read_email_in_emacs_with_
 
 ** notmuch-el
 #+BEGIN_SRC emacs-lisp
-(use-package notmuch)
+(use-package notmuch
+  :custom
+  (notmuch-search-oldest-first nil))
 #+END_SRC
 
 ** auth-source-pass
