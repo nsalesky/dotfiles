@@ -2,16 +2,15 @@
     "layer": "top", // Waybar at top layer
     "position": "bottom", // Waybar position (top|bottom|left|right)
     "mod": "dock",
-    "height": 28, // Waybar height (to be removed for auto height)
+    "height": 40, // Waybar height (to be removed for auto height)
     "exclusive": true,
     "passthrough": false,
-    "gtk-layer-shell": true
+    "gtk-layer-shell": true,
     // "width": 1280, // Waybar width
-    # "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
     "modules-left": ["cpu", "memory", "clock"],
     "modules-center": ["wlr/workspaces", "hyprland/window"],
-    "modules-right": ["idle_inhibitor", "custom/updates", "network", "bluetooth", "wireplumber", "custom/wallchange", "custom/mode", "tray", "battery"],
+    "modules-right": ["custom/updates", "network", "bluetooth", "wireplumber", "idle_inhibitor", "custom/wallchange", "custom/mode", "tray", "battery"],
 
     // Center modules
     "wlr/workspaces": {
