@@ -134,4 +134,4 @@ end
 
 direnv hook fish | source
 
-rvm default
+# rvm default

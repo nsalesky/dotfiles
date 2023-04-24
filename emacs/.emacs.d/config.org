@@ -669,8 +669,11 @@ Taken from [[https://firminmartin.com/en/posts/2020/10/read_email_in_emacs_with_
 ** notmuch-el
 #+BEGIN_SRC emacs-lisp
 (use-package notmuch
+  :bind
+  ("C-c p" . notmuch)
   :custom
-  (notmuch-search-oldest-first nil))
+  (notmuch-search-oldest-first nil)
+  (notmuch-kill-buffer-on-exit t))
 #+END_SRC
 
 ** auth-source-pass
@@ -861,7 +864,7 @@ Here's where I configure some basic Emacs features with keybindings.
 
 ** Meow: modal editing
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
@@ -958,7 +961,7 @@ Here's where I configure some basic Emacs features with keybindings.
 
 ** Lispy: short and sweet Lisp editing
 
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package lispy
   :hook ((emacs-lisp-mode . lispy-mode)
          (clojure-mode . lispy-mode))
