@@ -16,6 +16,12 @@ Wall_Next()
             break
         fi
     done
+
+    # CurrentWallpaper=`readlink $BASEDIR/wall.$WALLMODE`
+    # CurrentDir=(`dirname $CurrentWallpaper`/*)
+    # NewWallpaper=(`ls -d $CurrentDir | shuf -n 1`)
+    # ln -fs $NewWallpaper $BASEDIR/wall.$WALLMODE
+    # echo "Changing wallpaper to" $NewWallpaper
 }
 
 Wall_Set()

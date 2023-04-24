@@ -157,7 +157,7 @@
         // "format-full": "",
         "format-icons": ["", "", "", "", ""]
     },
-
+}
 
     //"mpd": {
     //    "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
@@ -185,37 +185,37 @@
     //    "tooltip-format": "MPD (connected)",
     //    "tooltip-format-disconnected": "MPD (disconnected)"
     //},
-    "clock": {
-        // "timezone": "America/New_York",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "{:%Y-%m-%d}"
-    },
-    //"backlight": {
-    //    // "device": "acpi_video1",
-    //    "format": "{percent}% {icon}",
-    //    "format-icons": ["", "", "", "", "", "", "", "", ""]
-    //},
-    "network": {
-        // "interface": "wlp2*", // (Optional) To force the use of this interface
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ipaddr}/{cidr} ",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) ",
-        "format-disconnected": "Disconnected ⚠",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}"
-    },
+    # "clock": {
+    #     // "timezone": "America/New_York",
+    #     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    #     "format-alt": "{:%Y-%m-%d}"
+    # },
+    # //"backlight": {
+    # //    // "device": "acpi_video1",
+    # //    "format": "{percent}% {icon}",
+    # //    "format-icons": ["", "", "", "", "", "", "", "", ""]
+    # //},
+    # "network": {
+    #     // "interface": "wlp2*", // (Optional) To force the use of this interface
+    #     "format-wifi": "{essid} ({signalStrength}%) ",
+    #     "format-ethernet": "{ipaddr}/{cidr} ",
+    #     "tooltip-format": "{ifname} via {gwaddr} ",
+    #     "format-linked": "{ifname} (No IP) ",
+    #     "format-disconnected": "Disconnected ⚠",
+    #     "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    # },
     
-    "custom/media": {
-        "format": "{icon} {}",
-        "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": "🎜"
-        },
-        "escape": true,
-        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
-    }
+    # "custom/media": {
+    #     "format": "{icon} {}",
+    #     "return-type": "json",
+    #     "max-length": 40,
+    #     "format-icons": {
+    #         "spotify": "",
+    #         "default": "🎜"
+    #     },
+    #     "escape": true,
+    #     "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
+    #     // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+    # }
 }
 

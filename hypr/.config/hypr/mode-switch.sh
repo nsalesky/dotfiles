@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # main script ##
-CFGDIR="$HOME/.config"
+CFGDIR="/home/nsalesky/.config"
 X_MODE=$1
 
 ## check mode ##
