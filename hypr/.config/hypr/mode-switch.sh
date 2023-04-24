@@ -41,8 +41,3 @@ $CFGDIR/swww/wallpaper-control.sh -$x
 ### kitty ###
 # ln -fs $CFGDIR/kitty/${S_MODE}.conf $CFGDIR/kitty/theme.conf
 # killall -SIGUSR1 kitty
-
-### waybar ###
-ln -fs $CFGDIR/waybar/${S_MODE}.css $CFGDIR/waybar/style.css
-sleep 1
-killall -SIGUSR2 waybar
