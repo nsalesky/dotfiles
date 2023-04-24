@@ -10,7 +10,7 @@ Wall_Next()
     do
         if [ $((i + 1)) -eq ${#Wallist[@]} ] ; then
             ln -fs ${Wallist[0]} $BASEDIR/wall.$WALLMODE
-            break
+            breakwall
         elif [ ${Wallist[i]} == ${WallSet} ] ; then
             ln -fs ${Wallist[i+1]} $BASEDIR/wall.$WALLMODE
             break
