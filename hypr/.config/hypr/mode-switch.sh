@@ -30,6 +30,9 @@ else
     exit 1
 fi
 
+### waybar ###
+ln -fs $CFGDIR/waybar/${S_MODE}.css $CFGDIR/waybar/style.css
+
 ### hyprland ###
 ln -fs $CFGDIR/hypr/${S_MODE}.conf $CFGDIR/hypr/hyprland.conf
 hyprctl reload

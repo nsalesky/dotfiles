@@ -8,16 +8,16 @@
 }
 
 window#waybar {
-    background: rgba(17, 17, 27, .10);
+    background: rgba(220, 224, 232, .10);
 }
 
 tooltip {
-    background: #1e1e2e;
-    color: #cdd6f4;
+    background: #9ca0b0;
+    color: #4c4f69;
     border-radius: 10px;
     border-width: 1px;
     border-style: solid;
-    border-color: #11111b;
+    border-color: #ccd0da;
 }
 
 #workspaces button {
@@ -29,14 +29,14 @@ tooltip {
     margin-bottom: 3px;
     padding-left: 2px;
     padding-right: 2px;
-    color: #cdd6f4;
+    color: #4c4f69;
     animation: gradient_f 20s ease-in infinite;
     transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.active {
-    background: #a6adc8;
-    color: #313244;
+    background: #5c5f77;
+    color: #dce0e8;
     margin-left: 2px;
     padding-left: 10px;
     padding-right: 10px;
@@ -46,8 +46,8 @@ tooltip {
 }
 
 #workspaces button:hover {
-    background: #f5c2e7;
-    color: #313244;
+    background: #dc8a78;
+    color: #dce0e8;
     padding-left: 2px;
     padding-right: 2px;
     animation: gradient_f 20s ease-in infinite;
@@ -69,8 +69,8 @@ tooltip {
 #idle_inhibitor,
 #battery,
 #tray {
-    color: #cdd6f4;
-    background: #11111b;
+    color: #4c4f69;
+    background: #9ca0b0;
     opacity: 1;
     padding: 0px;
     margin: 3px 0px 3px 0px;
