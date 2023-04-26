@@ -838,7 +838,7 @@ are equal return nil."
   (add-hook 'org-present-mode-hook 'ns/org-present-begin)
   (add-hook 'org-present-mode-quit-hook 'ns/org-present-end))
 
-;; (use-package emacsql-sqlite-builtin)
+(use-package emacsql-sqlite-builtin)
 
 (use-package org-roam
   :diminish
@@ -857,7 +857,7 @@ are equal return nil."
   (org-roam-directory (file-truename "~/Documents/notes/"))
   (org-roam-file-extensions '("org" "md"))
   (org-roam-dailies-directory "logs")
-  ;; (org-roam-database-connector 'sqlite-builtin)
+  (org-roam-database-connector 'sqlite-builtin)
   (org-roam-capture-templates
    '(("d" "default" plain (file "~/Documents/notes/capture-templates/default.org")
       :target (file "${slug}.org")

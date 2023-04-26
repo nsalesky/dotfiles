@@ -1488,7 +1488,7 @@ Give Org-mode documents some extra visual polish.
 ** Org-roam
 
 #+BEGIN_SRC emacs-lisp
-;; (use-package emacsql-sqlite-builtin)
+(use-package emacsql-sqlite-builtin)
 
 (use-package org-roam
   :diminish
@@ -1507,7 +1507,7 @@ Give Org-mode documents some extra visual polish.
   (org-roam-directory (file-truename "~/Documents/notes/"))
   (org-roam-file-extensions '("org" "md"))
   (org-roam-dailies-directory "logs")
-  ;; (org-roam-database-connector 'sqlite-builtin)
+  (org-roam-database-connector 'sqlite-builtin)
   (org-roam-capture-templates
    '(("d" "default" plain (file "~/Documents/notes/capture-templates/default.org")
       :target (file "${slug}.org")

@@ -2,7 +2,8 @@ if status is-interactive
     # Commands to run in interactive sessions can go here
 end
 
-set -gx EDITOR emacsclient
+set -gx EDITOR "emacsclient -c"
+set -gx VISUAL "emacsclient -c"
 
 # Autojump
 set -gx AUTOJUMP_SOURCED 1
