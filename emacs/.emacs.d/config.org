@@ -864,7 +864,7 @@ Here's where I configure some basic Emacs features with keybindings.
 
 ** Meow: modal editing
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
@@ -1488,7 +1488,7 @@ Give Org-mode documents some extra visual polish.
 ** Org-roam
 
 #+BEGIN_SRC emacs-lisp
-(use-package emacsql-sqlite-builtin)
+;; (use-package emacsql-sqlite-builtin)
 
 (use-package org-roam
   :diminish
@@ -1507,7 +1507,7 @@ Give Org-mode documents some extra visual polish.
   (org-roam-directory (file-truename "~/Documents/notes/"))
   (org-roam-file-extensions '("org" "md"))
   (org-roam-dailies-directory "logs")
-  (org-roam-database-connector 'sqlite-builtin)
+  ;; (org-roam-database-connector 'sqlite-builtin)
   (org-roam-capture-templates
    '(("d" "default" plain (file "~/Documents/notes/capture-templates/default.org")
       :target (file "${slug}.org")
@@ -1668,7 +1668,7 @@ This is a handy little hack I got from [[https://leba.dev/blog/2022/12/12/(ab)us
 
 **** treesit-auto: install Treesitter grammars automatically
 
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp :tangle no 
 (use-package treesit-auto
   :straight (:type git :host github :repo "renzmann/treesit-auto")
   :custom
@@ -1900,7 +1900,7 @@ A simple code formatting system for a ton of languages.
 *** Wakatime
 Wakatime makes it easy for me to keep track of how much time I'm spending on various projects.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package wakatime-mode
   :diminish wakatime-mode
   :config
