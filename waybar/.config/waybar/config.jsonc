@@ -10,7 +10,7 @@
     // Choose the order of the modules
     "modules-left": ["cpu", "memory", "clock"],
     "modules-center": ["wlr/workspaces", "hyprland/window"],
-    "modules-right": ["custom/updates", "network", "bluetooth", "wireplumber", "idle_inhibitor", "custom/wallchange", "custom/mode", "tray", "battery"],
+    "modules-right": ["custom/updates", "network", "bluetooth", "wireplumber", "backlight", "idle_inhibitor", "custom/wallchange", "custom/mode", "tray", "battery"],
 
     // Center modules
     "wlr/workspaces": {
@@ -120,6 +120,12 @@
         "format-muted": "",
         "on-click": "helvum",
         "format-icons": ["", "", ""]
+    },
+
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{icon} {percent}%",
+        "format-icons": ["", ""]
     },
 
     "custom/wallchange": {

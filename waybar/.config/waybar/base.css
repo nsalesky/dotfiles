@@ -64,6 +64,11 @@
     padding-right: 6px;
 }
 
+#backlight {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
 #idle_inhibitor {
     padding-left: 6px;
     padding-right: 6px;
