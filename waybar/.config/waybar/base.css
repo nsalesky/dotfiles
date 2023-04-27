@@ -4,13 +4,13 @@
     border-radius: 10px 0px 0px 10px;
     margin-left: 25px;
     padding-left: 12px;
-    padding-right: 4px;
+    padding-right: 6px;
 }
 
 #memory {
     border-radius: 0px 10px 10px 0px;
     border-left-width: 0px;
-    padding-left: 4px;
+    padding-left: 6px;
     padding-right: 12px;
     margin-right: 6px;
 }
@@ -46,7 +46,7 @@
     border-radius: 10px 0px 0px 10px;
     margin-left: 6px;
     padding-left: 12px;
-    padding-right: 4px;
+    padding-right: 6px;
 }
 
 #network {
@@ -55,23 +55,23 @@
 }
 
 #bluetooth {
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 #wireplumber {
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 #idle_inhibitor {
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 #custom-wallchange {
     border-radius: 0px 10px 10px 0px;
-    padding-left: 4px;
+    padding-left: 6px;
     padding-right: 12px;
     margin-right: 6px;
 }
@@ -82,17 +82,17 @@
     border-radius: 10px 0px 0px 10px;
     margin-left: 6px;
     padding-left: 12px;
-    padding-right: 4px;
+    padding-right: 6px;
 }
 
 #tray {
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 #battery {
     border-radius: 0px 10px 10px 0px;
-    padding-left: 4px;
+    padding-left: 6px;
     padding-right: 12px;
     margin-right: 25px;
 }
