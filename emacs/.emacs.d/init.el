@@ -48,6 +48,44 @@
 (setq user-full-name "Nick Salesky"
       user-mail-address "nicksalesky@gmail.com")
 
+(setq disabled-command-function nil)
+
+(use-package evil
+  :init
+  (setq evil-want-keybinding nil
+        evil-want-integration t)
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection)
+
+(electric-pair-mode 1)
+(setq electric-pair-inhibit-predicate
+      (lambda (char)
+        (member major-mode '(org-mode))))
+
+(global-unset-key (kbd "ESC ESC"))
+
+(delete-selection-mode 1)
+
+;; Set the default tab settings
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 4)
+(setq-default python-indent-offset 4)
+
+;; Make the backspace properly erase the whole tab instead of removing
+;; 1 space at a time
+(setq backward-delete-char-untabify-method 'hungry)
+
+;; Keep track of recently-opened files
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
+(global-set-key (kbd "C-x C-r") 'consult-recent-file)
+
+(define-key global-map (kbd "M-o") 'ace-window)
+
 (use-package saveplace
   :unless noninteractive
   :config
@@ -178,6 +216,7 @@
     (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
     ;; :hook (after-init-hook . dashboard-refresh-buffer)
     :config
+    (evil-collection-dashboard-setup)
     (dashboard-setup-startup-hook))
 
 (pixel-scroll-mode)
@@ -498,51 +537,9 @@
       "Set workspace buffer list for consult-buffer.")
     (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
 
-(setq disabled-command-function nil)
-
-(electric-pair-mode 1)
-(setq electric-pair-inhibit-predicate
-      (lambda (char)
-        (member major-mode '(org-mode))))
-
-(global-unset-key (kbd "ESC ESC"))
-
-(delete-selection-mode 1)
-
-(use-package hydra)
-
-;; Set the default tab settings
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-(setq-default c-basic-offset 4)
-(setq-default python-indent-offset 4)
-
-;; Make the backspace properly erase the whole tab instead of removing
-;; 1 space at a time
-(setq backward-delete-char-untabify-method 'hungry)
-
-;; Keep track of recently-opened files
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
-(global-set-key (kbd "C-x C-r") 'consult-recent-file)
-
-(define-key global-map (kbd "M-o") 'ace-window)
-
-(use-package dumb-jump
+(use-package magit
   :config
-  (defhydra dumb-jump-hydra (:color blue :columns 3)
-    "Dumb Jump"
-    ("j" dumb-jump-go "Go")
-    ("o" dumb-jump-go-other-window "Other window")
-    ("e" dumb-jump-go-prefer-external "Go external")
-    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
-    ("i" dumb-jump-go-prompt "Prompt")
-    ("l" dumb-jump-quick-look "Quick look")
-    ("b" dumb-jump-back "Back"))
-  (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
-
-(use-package magit)
+  (evil-collection-magit-setup))
 
 ;; (use-package forge
 ;;   :after magit)
