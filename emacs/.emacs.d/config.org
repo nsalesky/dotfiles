@@ -864,7 +864,7 @@ Here's where I configure some basic Emacs features with keybindings.
 
 ** Meow: modal editing
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
@@ -1513,19 +1513,7 @@ Give Org-mode documents some extra visual polish.
     (org-roam-ui-follow t)
     (org-roam-ui-update-on-save t)
     (org-roam-ui-open-on-start t))
-#+END_SRC
-** +Denote+
-
-#+BEGIN_SRC emacs-lisp :tangle no
-;; (use-package denote
-;;   :straight (denote :type git :host gitlab
-;;                     :repo "protesilaos/denote")
-;;   :custom
-;;   (denote-directory "~/notes")
-;;   (denote-known-keywords
-;;     '("emacs" "personal" "journal")))
 #+END_SRC 
-
 * Shells/Terminal Emulators
 ** with-editor-async-shell-command
 #+BEGIN_SRC emacs-lisp
@@ -2142,71 +2130,6 @@ A little transient function for visiting my common files that aren't accessible 
 (define-key 'ns/files-map (kbd "f") 'ns/visit-note-transient)
 
 #+END_SRC
-
-* +Social+
-** +IRC+
-I use the ~erc-sasl~ implementation provided [[https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Bchat/erc/local/erc-sasl/erc-sasl.el][here]], so you'll have to download it before running this.
-
-Set up SASL for [[libera.chat]].
-#+BEGIN_SRC emacs-lisp
-
-;; (require 'erc-sasl)
-
-;; (add-to-list 'erc-sasl-server-regexp-list "irc\\.libera\\.chat")
-
-;; ;; Redefine/Override the erc-login() function from the erc package, so that
-;; ;; it now uses SASL
-;; (defun erc-login ()
-;;   "Perform user authentication at the IRC server. (PATCHED)"
-;;   (erc-log (format "login: nick: %s, user: %s %s %s :%s"
-;;            (erc-current-nick)
-;;            (user-login-name)
-;;            (or erc-system-name (system-name))
-;;            erc-session-server
-;;            erc-session-user-full-name))
-;;   (if erc-session-password
-;;       (erc-server-send (format "PASS %s" erc-session-password))
-;;     (message "Logging in without password"))
-;;   (when (and (featurep 'erc-sasl) (erc-sasl-use-sasl-p))
-;;     (erc-server-send "CAP REQ :sasl"))
-;;   (erc-server-send (format "NICK %s" (erc-current-nick)))
-;;   (erc-server-send
-;;    (format "USER %s %s %s :%s"
-;;        ;; hacked - S.B.
-;;        (if erc-anonymous-login erc-email-userid (user-login-name))
-;;        "0" "*"
-;;        erc-session-user-full-name))
-;;   (erc-update-mode-line))
-
-#+END_SRC
-
-Set up my basic IRC user info.
-#+BEGIN_SRC emacs-lisp
-
-(setq erc-server "irc.libera.chat"
-      erc-nick "abcd987"              ; change this
-      erc-autojoin-channels-alist '((Libera.Chat
-                                     "#systemcrafters"
-                                     "#emacs"
-                                     "#go-nuts"
-                                     "##rust"))
-      erc-track-shorten-start 8
-      erc-kill-buffer-on-part t
-      erc-auto-query 'bury)
-
-#+END_SRC
-
-** +Mastodon+
-
-#+BEGIN_SRC emacs-lisp
-;; (use-package mastodon
-;;   :custom
-;;   (mastodon-instance-url "https://emacs.ch")
-;;   (mastodon-active-user "nsalesky")
-;;   :config
-;;   (mastodon-discover))
-#+END_SRC
-
 * Documents
 ** PDFs
 
