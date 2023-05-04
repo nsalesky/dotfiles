@@ -1,9 +1,6 @@
-# Sample minimal config file.  Copy this to ~/.offlineimaprc and edit to
-# get started fast.
-
 [general]
 accounts = gmail
-pythonfile = ~/.config/offlineimap/offlineimap.py
+pythonfile = ~/.config/offlineimap/utilities.py
 
 [Account gmail]
 localrepository = gmail_local

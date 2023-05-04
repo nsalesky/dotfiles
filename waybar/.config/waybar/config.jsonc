@@ -129,7 +129,7 @@
     },
 
     "custom/wallchange": {
-        "format": "{}",
+        "format": "{}",
         "exec": "~/.config/swww/wallpaper-control.sh -t",
         "on-click": "~/.config/swww/wallpaper-control.sh -n",
         "interval" : 86400, // once every day

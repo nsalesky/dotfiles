@@ -542,19 +542,11 @@
     ("b" dumb-jump-back "Back"))
   (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
 
-(use-package magit
-  :after blamer
-  :bind
-  (:prefix-map ns/git-prefix-map
-               :prefix "C-x g"
-               ("g" . magit-status)
-               ("b" . blamer-mode)))
+(use-package magit)
 
 ;; (use-package forge
 ;;   :after magit)
 ;; TODO set up personal access token personal to work with pull requests from Emacs  :after magit)
-
-(use-package blamer)
 
  (defun ns/org-mode-setup ()
    (org-indent-mode)

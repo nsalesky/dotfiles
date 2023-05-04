@@ -135,4 +135,6 @@ end
 
 direnv hook fish | source
 
+starship init fish | source
+
 # rvm default

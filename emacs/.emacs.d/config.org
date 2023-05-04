@@ -1059,13 +1059,7 @@ Keybindings for operating windows.
 ** Magit
 
 #+begin_src emacs-lisp
-(use-package magit
-  :after blamer
-  :bind
-  (:prefix-map ns/git-prefix-map
-               :prefix "C-x g"
-               ("g" . magit-status)
-               ("b" . blamer-mode)))
+(use-package magit)
 #+end_src
 
 ** +Magit-todos: view project TODOs in the Magit status buffer+
@@ -1081,14 +1075,7 @@ Keybindings for operating windows.
 ;; (use-package forge
 ;;   :after magit)
 ;; TODO set up personal access token personal to work with pull requests from Emacs  :after magit)
-
-#+END_SRC 
-
-** Blamer: Git blame the current line
-
-#+BEGIN_SRC emacs-lisp
-(use-package blamer)
-#+END_SRC 
+#+END_SRC  
 
 * Org Mode
 ** Basic config
@@ -1345,51 +1332,6 @@ are equal return nil."
                          (:auto-category t :order 9)
                          )))))))))
 #+END_SRC
-
-*** +Capture templates+
-Now, I need to set up some capture templates to quickly add items to the agenda.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-
-(setq org-capture-templates
-      '(("t" "todo" entry (file+headline "inbox.org" "Todo")
-	     "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
-        ;; ("m" "Meeting" entry (file "agenda/inbox.org")
-        ;;  "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
-        ("s" "Schedule an Appointment" entry (file+headline "agenda.org" "Future")
-         "*** TODO %? \nSCHEDULED: %t")
-        ("d" "Diary" entry (file+olp+datetree "diary.org")
-         "* %?\n%U\n" :clock-in t :clock-resume t)
-        ("i" "Idea" entry (file "inbox.org")
-         "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
-        ("n" "High Priority Task" entry (file+headline "inbox.org" "Tasks")
-         "** NEXT %? \nDEADLINE: %t") ))
-#+END_SRC 
-
-*** +Refiling tasks+
-Make it easier to move tasks from the inbox or other files over to ~projects.org~, and automatically save all agenda files after refiling.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(setq org-refile-targets
-      '(("projects.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)"))
-      org-refile-use-outline-path 'file
-      org-outline-path-complete-in-steps nil)
-
-(defun ns/org-agenda-save-buffers ()
-  "Save `org-agenda-files` buffers without user confirmation."
-  (interactive)
-  (message "Saving org-agenda-files buffers...")
-  (save-some-buffers t
-                     (lambda ()
-                       (when (member (buffer-file-name) (org-agenda-files))
-                         t)))
-  (message "Saving org-agenda-files buffers... done"))
-
-;; Automatically save after refile
-(advice-add 'org-refile :after
-            (lambda (&rest _)
-              (ns/org-agenda-save-buffers)))
-#+END_SRC 
 
 *** org-super-agenda
 
