@@ -937,6 +937,7 @@ Here's where I configure some basic Emacs features with keybindings.
    '("r" . meow-replace)
    '("R" . meow-swap-grab)
    '("s" . meow-kill)
+   '("S" . embrace-commander)
    '("t" . meow-till)
    '("u" . meow-undo)
    '("U" . meow-undo-in-selection)
@@ -957,6 +958,22 @@ Here's where I configure some basic Emacs features with keybindings.
   (meow-global-mode 1)
   :hook
   (vterm-mode . (lambda () (meow-mode 0))))
+#+END_SRC
+
+** Embrace: surround
+#+BEGIN_SRC emacs-lisp
+(use-package embrace
+  :straight (:type git :host github :repo "cute-jumper/embrace.el")
+  ;; :bind (("C-M-s-#" . embrace-commander))
+  :config
+  (defun embrace-markdown-mode-hook ()
+    (dolist (lst '((?* "*" . "*")
+                   (?\ "\\" . "\\")
+                   (?$ "$" . "$")
+                   (?/ "/" . "/")))
+      (embrace-add-pair (car lst) (cadr lst) (cddr lst))))
+  (add-hook 'markdown-mode-hook 'embrace-markdown-mode-hook)
+  (add-hook 'org-mode-hook 'embrace-org-mode-hook))
 #+END_SRC
 
 ** Lispy: short and sweet Lisp editing
@@ -2130,6 +2147,15 @@ A little transient function for visiting my common files that aren't accessible 
 (define-key 'ns/files-map (kbd "f") 'ns/visit-note-transient)
 
 #+END_SRC
+** Open file as superuser
+
+#+BEGIN_SRC emacs-lisp
+(defun ns/sudo-find-file (filename)
+  (interactive "F")
+  (find-file (concat "/sudo::"
+                     (expand-file-name filename))))
+#+END_SRC
+
 * Documents
 ** PDFs
 

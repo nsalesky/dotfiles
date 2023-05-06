@@ -572,6 +572,7 @@
    '("r" . meow-replace)
    '("R" . meow-swap-grab)
    '("s" . meow-kill)
+   '("S" . embrace-commander)
    '("t" . meow-till)
    '("u" . meow-undo)
    '("U" . meow-undo-in-selection)
@@ -592,6 +593,19 @@
   (meow-global-mode 1)
   :hook
   (vterm-mode . (lambda () (meow-mode 0))))
+
+(use-package embrace
+  :straight (:type git :host github :repo "cute-jumper/embrace.el")
+  ;; :bind (("C-M-s-#" . embrace-commander))
+  :config
+  (defun embrace-markdown-mode-hook ()
+    (dolist (lst '((?* "*" . "*")
+                   (?\ "\\" . "\\")
+                   (?$ "$" . "$")
+                   (?/ "/" . "/")))
+      (embrace-add-pair (car lst) (cadr lst) (cddr lst))))
+  (add-hook 'markdown-mode-hook 'embrace-markdown-mode-hook)
+  (add-hook 'org-mode-hook 'embrace-org-mode-hook))
 
 (electric-pair-mode 1)
 (setq electric-pair-inhibit-predicate
@@ -1423,6 +1437,11 @@ are equal return nil."
    ])
 
 (define-key 'ns/files-map (kbd "f") 'ns/visit-note-transient)
+
+(defun ns/sudo-find-file (filename)
+  (interactive "F")
+  (find-file (concat "/sudo::"
+                     (expand-file-name filename))))
 
 (use-package tablist)
 
