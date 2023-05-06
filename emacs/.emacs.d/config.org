@@ -481,8 +481,12 @@ Sets up minibuffer completion with Vertico.
    :map minibuffer-local-map
    ("M-s" . consult-history)
    ("M-r" . consult-history))
-  :custom
-  (consult-narrow-key (kbd "<")))
+
+  :init
+  (setq consult-narrow-key (kbd "<"))
+
+  (autoload 'projectile-project-root "projectile")
+  (setq consult-project-function (lambda (_) (projectile-project-root))))
 #+END_SRC 
 
 ** Orderless: match the different parts of completion candidates
@@ -508,6 +512,11 @@ Sets up minibuffer completion with Vertico.
   :custom
   (marginalia-align 'right)
   :init
+  (setq marginalia-command-categories
+        (append '((projectile-find-file . project-file)
+                  (projectile-find-dir . project-file)
+                  (projectile-switch-project . file))
+                marginalia-command-categories))
   (marginalia-mode))
 #+END_SRC
 
@@ -716,32 +725,23 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   (dired-kill-when-opening-new-dired-buffer t))
 #+END_SRC
 
-** Project.el
-#+BEGIN_SRC emacs-lisp
-;; (defun ns/toggle-between-implementation-and-tests ()
-;;   (interactive)
-  
-;;   )
-
-;; (use-package project
-;;   :bind
-;;   ("C-x p t" . ns/toggle-between-implementation-and-tests))
-#+END_SRC
-
-** +Projectile+
+** Projectile
 #+begin_src emacs-lisp
-;; (use-package projectile
-;;   :diminish projectile-mode
-;;   :config (projectile-mode)
-;;   ;; :custom ((projectile-completion-system 'ivy))
-;;   :bind-keymap
-;;   ("C-c p" . projectile-command-map)
-;;   :init
-;;   ;(when (file-directory-p "~/Documents")
-;;     ;(setq projectile-project-search-path '("~/Documents")))
-;;   (setq projectile-switch-project-action #'projectile-dired))
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  ;; :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  ;(when (file-directory-p "~/Documents")
+    ;(setq projectile-project-search-path '("~/Documents")))
+  (setq projectile-switch-project-action #'magit-status
+        projectile-completion-system 'default))
 
-;; (use-package ripgrep)
+;; (use-package consult-projectile)
+
+(use-package ripgrep)
 #+end_src
 
 ** Treemacs: A tree layout file explorer
@@ -811,17 +811,17 @@ I initially thought that this would be able to replace =perspective.el=, but it 
   ;;   (setf tab-bar-format (append tab-bar-format '(tab-bar-format-align-right tab-bar-format-global)))))
 #+END_SRC 
 
-** Tabspaces
+** +Tabspaces+
 A light wrapper around ~project.el~ and ~tab-bar-mode~ providing isolated buffer lists with per-project tab-bars. /This might be unnecessary, I might be fine with just builtin consult project narrowing/
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package tabspaces
   :straight (:type git :host github :repo "mclear-tools/tabspaces")
   :hook (after-init . tabspaces-mode)
   :commands (tabspaces-switch-or-create-workspace
              tabspaces-open-or-create-project-and-workspace)
   :custom
-  (tabspaces-use-filtered-buffers-as-default t)
+  ;; (tabspaces-use-filtered-buffers-as-default t)
   (tabspaces-default-tab "Default")
   (tabspaces-remove-to-default t)
   (tabspaces-include-buffers '("*scratch*"))
@@ -864,7 +864,7 @@ Here's where I configure some basic Emacs features with keybindings.
 
 ** Meow: modal editing
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
