@@ -108,8 +108,10 @@
 (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
 (use-package diminish
-  :config
-  (diminish 'buffer-face-mode))
+  :init
+  (diminish 'buffer-face-mode)
+  (diminish 'visual-line-mode)
+  (diminish 'abbrev))
 
 (defvar ns/default-font "JetBrainsMono Nerd Font"
   "My custom default font choice.")
@@ -127,8 +129,6 @@
 
 (use-package all-the-icons)
 
-;; (use-package autothemer)
-
 (use-package doom-themes
   :config
   (load-theme 'doom-moonlight t))
@@ -137,28 +137,31 @@
   ;; :config
   ;; (load-theme 'ef-summer t))
 
-;; (use-package catppuccin-theme
-;;   :straight (:type git :host github
-;;                    :repo "catppuccin/emacs")
-;;   :after autothemer)
-  ;; :config (load-theme 'catppuccin-macchiato t))
-
 (use-package modus-themes)
-  ;; :custom
-  ;; (modus-themes-italic-constructs t)     ; use italics for comments
-  ;; (modus-themes-bold-constructs t)       ; use bold
-  ;; (modus-themes-syntax '(faint))
-  ;; (modus-themes-mixed-fonts t)           ; Enable fixed and variable pitched fonts
-  ;; (modus-themes-prompts '(italic))
-  ;; ;; (modus-themes-mode-line '(accented borderless))
-  ;; (modus-themes-mode-line '())
-  ;; (modus-themes-subtle-line-numbers t)
+  ;; :init
+  ;; (setq modus-themes-mode-line '(moody)))
+  ;; :config
+  ;; (load-theme 'modus-vivendi t))
+
+(use-package material-theme)
+  ;; :config
+  ;; (load-theme 'material t))
+
+;; (use-package modus-themes)
 
 (use-package doom-modeline
   :init
   (setq doom-modeline-height 35
         doom-modeline-support-imenu t)
   (doom-modeline-mode 1))
+
+;; (use-package moody
+;;   :custom
+;;   (x-underline-at-descent-line t)
+;;   :config
+;;   (moody-replace-mode-line-buffer-identification)
+;;   (moody-replace-vc-mode)
+;;   (moody-replace-eldoc-minibuffer-message-function))
 
 ;; Necessary for dashboard in order to get nice seperators between sections
 (use-package page-break-lines)
@@ -276,12 +279,13 @@
   :custom
   (marginalia-align 'right)
   :init
+  (marginalia-mode)
+  :config
   (setq marginalia-command-categories
         (append '((projectile-find-file . project-file)
                   (projectile-find-dir . project-file)
                   (projectile-switch-project . file))
-                marginalia-command-categories))
-  (marginalia-mode))
+                marginalia-command-categories)))
 
 (use-package all-the-icons-completion
   :after (marginalia all-the-icons)
@@ -374,7 +378,7 @@
 
 (use-package notmuch
   :bind
-  ("C-c p" . notmuch)
+  ("C-c b" . notmuch)
   :custom
   (notmuch-search-oldest-first nil)
   (notmuch-kill-buffer-on-exit t))
@@ -526,24 +530,25 @@
 ;;   :after magit)
 ;; TODO set up personal access token personal to work with pull requests from Emacs  :after magit)
 
- (defun ns/org-mode-setup ()
-   (org-indent-mode)
-   ;; (variable-pitch-mode 1)
-   (visual-line-mode 1))
+(defun ns/org-mode-setup ()
+  (org-indent-mode)
+  (diminish 'org-indent-mode)
+  ;; (variable-pitch-mode 1)
+  (visual-line-mode 1))
 
 (defun ns/org-font-setup ()
   ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
-    (set-face-attribute 'org-block nil :foreground nil :inherit
-                        'fixed-pitch)
-    (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
-    ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit
-                    '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit
-                        '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+  (set-face-attribute 'org-block nil :foreground nil :inherit
+                      'fixed-pitch)
+  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+  ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit
+                      '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit
+                      '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 ;; Org Mode
 (use-package org
@@ -853,28 +858,26 @@ are equal return nil."
 (require 'org-roam) ;; Force org-roam to load
 
 (use-package consult-org-roam
-   :after org-roam
-   :init
-   (require 'consult-org-roam)
-   (consult-org-roam-mode 1)
-   :custom
-   (consult-org-roam-grep-func #'consult-ripgrep)
-   ;; Configure a custom narrow key for `consult-buffer'
-   (consult-org-roam-buffer-narrow-key ?r)
-   ;; Display org-roam buffers right after non-org-roam buffers
-   ;; in consult-buffer (and not down at the bottom)
-   (consult-org-roam-buffer-after-buffers t)
-   :config
-   ;; Eventually suppress previewing for certain functions
-   (consult-customize
-    consult-org-roam-forward-links
-    :preview-key (kbd "M-."))
-   :bind
-   ;; Define some convenient keybindings as an addition
-   ("C-c n f" . consult-org-roam-file-find)
-   ("C-c n b" . consult-org-roam-backlinks)
-   ("C-c n l" . consult-org-roam-forward-links)
-   ("C-c n s" . consult-org-roam-search))
+  :diminish
+  :after org-roam
+  :init
+  (require 'consult-org-roam)
+  (consult-org-roam-mode 1)
+  :custom
+  (consult-org-roam-grep-func #'consult-ripgrep)
+  (consult-org-roam-buffer-narrow-key ?r)
+  (consult-org-roam-buffer-after-buffers nil)
+  :config
+  ;; Eventually suppress previewing for certain functions
+  (consult-customize
+   consult-org-roam-forward-links
+   :preview-key (kbd "M-."))
+  :bind
+  ;; Define some convenient keybindings as an addition
+  ("C-c n f" . consult-org-roam-file-find)
+  ("C-c n b" . consult-org-roam-backlinks)
+  ("C-c n l" . consult-org-roam-forward-links)
+  ("C-c n s" . consult-org-roam-search))
 
 (use-package org-roam-ui
   :straight
