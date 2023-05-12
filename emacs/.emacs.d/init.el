@@ -113,10 +113,10 @@
   (diminish 'visual-line-mode)
   (diminish 'abbrev))
 
-(defvar ns/default-font "JetBrainsMono Nerd Font"
+(defvar ns/default-font "VictorMono Nerd Font"
   "My custom default font choice.")
 
-(defvar ns/fixed-pitch-font "JetBrainsMono Nerd Font"
+(defvar ns/fixed-pitch-font "VictorMono Nerd Font"
   "My custom fixed pitch font choice.")
 
 (defvar ns/variable-pitch-font "Iosevka Aile"
@@ -124,30 +124,38 @@
 
 (custom-set-faces
  `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 120 :width normal :foundry "JB  "))))
- `(fixed-pitch ((t (:family ,ns/fixed-pitch-font))))
+ `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 120))))
  `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
 
 (use-package all-the-icons)
 
-(use-package doom-themes
-  :config
-  (load-theme 'doom-moonlight t))
-
-(use-package ef-themes)
+(use-package doom-themes)
   ;; :config
-  ;; (load-theme 'ef-summer t))
+  ;; (load-theme 'doom-moonlight t))
+
+(use-package ef-themes
+  :config
+  (setq ef-themes-headings ; read the manual's entry or the doc string
+      '((0 . (variable-pitch light 1.9))
+        (1 . (variable-pitch light 1.8))
+        (2 . (variable-pitch regular 1.7))
+        (3 . (variable-pitch regular 1.6))
+        (4 . (variable-pitch regular 1.5))
+        (5 . (variable-pitch 1.4)) ; absence of weight means `bold'
+        (6 . (variable-pitch 1.3))
+        (7 . (variable-pitch 1.2))
+        (t . (variable-pitch 1.1))))
+  (setq ef-themes-to-toggle '(ef-summer ef-cherie)
+        ef-themes-mixed-fonts t
+        ef-themes-variable-pitch-ui t)
+  
+  (ef-themes-select 'ef-summer))
 
 (use-package modus-themes)
   ;; :init
   ;; (setq modus-themes-mode-line '(moody)))
   ;; :config
   ;; (load-theme 'modus-vivendi t))
-
-(use-package material-theme)
-  ;; :config
-  ;; (load-theme 'material t))
-
-;; (use-package modus-themes)
 
 (use-package doom-modeline
   :init
@@ -409,29 +417,6 @@
 
 (use-package ripgrep)
 
-(use-package treemacs
-  :custom
-  (treemacs-width 25)
-  :bind
-  ("M-0" . treemacs-select-window)
-  ("C-c t 1" . treemacs-delete-other-windows)
-  ("C-c t t" . treemacs)
-  ("C-c t d" . treemacs-select-directory)
-  ("C-c t B" . treemacs-bookmark)
-  ("C-c t f" . treemacs-find-file))
-;; (use-package treemacs-projectile
-;;   :config
-;;   (treemacs-project-follow-mode 1))
-(use-package treemacs-icons-dired
-    :hook (dired-mode . treemacs-icons-dired-enable-once))
-;; (use-package treemacs-perspective
-;;   :after (treemacs perspective))
-(use-package treemacs-magit
-    :after (treemacs magit))
-(use-package treemacs-all-the-icons
-  :config
-  (treemacs-load-theme "all-the-icons"))
-
 ;; (defun ns/tab-bar-switch-or-create (name func)
 ;;   (if (ns/tab-bar-tab-exists name)
 ;;       (tab-bar-switch-to-tab name)
@@ -491,8 +476,6 @@
 
 (delete-selection-mode 1)
 
-(use-package hydra)
-
 ;; Set the default tab settings
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
@@ -510,6 +493,8 @@
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 
 (define-key global-map (kbd "M-o") 'ace-window)
+
+(use-package hydra)
 
 (use-package dumb-jump
   :config
@@ -533,22 +518,8 @@
 (defun ns/org-mode-setup ()
   (org-indent-mode)
   (diminish 'org-indent-mode)
-  ;; (variable-pitch-mode 1)
+  (variable-pitch-mode 1)
   (visual-line-mode 1))
-
-(defun ns/org-font-setup ()
-  ;; Make sure that anything that should be fixed pitch in Org files actually appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit
-                      'fixed-pitch)
-  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
-  ;; (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit
-                      '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit
-                      '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 ;; Org Mode
 (use-package org
@@ -557,7 +528,6 @@
   ("C-c l" . org-store-link)
   :hook (org-mode . ns/org-mode-setup)
   :config
-  ;; (ns/org-font-setup)
   :custom
   (org-ellipsis "…")
   (org-pretty-entities t)
@@ -575,34 +545,6 @@
 (use-package org-appear
   :straight (org-appear :type git :host github :repo "awth13/org-appear")
   :hook (org-mode . org-appear-mode))
-
-(add-hook 'org-mode-hook 'variable-pitch-mode)
-
-(require 'org-faces)
-
-;; Resize Org headings
-(dolist (face '((org-level-1 . 1.2)
-                (org-level-2 . 1.1)
-                (org-level-3 . 1.05)
-                (org-level-4 . 1.0)
-                (org-level-5 . 1.1)
-                (org-level-6 . 1.1)
-                (org-level-7 . 1.1)
-                (org-level-8 . 1.1)))
-  (set-face-attribute (car face) nil :font ns/variable-pitch-font :weight 'medium :height (cdr face)))
-
-;; Make the document title a bit bigger
-(set-face-attribute 'org-document-title nil :font ns/variable-pitch-font :weight 'bold :height 1.3)
-
-;; Make sure certain org faces continue to use fixed-pitch face even whenn variable-pitch-mode is on
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-formula nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
 (org-babel-do-load-languages 'org-babel-load-languages
     '((emacs-lisp . t)
@@ -1043,9 +985,13 @@ are equal return nil."
   (eglot-send-changes-idle-time 0.5)
 
   ;; TODO: (hopefully) temporary hack for Treesitter support
+  :hook
+  (eglot-managed-mode . eglot-inlay-hints-mode)
   :config
   (add-to-list 'eglot-server-programs
-               '(python-ts-mode . ("pylsp"))))
+               '(python-ts-mode . ("pylsp")))
+  (add-to-list 'eglot-server-programs
+               '(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"))))
 
 (use-package corfu
   :straight (corfu :files (:defaults "extensions/*")
