@@ -1063,6 +1063,10 @@ are equal return nil."
         ("M-p" . flymake-goto-prev-error)
         ("M-n" . flymake-goto-next-error)))
 
+(use-package breadcrumb
+  :straight (:type git :host github :repo "joaotavora/breadcrumb")
+  :hook (prog-mode . breadcrumb-local-mode))
+
 (use-package realgud)
 
 (use-package verb
