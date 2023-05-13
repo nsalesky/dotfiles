@@ -23,6 +23,11 @@ Add my custom ELisp files to the load-path.
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 #+END_SRC 
 
+Enable native compilation for all Elisp code
+#+BEGIN_SRC emacs-lisp
+(setq native-comp-deferred-compilation t)
+#+END_SRC
+
 Disable certain byte compiler warnings to cut down on the noise for (usually unnecessary) errors.
 
 #+BEGIN_SRC emacs-lisp
@@ -688,6 +693,8 @@ Taken from [[https://firminmartin.com/en/posts/2020/10/read_email_in_emacs_with_
 (use-package notmuch
   :bind
   ("C-c b" . notmuch)
+  :hook
+  (notmuch-show . variable-pitch-mode)
   :custom
   (notmuch-search-oldest-first nil)
   (notmuch-kill-buffer-on-exit t))
@@ -733,6 +740,48 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   (dired-kill-when-opening-new-dired-buffer t))
 #+END_SRC
 
+** +Dirvish+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package dirvish
+  :init
+  (dirvish-override-dired-mode)
+  :custom
+  (dired-use-ls-dired t)
+  (dirvish-quick-access-entries ; It's a custom option, `setq' won't work
+   '(("h" "~/"                          "Home")
+     ("d" "~/Downloads/"                "Downloads")))
+  :config
+  ;; (dirvish-peek-mode) ; Preview files in minibuffer
+  (dirvish-side-follow-mode) ; similar to `treemacs-follow-mode'
+  (setq dirvish-mode-line-format
+        '(:left (sort symlink) :right (omit yank index)))
+  (setq dirvish-attributes
+        '(all-the-icons collapse subtree-state vc-state git-msg))
+  (setq delete-by-moving-to-trash t)
+  (setq dired-listing-switches
+        "-l --almost-all --human-readable --group-directories-first --no-group")
+  :bind ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
+  (("C-c t" . dirvish-side)
+   ("C-c f" . dirvish-fd)
+   :map dirvish-mode-map ; Dirvish inherits `dired-mode-map'
+   ("a"   . dirvish-quick-access)
+   ("f"   . dirvish-file-info-menu)
+   ("y"   . dirvish-yank-menu)
+   ("N"   . dirvish-narrow)
+   ("^"   . dirvish-history-last)
+   ("h"   . dirvish-history-jump) ; remapped `describe-mode'
+   ("s"   . dirvish-quicksort)    ; remapped `dired-sort-toggle-or-edit'
+   ("v"   . dirvish-vc-menu)      ; remapped `dired-view-file'
+   ("TAB" . dirvish-subtree-toggle)
+   ("M-f" . dirvish-history-go-forward)
+   ("M-b" . dirvish-history-go-backward)
+   ("M-l" . dirvish-ls-switches-menu)
+   ("M-m" . dirvish-mark-menu)
+   ("M-t" . dirvish-layout-toggle)
+   ("M-s" . dirvish-setup-menu)
+   ("M-e" . dirvish-emerge-menu)
+   ("M-j" . dirvish-fd-jump)))
+#+END_SRC
 ** Projectile
 #+begin_src emacs-lisp
 (use-package projectile
@@ -1024,7 +1073,8 @@ Keybindings for working with files.
 Keybindings for operating windows.
 
 #+BEGIN_SRC emacs-lisp
-(define-key global-map (kbd "M-o") 'ace-window)
+(use-package ace-window
+  :bind ("M-o" . ace-window))
 #+END_SRC
 
 ** Dumb-jump

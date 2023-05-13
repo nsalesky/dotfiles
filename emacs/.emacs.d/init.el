@@ -1,5 +1,7 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
+(setq native-comp-deferred-compilation t)
+
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
       native-comp-async-report-warnings-errors nil)
 
@@ -387,6 +389,8 @@
 (use-package notmuch
   :bind
   ("C-c b" . notmuch)
+  :hook
+  (notmuch-show . variable-pitch-mode)
   :custom
   (notmuch-search-oldest-first nil)
   (notmuch-kill-buffer-on-exit t))
@@ -492,7 +496,8 @@
 (setq recentf-max-saved-items 25)
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 
-(define-key global-map (kbd "M-o") 'ace-window)
+(use-package ace-window
+  :bind ("M-o" . ace-window))
 
 (use-package hydra)
 
