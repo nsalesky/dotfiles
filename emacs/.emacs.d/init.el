@@ -1047,7 +1047,16 @@ are equal return nil."
   (global-corfu-mode)
   (corfu-popupinfo-mode))
 
-(use-package cape)
+;; Example 4: Define a defensive Dabbrev Capf, which accepts all inputs.  If you
+;; use Corfu and `corfu-auto=t', the first candidate won't be auto selected even
+;; if `corfu-preselect=first'. You can use this instead of `cape-dabbrev'.
+(defun my-cape-dabbrev-accept-all ()
+  (cape-wrap-accept-all #'cape-dabbrev))
+
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'my-cape-dabbrev-accept-all))
+  
 
 (use-package kind-icon
   :custom
