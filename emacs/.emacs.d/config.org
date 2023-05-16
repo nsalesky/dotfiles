@@ -1721,7 +1721,13 @@ A good code-completion package. I might consider switching to Corfu at some poin
   (add-to-list 'eglot-server-programs
                '(python-ts-mode . ("pylsp")))
   (add-to-list 'eglot-server-programs
-               '(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"))))
+               `(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"
+                                :initializationOptions
+                                (:procMacro (:attributes (:enable t)
+                                                         :enable t)
+                                 :cargo (:buildScripts (:enable t))
+                                 :diagnostics (:disabled ["unresolved-proc-macro"
+                                                          "unresolved-macro-call"]))))))
 #+END_SRC 
 
 *** Corfu: Completion at point
@@ -1852,7 +1858,7 @@ Wakatime makes it easy for me to keep track of how much time I'm spending on var
 
 #+BEGIN_SRC emacs-lisp
 (use-package imenu-list)
-#+END_SRC
+#+END_SRCp
 
 *** RE-Builder
 A pretty useful tool for debugging regular expressions. I use the ~string~ mode so that I don't have to backslash the backslashes.
@@ -1865,7 +1871,6 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
 
 ** Languages
 *** YAML
-
 #+BEGIN_SRC emacs-lisp
 
 (use-package yaml-mode
@@ -1874,7 +1879,6 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
 #+END_SRC 
 
 *** C/C++
-
 #+begin_src emacs-lisp
 
 ;; (add-hook 'c-mode-hook 'lsp)
@@ -2057,17 +2061,10 @@ Most Rustic keybindings begin with =C-c C-c=
 (use-package rustic
   :custom
   (rustic-lsp-client 'eglot)
+  (rustic-format-on-save t)
   :hook
   (rustic-mode . (lambda () (flycheck-mode -1)))
-  ;; (rustic-mode . ns/setup-eglot-rust)
   (rustic-mode . eglot-ensure))
-  ;; :config
-  ;; (add-to-list 'eglot-server-programs
-  ;;              '(rustic-mode . (eglot-rust-analyzer "rust-analyzer"))))
-
-  ;comment to disable rustfmt on save
-  ;(setq rustic-format-on-save t))
-
 #+end_src
 
 *** Web

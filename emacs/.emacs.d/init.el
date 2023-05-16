@@ -996,7 +996,13 @@ are equal return nil."
   (add-to-list 'eglot-server-programs
                '(python-ts-mode . ("pylsp")))
   (add-to-list 'eglot-server-programs
-               '(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"))))
+               `(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"
+                                :initializationOptions
+                                (:procMacro (:attributes (:enable t)
+                                                         :enable t)
+                                 :cargo (:buildScripts (:enable t))
+                                 :diagnostics (:disabled ["unresolved-proc-macro"
+                                                          "unresolved-macro-call"]))))))
 
 (use-package corfu
   :straight (corfu :files (:defaults "extensions/*")
@@ -1078,8 +1084,6 @@ are equal return nil."
   :diminish ws-butler-mode
   :hook
   (prog-mode . ws-butler-mode))
-
-(use-package imenu-list)
 
 (use-package re-builder
   :custom
@@ -1208,16 +1212,10 @@ are equal return nil."
 (use-package rustic
   :custom
   (rustic-lsp-client 'eglot)
+  (rustic-format-on-save t)
   :hook
   (rustic-mode . (lambda () (flycheck-mode -1)))
-  ;; (rustic-mode . ns/setup-eglot-rust)
   (rustic-mode . eglot-ensure))
-  ;; :config
-  ;; (add-to-list 'eglot-server-programs
-  ;;              '(rustic-mode . (eglot-rust-analyzer "rust-analyzer"))))
-
-  ;comment to disable rustfmt on save
-  ;(setq rustic-format-on-save t))
 
 ;; (defun ns/toggle-web-mode ()
 ;;   "Toggles web-mode on or off, switching back to the previous major mode when disabled."
