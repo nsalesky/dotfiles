@@ -2,8 +2,13 @@ if status is-interactive
     # Commands to run in interactive sessions can go here
 end
 
-set -gx EDITOR "emacsclient -c"
-set -gx VISUAL "emacsclient -c"
+# set -gx EDITOR "emacsclient -c"
+# set -gx VISUAL "emacsclient -c"
+set -gx EDITOR "nvim"
+set -gx VISUAL "nvim"
+
+# Use Vi keybindings
+# fish_vi_key_bindings
 
 # Autojump
 set -gx AUTOJUMP_SOURCED 1
