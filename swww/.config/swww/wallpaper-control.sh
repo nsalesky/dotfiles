@@ -1,27 +1,17 @@
 #!/usr/bin/env sh
 
-## define functions ##
-Wall_Next()
+WALLPAPER_DIR="~/Pictures/wallpapers/dark"
+
+SetWallpaper()
 {
-    WallSet=`readlink $BASEDIR/wall.$WALLMODE`
-    Wallist=(`dirname $WallSet`/*)
+    NewWallpaper=(`ls -d $WALLPAPER_DIR | shuf -n 1`)
+    swww img $NewWallpaper \
+    --transition-bezier .43,1.19,1,.4 \
+    --transition-type grow \
+    --transition-duration 1 \
+    --transition-fps 144 \
+    --transition-pos bottom-right
 
-    for((i=0;i<${#Wallist[@]};i++))
-    do
-        if [ $((i + 1)) -eq ${#Wallist[@]} ] ; then
-            ln -fs ${Wallist[0]} $BASEDIR/wall.$WALLMODE
-            break
-        elif [ ${Wallist[i]} == ${WallSet} ] ; then
-            ln -fs ${Wallist[i+1]} $BASEDIR/wall.$WALLMODE
-            break
-        fi
-    done
-
-    # CurrentWallpaper=`readlink $BASEDIR/wall.$WALLMODE`
-    # CurrentDir=(`dirname $CurrentWallpaper`/*)
-    # NewWallpaper=(`ls -d $CurrentDir | shuf -n 1`)
-    # ln -fs $NewWallpaper $BASEDIR/wall.$WALLMODE
-    # echo "Changing wallpaper to" $NewWallpaper
 }
 
 Wall_Set()

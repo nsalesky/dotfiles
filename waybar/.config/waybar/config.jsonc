@@ -10,7 +10,7 @@
     // Choose the order of the modules
     "modules-left": ["cpu", "memory", "clock"],
     "modules-center": ["wlr/workspaces", "hyprland/window"],
-    "modules-right": ["custom/updates", "network", "bluetooth", "wireplumber", "backlight", "idle_inhibitor", "custom/wallchange", "custom/mode", "tray", "battery"],
+    "modules-right": ["custom/updates", "network", "bluetooth", "wireplumber", "backlight", "idle_inhibitor", "custom/wallchange", "tray", "battery"],
 
     // Center modules
     "wlr/workspaces": {
@@ -110,7 +110,6 @@
 	    "format": "",
 	    "format-disabled": "", // an empty format will hide the module
 	    "format-connected": " {num_connections}",
-	    "tooltip-format": " {device_alias}",
 	    "tooltip-format-connected": "{device_enumerate}",
 	    "tooltip-format-enumerate-connected": " {device_alias}"
     },
@@ -132,14 +131,6 @@
         "format": "{}",
         "exec": "~/.config/swww/wallpaper-control.sh -t",
         "on-click": "~/.config/swww/wallpaper-control.sh -n",
-        "interval" : 86400, // once every day
-        "tooltip": true
-    },
-
-    "custom/mode": {
-        "format": "{}",
-        "exec": "echo ; echo 󰟡 switch mode",
-        "on-click": "~/.config/hypr/mode-switch.sh switch",
         "interval" : 86400, // once every day
         "tooltip": true
     },
