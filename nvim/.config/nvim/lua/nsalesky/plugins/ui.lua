@@ -8,7 +8,7 @@ return {
 			local wk = require('which-key')
 			wk.setup({})
 			wk.register({
-				p = { "project" },
+				f = { "file" },
 				g = { "git" },
 				u = { "Undo Tree" },
 			}, { prefix = "<leader>" })
