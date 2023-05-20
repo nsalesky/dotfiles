@@ -1,0 +1,68 @@
+#!/usr/bin/fish
+
+# an arbitrary but unique message tag
+set msg_tag "myvolume"
+
+set program_name "volctl"
+
+function _display_help
+    echo "Usage: $program_name"
+    echo "mute: toggles volume on/off"
+    echo "up <percentage> : increase volume by some percentage"
+    echo "down <percentage> : decrease volume by some percentage"
+end
+
+function _toggle_mute
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+
+    set volume_status (wpctl get-volume @DEFAULT_AUDIO_SINK@)
+
+    if string match --quiet '*[MUTED]' $volume_status
+        dunstify -a "changeVolume" -u low -i audio-volume-muted -h string:x-dunst-stack-tag:$msg_tag "Volume muted"
+    else
+        dunstify -a "changeVolume" -u low -i audio-volume-muted -h string:x-dunst-stack-tag:$msg_tag "Volume unmuted"
+    end
+end
+
+function _change_volume -a delta # delta should be something like "5%+" or "5%-"
+    wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ $delta
+
+    set volume_status (wpctl get-volume @DEFAULT_AUDIO_SINK@)
+
+    set volume_percent (string match -g -r '.*Volume: (.*)(?:.*?)' $volume_status)
+    set volume (math "$volume_percent*100") # convert it to an integer
+
+    dunstify -a "changeVolume" -u low -i audio-volume-high -h string:x-dunst-stack-tag:$msg_tag \
+    -h int:value:$volume "Volume: $volume%"
+end
+
+
+if test (count $argv) -eq 0
+    _display_help
+    return
+end
+
+switch $argv[1]
+case "help"
+    _display_help
+
+case "mute"
+    _toggle_mute
+
+case "up"
+    if test (count $argv) -ne 2
+        _display_help
+        return 1
+    end
+
+    _change_volume "$argv[2]%+"
+case "down"
+    if test (count $argv) -ne 2
+        _display_help
+        return 1
+    end
+
+    _change_volume "$argv[2]%-"
+end
+
+# vim: ft=fish
