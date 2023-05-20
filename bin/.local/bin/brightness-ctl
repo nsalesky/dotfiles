@@ -1,0 +1,68 @@
+#!/usr/bin/fish
+
+# an arbitrary but unique message tag
+set msg_tag "mybrightness"
+
+set program_name "brightness-ctl"
+
+function _display_help
+    echo "Usage: $program_name"
+    echo "up <percentage> : increase brightness by some percentage"
+    echo "down <percentage> : decrease brightness by some percentage"
+    echo "set <percentage> : set the brightness to an absolute percentage"
+end
+
+function _show_brightness_percentage -a brightness
+    dunstify -a "changeBrightness" -u low -i preferences-system-brightness-lock \
+    -h string:x-dunst-stack-tag:$msg_tag \
+    -h int:value:$brightness "Brightness: $brightness%"
+end
+ 
+# delta should be something like either +10% or 10%-
+function _change_brightness -a delta
+    brightnessctl set $delta
+
+    set curr (brightnessctl get)
+    set max (brightnessctl max)
+
+    set brightness (math "$curr/$max*100")
+
+    _show_brightness_percentage $brightness
+end
+
+if test (count $argv) -eq 0
+    _display_help
+    exit
+end
+
+switch $argv[1]
+case "help"
+    _display_help
+
+case "up"
+    if test (count $argv) -ne 2
+        _display_help
+        exit 1
+    end
+
+    _change_brightness "+$argv[2]%"
+
+case "down"
+    if test (count $argv) -ne 2
+        _display_help
+        exit 1
+    end
+
+    _change_brightness "$argv[2]%-"
+case "set"
+    if test (count $argv) -ne 2
+        _display_help
+        exit 1
+    end
+
+    brightnessctl set "$argv[2]%"
+    _show_brightness_percentage $argv[2]
+end
+
+# vim: ft=fish
+
