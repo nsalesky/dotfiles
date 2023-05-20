@@ -3,7 +3,7 @@
 # an arbitrary but unique message tag
 set msg_tag "myvolume"
 
-set program_name "volctl"
+set program_name "vol-ctl"
 
 function _display_help
     echo "Usage: $program_name"
