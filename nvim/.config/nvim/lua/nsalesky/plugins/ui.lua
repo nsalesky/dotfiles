@@ -1,5 +1,5 @@
 return {
-	{ 
+	{
 		"folke/which-key.nvim",
 		config = function()
 			vim.o.timeout = true
@@ -8,8 +8,9 @@ return {
 			local wk = require("which-key")
 			wk.setup({})
 			wk.register({
+                d = { "debugging" },
 				f = { "file" },
-				g = { "git" },
+				g = { "it" },
 				u = { "Undo Tree" },
 			}, { prefix = "<leader>" })
 		end,
