@@ -24,16 +24,13 @@ return {
         lazy = false,
     },
     {
-        "numtostr/comment.nvim",
+        "stevearc/oil.nvim",
         config = function()
-            require("Comment").setup({
-                toggler = {
-                    line = "<leader>/",
-                },
-                opleader = {
-                    line = "<leader>/",
-                },
-            })
+            local oil = require("oil")
+
+            oil.setup()
+
+            vim.keymap.set("n", "-", oil.open, { desc = "Open parent directory" } )
         end,
     },
 }
