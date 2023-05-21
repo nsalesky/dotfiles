@@ -33,6 +33,7 @@ function _change_volume -a delta # delta should be something like "5%+" or "5%-"
     set volume (math "$volume_percent*100") # convert it to an integer
 
     dunstify -a "changeVolume" -u low -i audio-volume-high -h string:x-dunst-stack-tag:$msg_tag \
+    -t 2000 \
     -h int:value:$volume "Volume: $volume%"
 end
 

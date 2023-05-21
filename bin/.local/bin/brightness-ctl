@@ -15,6 +15,7 @@ end
 function _show_brightness_percentage -a brightness
     dunstify -a "changeBrightness" -u low -i preferences-system-brightness-lock \
     -h string:x-dunst-stack-tag:$msg_tag \
+    -t 2000 \
     -h int:value:$brightness "Brightness: $brightness%"
 end
  
