@@ -17,6 +17,7 @@ return {
 			{'hrsh7th/nvim-cmp'},     -- Required
 			{'hrsh7th/cmp-nvim-lsp'}, -- Required
 			{'L3MON4D3/LuaSnip'},     -- Required
+            -- {'onsails/lspkind.nvim'},
 		},
 		config = function()
 			local lsp = require('lsp-zero').preset({})
@@ -27,14 +28,25 @@ return {
                 'jedi_language_server',
 			})
 
+            -- Set up the completion system
 			local cmp = require('cmp')
-			local cmp_select = {behavior = cmp.SelectBehavior.Select}
-			local cmp_mappings = lsp.defaults.cmp_mappings({
-				['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-				['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-				['Tab'] = cmp.mapping.confirm({ select = true }),
-				['<C-Space>'] = cmp.mapping.complete(),
-			})
+            local cmp_action = require('lsp-zero').cmp_action()
+
+            cmp.setup({
+                mapping = {
+                    ['<Tab>'] = cmp_action.luasnip_supertab(),
+                    ['<S-Tab>'] = cmp_action.luasnip_shift_supertab(),
+                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+                },
+                formatting = {
+                    fields = {'abbr', 'kind', 'menu'},
+                    -- format = require('lspkind').cmp_format({
+                    --     mode = 'symbol', -- show only symbol annotations
+                    --     maxwidth = 50, -- prevent the popup from showing more than provided characters
+                    --     ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead
+                    -- })
+                }
+            })
 
 			lsp.on_attach(function(client, bufnr)
 				local opts = { buffer = bufnr, remap = false }
@@ -50,6 +62,8 @@ return {
 				vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
 				vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
 			end)
+
+            require("rust-tools").setup({})
 
 			lsp.setup()
 		end,
