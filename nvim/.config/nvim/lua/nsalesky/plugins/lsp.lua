@@ -1,44 +1,44 @@
 return {
 	{
-		'VonHeikemen/lsp-zero.nvim',
-		branch = 'v2.x',
+		"VonHeikemen/lsp-zero.nvim",
+		branch = "v2.x",
 		dependencies = {
 			-- LSP Support
-			{'neovim/nvim-lspconfig'},             -- Required
+			{"neovim/nvim-lspconfig"},             -- Required
 			{                                      -- Optional
-				'williamboman/mason.nvim',
+				"williamboman/mason.nvim",
 				build = function()
-					pcall(vim.cmd, 'MasonUpdate')
+					pcall(vim.cmd, "MasonUpdate")
 				end,
 			},
-			{'williamboman/mason-lspconfig.nvim'}, -- Optional
+			{"williamboman/mason-lspconfig.nvim"}, -- Optional
 
 			-- Autocompletion
-			{'hrsh7th/nvim-cmp'},     -- Required
-			{'hrsh7th/cmp-nvim-lsp'}, -- Required
-			{'L3MON4D3/LuaSnip'},     -- Required
+			{"hrsh7th/nvim-cmp"},     -- Required
+			{"hrsh7th/cmp-nvim-lsp"}, -- Required
+			{"L3MON4D3/LuaSnip"},     -- Required
 		},
 		config = function()
-			local lsp = require('lsp-zero').preset({})
+			local lsp = require("lsp-zero").preset({})
 
 			lsp.ensure_installed({
-				'lua_ls',
-				'rust_analyzer',
-                'jedi_language_server',
+				"lua_ls",
+				"rust_analyzer",
+                "jedi_language_server",
 			})
 
             -- Set up the completion system
-			local cmp = require('cmp')
-            local cmp_action = require('lsp-zero').cmp_action()
+			local cmp = require("cmp")
+            local cmp_action = require("lsp-zero").cmp_action()
 
             cmp.setup({
                 mapping = {
-                    ['<Tab>'] = cmp_action.luasnip_supertab(),
-                    ['<S-Tab>'] = cmp_action.luasnip_shift_supertab(),
-                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+                    ["<Tab>"] = cmp_action.luasnip_supertab(),
+                    ["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
+                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
                 },
                 formatting = {
-                    fields = {'abbr', 'kind', 'menu'},
+                    fields = {"abbr", "kind", "menu"},
                 }
             })
 

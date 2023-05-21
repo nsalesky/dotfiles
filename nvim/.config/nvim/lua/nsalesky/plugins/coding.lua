@@ -13,6 +13,14 @@ return {
         end,
     },
     {
+        "kylechui/nvim-surround",
+        version = "*",
+        event = "VeryLazy",
+        config = function()
+            require("nvim-surround").setup({}) 
+        end,
+    },
+    {
        'mfussenegger/nvim-dap',
         config = function()
             vim.keymap.set('n', '<leader>db', '<cmd> DapToggleBreakpoint <CR>', { desc = "Toggle Breakpoint" })
