@@ -17,7 +17,6 @@ return {
 			{'hrsh7th/nvim-cmp'},     -- Required
 			{'hrsh7th/cmp-nvim-lsp'}, -- Required
 			{'L3MON4D3/LuaSnip'},     -- Required
-            -- {'onsails/lspkind.nvim'},
 		},
 		config = function()
 			local lsp = require('lsp-zero').preset({})
@@ -40,15 +39,10 @@ return {
                 },
                 formatting = {
                     fields = {'abbr', 'kind', 'menu'},
-                    -- format = require('lspkind').cmp_format({
-                    --     mode = 'symbol', -- show only symbol annotations
-                    --     maxwidth = 50, -- prevent the popup from showing more than provided characters
-                    --     ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead
-                    -- })
                 }
             })
 
-			lsp.on_attach(function(client, bufnr)
+			lsp.on_attach(function(_, bufnr)
 				local opts = { buffer = bufnr, remap = false }
 
 				vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
