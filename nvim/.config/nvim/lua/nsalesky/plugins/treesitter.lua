@@ -4,7 +4,7 @@ return {
 		build = ":TSUpdate",
 		opts = {
 			auto_install = true,
-			highlight = { 
+			highlight = {
 				enable = true,
 				additional_vim_regex_highlighting = false,
 			},
@@ -12,7 +12,6 @@ return {
 			ensure_installed = {
 				"bash",
 				"json",
-				-- "help",
 				"lua",
 				"luadoc",
 				"luap",
