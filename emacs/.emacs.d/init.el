@@ -115,10 +115,10 @@
   (diminish 'visual-line-mode)
   (diminish 'abbrev))
 
-(defvar ns/default-font "VictorMono Nerd Font"
+(defvar ns/default-font "JetBrainsMono Nerd Font"
   "My custom default font choice.")
 
-(defvar ns/fixed-pitch-font "VictorMono Nerd Font"
+(defvar ns/fixed-pitch-font "JetBrainsMono Nerd Font"
   "My custom fixed pitch font choice.")
 
 (defvar ns/variable-pitch-font "Iosevka Aile"
