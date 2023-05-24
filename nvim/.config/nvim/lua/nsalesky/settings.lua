@@ -27,4 +27,7 @@ vim.opt.updatetime = 50
 
 vim.opt.colorcolumn = "80"
 
+-- use system clipboard as the unnamed register for yank/paste
+vim.opt.clipboard = "unnamedplus"
+
 vim.g.mapleader = " "
