@@ -8,9 +8,10 @@ return {
 			local wk = require("which-key")
 			wk.setup({})
 			wk.register({
+                c = { "code" },
                 d = { "debugging" },
 				f = { "file" },
-				g = { "it" },
+				g = { "git" },
 				u = { "Undo Tree" },
 			}, { prefix = "<leader>" })
 		end,
