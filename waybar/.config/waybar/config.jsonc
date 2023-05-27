@@ -101,11 +101,10 @@
         "format": "{ifname}",
         "format-wifi": "<span color='#b4befe'></span>  {essid}",
         "format-ethernet": "󱘖   {ipaddr}/{cidr}",
-        // "tooltip-format": " {bandwidthUpBytes}  {bandwidthDownBytes}",
+        "tooltip-format": " {bandwidthUpBytes}  {bandwidthDownBytes}",
         "format-disconnected": "<span color='#b4befe'>󰖪</span> No Network",
         "format-alt": " {signalStrength}%",
-        "interval": 5,
-        "tooltip": false
+        "interval": 5
     },
     "battery": {
         "states": {
@@ -121,7 +120,6 @@
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
         "format-icons": ["", "", "", "", ""],
-        // "tooltip": false
     },
 
     // "cpu": {
