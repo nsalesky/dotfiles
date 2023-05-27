@@ -1,3 +1,5 @@
+vim.keymap.set("n", ";", ":")
+
 vim.keymap.set("n", "<leader>fv", vim.cmd.Ex, { desc = "Open Ex" })
 
 -- move selected lines up and down with J and K
