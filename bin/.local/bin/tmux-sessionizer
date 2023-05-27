@@ -5,7 +5,7 @@ if [[ $# -eq 1 ]]; then
 else
     # other folders that might be relevant in the future
     # ~/work ~/personal
-    selected=$(find ~/Documents/projects ~/ -mindepth 1 -maxdepth 1 -type d | fzf)
+    selected=$(find ~/development ~/ -mindepth 1 -maxdepth 1 -type d | fzf)
 fi
 
 if [[ -z $selected ]]; then
