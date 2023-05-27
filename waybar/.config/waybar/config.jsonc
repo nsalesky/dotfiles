@@ -13,7 +13,8 @@
     // Left modules
     "custom/arch": {
         "format": "  ",
-        "tooltip": false
+        "tooltip": false,
+        "on-click": "~/.local/bin/wallpaper-ctl dark" // just dark mode for now
     },
     "wlr/workspaces": {
         "disable-scroll": true,
