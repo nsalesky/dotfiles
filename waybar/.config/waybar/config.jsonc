@@ -1,218 +1,150 @@
 {
     "layer": "top", // Waybar at top layer
-    "position": "bottom", // Waybar position (top|bottom|left|right)
-    "mod": "dock",
+    "position": "top", // Waybar position (top|bottom|left|right)
+    "mode": "dock",
     "height": 40, // Waybar height (to be removed for auto height)
     "exclusive": true,
     "passthrough": false,
     "gtk-layer-shell": true,
-    // "width": 1280, // Waybar width
-    // Choose the order of the modules
-    "modules-left": ["cpu", "memory", "clock"],
-    "modules-center": ["wlr/workspaces", "hyprland/window"],
-    "modules-right": ["custom/updates", "network", "bluetooth", "wireplumber", "backlight", "idle_inhibitor", "custom/wallchange", "tray", "battery"],
+    "modules-left": ["custom/arch", "wlr/workspaces", "tray"],
+    "modules-center": ["clock"],
+    "modules-right": ["backlight", "wireplumber", "bluetooth", "network", "battery"],
 
-    // Center modules
+    // Left modules
+    "custom/arch": {
+        "format": "  ",
+        "tooltip": false
+    },
     "wlr/workspaces": {
         "disable-scroll": true,
-        "all-outputs": true,
+        // "all-outputs": true,
         "on-click": "activate",
-        
-        "format": "{name}: {icon}",
-        "format-icons": {
-            "1": "  ",
-            "2": "󰈹  ",
-            "3": "  ",
-            "4": "  ",
-            "5": "  ",
-            "urgent": "  ",
-            "focused": "  ",
-            "default": "  "
-        },
-
-        // "persistent-workspaces": {
-        //     "1": ["DP-1", "eDP-1"],
-        //     "2": ["eDP-1"],
-        //     "3": ["DP-1", "eDP-1"],
-        //     "4": ["eDP-1"],
-        //     "5": ["eDP-1"],
-        //     "6": [],
-        //     "7": [],
-        //     "8": [],
-        //     "9": [],
-        //     "10": []
-        // }
-    },
-
-    "hyprland/window": {
-        "format": "  {}",
-        "separate-outputs": true,
-        "rewrite": {
-            "(.*) — Mozilla Firefox": "$1 󰈹",
-            "(.*)Mozilla Firefox": "Firefox 󰈹",
-            "(.*)Spotify": "Spotify 󰓇",
-            "(.*)Steam": "Steam 󰓓"
-        }
-    },
-
-    // left modules
-    "cpu": {
-        "interval": 10,
-        "format": "󰍛 {usage}%",
-        "format-alt": "{icon0}{icon1}{icon2}{icon3}",
-        "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
-    },
-
-    "memory": {
-        "interval": 30,
-        "format": "󰾆 {percentage}%",
-        "format-alt": "󰾅 {used}GB",
-        "max-length": 10,
-        "tooltip": true,
-        "tooltip-format": " {used:0.1f}GB/{total:0.1f}GB"
-    },
-
-    "clock": {
-        "format": "{: %I:%M %p 󰃭 %a %d}",
-        "format-alt": "{:󰥔 %H:%M  %b %Y}",
-        "tooltip-format": "<tt><big>{calendar}</big></tt>"
-    },
-
-    // right modules
-    "idle_inhibitor": {
         "format": "{icon}",
+        // "format-icons": {
+        //     "1": "  ",
+        //     "2": "󰈹  ",
+        //     "3": "  ",
+        //     "4": "  ",
+        //     "5": "  ",
+        //     "urgent": "  ",
+        //     "focused": "  ",
+        //     "default": "  "
+        // },
         "format-icons": {
-            "activated": "",
-            "deactivated": ""
+            "1": "1 ",
+            "2": "2 󰈹",
+            "3": "3 ",
+            "4": "4 ",
+            "5": "5 ",
+            "6": "6 ",
+            "7": "7 ",
+            "8": "8 ",
+            "9": "9 ",
+            // "active": "",
+        },
+        "persistent_workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": [],
+            "6": [],
+            "7": [],
+            "8": [],
+            "9": []
         }
     },
-
-    "custom/updates": {
-        "format": "󰮯 {}",
-        "exec": "~/.config/waybar/scripts/update-sys.sh",
-        "on-click": "~/.config/waybar/scripts/update-sys.sh update",
-        "interval": 86400, // once every day
-        "tooltip": true
-    },
-    
-    "network": {
-        // "interface": "wlp2*", // (Optional) To force the use of this interface
-        "format-wifi": "󰤨 {essid}",
-        "format-ethernet": "󱘖 Wired",
-        "tooltip-format": "󱘖 {ipaddr}  {bandwidthUpBytes}  {bandwidthDownBytes}",
-        "format-linked": "󱘖 {ifname} (No IP)",
-        "format-disconnected": " Disconnected",
-        "format-alt": "󰤨 {signalStrength}%",
-        "interval": 5
-    },
-
-    "bluetooth": {
-	    "format": "",
-	    "format-disabled": "", // an empty format will hide the module
-	    "format-connected": " {num_connections}",
-	    "tooltip-format-connected": "{device_enumerate}",
-	    "tooltip-format-enumerate-connected": " {device_alias}"
-    },
-
-    "wireplumber": {
-        "format": "{volume}% {icon}",
-        "format-muted": "",
-        "on-click": "helvum",
-        "format-icons": ["", "", ""]
-    },
-
-    "backlight": {
-        "device": "intel_backlight",
-        "format": "{icon} {percent}%",
-        "format-icons": ["", ""]
-    },
-
-    "custom/wallchange": {
-        "format": "{}",
-        "exec": "~/.config/swww/wallpaper-control.sh -t",
-        "on-click": "~/.config/swww/wallpaper-control.sh -n",
-        "interval" : 86400, // once every day
-        "tooltip": true
-    },
-
     "tray": {
         "icon-size": 15,
         "spacing": 5
     },
 
+    // Center modules
+    "clock": {
+        "format": "{: %I:%M %p   󰃭 %a %d}"
+    },
+
+    // "hyprland/window": {
+    //     "format": "  {}",
+    //     "separate-outputs": true,
+    //     "rewrite": {
+    //         "(.*) — Mozilla Firefox": "$1 󰈹",
+    //         "(.*)Mozilla Firefox": "Firefox 󰈹",
+    //         "(.*)Spotify": "Spotify 󰓇",
+    //         "(.*)Steam": "Steam 󰓓"
+    //     }
+    // },
+
+    // Right modules
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "<span color='#b4befe'>{icon}</span> {percent}%",
+        "format-icons": ["", "", "", "", "", "", "", "", ""]
+    },
+    "wireplumber": {
+        "format": "<span color='#b4befe'>{icon}</span> {volume}%",
+        "format-muted": "",
+        "tooltip": false,
+        "on-click": "helvum",
+        "format-icons": ["", "", ""]
+    },
+    "bluetooth": {
+	    "format": "<span color='#b4befe'></span> {status}",
+	    "format-disabled": "", // an empty format will hide the module
+	    "format-connected": "<span color='#b4befe'></span> {num_connections}",
+	    "tooltip-format-connected": "{device_enumerate}",
+	    "tooltip-format-enumerate-connected": "{device_alias}   {device_address}"
+    },
+    "network": {
+        // "interface": "wlp2*", // (Optional) To force the use of this interface
+        "format": "{ifname}",
+        "format-wifi": "<span color='#b4befe'></span>  {essid}",
+        "format-ethernet": "󱘖   {ipaddr}/{cidr}",
+        // "tooltip-format": " {bandwidthUpBytes}  {bandwidthDownBytes}",
+        "format-disconnected": "<span color='#b4befe'>󰖪</span> No Network",
+        "format-alt": " {signalStrength}%",
+        "interval": 5,
+        "tooltip": false
+    },
     "battery": {
         "states": {
             // "good": 95,
             "warning": 30,
             "critical": 15
         },
-        "format": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{time} {icon}",
+        "format": "<span color='#b4befe'>{icon}</span>  {capacity}%",
+        // "format": "{icon}  {capacity}%",
+        "format-charging": "<span color='#b4befe'></span>  {capacity}%",
+        // "format-plugged": " {capacity}%",
+        "format-alt": "{icon} {time}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["", "", "", "", ""]
+        "format-icons": ["", "", "", "", ""],
+        // "tooltip": false
     },
-}
 
-    //"mpd": {
-    //    "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
-    //    "format-disconnected": "Disconnected ",
-    //    "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
-    //    "unknown-tag": "N/A",
-    //    "interval": 2,
-    //    "consume-icons": {
-    //        "on": " "
-    //    },
-    //    "random-icons": {
-    //        "off": "<span color=\"#f53c3c\"></span> ",
-    //        "on": " "
-    //    },
-    //    "repeat-icons": {
-    //        "on": " "
-    //    },
-    //    "single-icons": {
-    //        "on": "1 "
-    //    },
-    //    "state-icons": {
-    //        "paused": "",
-    //        "playing": ""
-    //    },
-    //    "tooltip-format": "MPD (connected)",
-    //    "tooltip-format-disconnected": "MPD (disconnected)"
-    //},
-    # "clock": {
-    #     // "timezone": "America/New_York",
-    #     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-    #     "format-alt": "{:%Y-%m-%d}"
-    # },
-    # //"backlight": {
-    # //    // "device": "acpi_video1",
-    # //    "format": "{percent}% {icon}",
-    # //    "format-icons": ["", "", "", "", "", "", "", "", ""]
-    # //},
-    # "network": {
-    #     // "interface": "wlp2*", // (Optional) To force the use of this interface
-    #     "format-wifi": "{essid} ({signalStrength}%) ",
-    #     "format-ethernet": "{ipaddr}/{cidr} ",
-    #     "tooltip-format": "{ifname} via {gwaddr} ",
-    #     "format-linked": "{ifname} (No IP) ",
-    #     "format-disconnected": "Disconnected ⚠",
-    #     "format-alt": "{ifname}: {ipaddr}/{cidr}"
-    # },
-    
-    # "custom/media": {
-    #     "format": "{icon} {}",
-    #     "return-type": "json",
-    #     "max-length": 40,
-    #     "format-icons": {
-    #         "spotify": "",
-    #         "default": "🎜"
-    #     },
-    #     "escape": true,
-    #     "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-    #     // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
-    # }
+    // "cpu": {
+    //     "interval": 10,
+    //     "format": "󰍛 {usage}%",
+    //     "format-alt": "{icon0}{icon1}{icon2}{icon3}",
+    //     "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+    // },
+    //
+    // "memory": {
+    //     "interval": 30,
+    //     "format": "󰾆 {percentage}%",
+    //     "format-alt": "󰾅 {used}GB",
+    //     "max-length": 10,
+    //     "tooltip": true,
+    //     "tooltip-format": " {used:0.1f}GB/{total:0.1f}GB"
+    // },
+
+    // "custom/wallchange": {
+    //     "format": "{}",
+    //     "exec": "~/.config/swww/wallpaper-control.sh -t",
+    //     "on-click": "~/.config/swww/wallpaper-control.sh -n",
+    //     "interval" : 86400, // once every day
+    //     "tooltip": true
+    // },
 }
 
