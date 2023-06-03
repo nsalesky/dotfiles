@@ -54,7 +54,8 @@ local function get_git_compare()
     -- No file, so no git
     if get_current_buftype() == "nofile" then return "" end
 
-    return " 󱦳" .. behind .. " 󱦲" .. ahead
+    return "󰁅 " .. behind .. " 󰁝 " .. ahead
+
 end
 
 
@@ -131,7 +132,7 @@ return {
                 padding = 0,
 
                 file_status = true,
-                path = 1,
+                path = 4,
                 shorting_target = 40,
                 symbols = {
                     modified = "[+]",      -- Text to show when the file is modified.
