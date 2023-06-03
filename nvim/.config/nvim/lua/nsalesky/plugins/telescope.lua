@@ -4,10 +4,15 @@ return {
 	config = function()
 		local builtin = require("telescope.builtin")
 
-		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find File" })
-        vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find Buffer" }) 
+		vim.keymap.set("n", "<leader>ff", function()
+            builtin.find_files({
+                hidden = true,
+            })
+        end, { desc = "Find File" })
+
+        vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find Buffer" })
 		vim.keymap.set("n", "<C-p>", builtin.git_files, { desc = "Find Git File" })
-		vim.keymap.set("n", "<leader>fs", builtin.grep_string, { desc = "Search For Text" })
+		vim.keymap.set("n", "<leader>fs", builtin.live_grep, { desc = "Search For Text" })
 
         -- Set up some custom theming
         local colors = require("catppuccin.palettes").get_palette()
