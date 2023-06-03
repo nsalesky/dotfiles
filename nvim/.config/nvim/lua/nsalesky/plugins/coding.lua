@@ -1,56 +1,40 @@
 return {
     {
         "numtostr/comment.nvim",
-        config = function()
-            require("Comment").setup({
-                toggler = {
-                    line = "<leader>/",
-                },
-                opleader = {
-                    line = "<leader>/",
-                },
-            })
-        end,
+        opts = {
+            toggler = {
+                line = "<leader>/",
+            },
+            opleader = {
+                line = "<leader>/",
+            },
+        }
     },
     {
         "kylechui/nvim-surround",
         version = "*",
         event = "VeryLazy",
-        config = function()
-            require("nvim-surround").setup({})
-        end,
+        opts = {},
     },
     {
-       "mfussenegger/nvim-dap",
-        config = function()
-            vim.keymap.set('n', '<leader>db', ':DapToggleBreakpoint <CR>', { desc = "Toggle Breakpoint" })
-            vim.keymap.set('n', '<leader>dx', ':DapTerminate <CR>', { desc = "Terminate Debugger" })
-            vim.keymap.set('n', '<leader>do', ':DapStepOver <CR>', { desc = "Step Over" })
-            vim.keymap.set('n', '<leader>di', ':DapStepInto <CR>', { desc = "Step Into" })
-            vim.keymap.set('n', '<leader>dc', ':DapContinue <CR>', { desc = "Continue Execution" })
-        end,
+        "folke/todo-comments.nvim",
+        requires = "nvim-lua/plenary.nvim",
     },
     {
-        "rcarriga/nvim-dap-ui",
-        dependencies = { "mfussenegger/nvim-dap" },
-        config = function()
-            local dapui = require("dapui")
-            local dap = require("dap")
-
-            dapui.setup({})
-
-            dap.listeners.after.event_initialized["dapui_config"] = function()
-                dapui.open()
-            end
-
-            dap.listeners.before.event_terminated["dapui_config"] = function()
-                dapui.close()
-            end
-
-            dap.listeners.before.event_exited["dapui_config"] = function()
-                dapui.close()
-            end
-
-        end
+        "windwp/nvim-autopairs",
+        opts = {
+            map_cr = true
+        }
+    },
+    {
+        "folke/trouble.nvim",
+        opts = {},
+        keys = {
+            { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Trouble Toggle" },
+            { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Trouble Workspace" },
+            { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Trouble Document" },
+            { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Trouble Quickfix" },
+            { "<leader>gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" }
+        }
     }
 }

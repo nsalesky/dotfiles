@@ -33,16 +33,4 @@ return {
             vim.keymap.set("n", "-", oil.open, { desc = "Open parent directory" } )
         end,
     },
-    {
-        "folke/todo-comments.nvim",
-        requires = "nvim-lua/plenary.nvim",
-    },
-    {
-        "windwp/nvim-autopairs",
-        config = function()
-            require("nvim-autopairs").setup({
-                map_cr = true,
-            })
-        end,
-    },
 }

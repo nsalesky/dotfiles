@@ -9,6 +9,7 @@ return {
 		vim.keymap.set("n", "<C-p>", builtin.git_files, { desc = "Find Git File" })
 		vim.keymap.set("n", "<leader>fs", builtin.grep_string, { desc = "Search For Text" })
 
+        -- Set up some custom theming
         local colors = require("catppuccin.palettes").get_palette()
         local TelescopeColor = {
             TelescopeMatching = { fg = colors.flamingo },
@@ -29,5 +30,23 @@ return {
         for hl, col in pairs(TelescopeColor) do
             vim.api.nvim_set_hl(0, hl, col)
         end
+
+        -- Open Telescope results in trouble
+        local telescope = require("telescope")
+        -- local actions = require("telescope.actions")
+        local trouble = require("trouble.providers.telescope")
+
+        telescope.setup({
+            defaults = {
+                mappings = {
+                    i = {
+                        ["<c-t>"] = trouble.open_with_trouble,
+                    },
+                    n = {
+                        ["<c-t>"] = trouble.open_with_trouble,
+                    }
+                },
+            },
+        })
 	end,
 }
