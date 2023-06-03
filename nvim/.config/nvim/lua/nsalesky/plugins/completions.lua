@@ -2,8 +2,11 @@
 return {
     {
         "hrsh7th/nvim-cmp",
-        config = function()
-            require("nsalesky.configs.cmp")
+        opts = function()
+            return require("nsalesky.configs.cmp")
+        end,
+        config = function(_, opts)
+            require("cmp").setup(opts)
         end,
     },
     "hrsh7th/cmp-nvim-lsp",
