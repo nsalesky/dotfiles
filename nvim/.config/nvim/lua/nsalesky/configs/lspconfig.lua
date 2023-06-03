@@ -15,8 +15,8 @@ return {
         vim.keymap.set("n", "<leader>crr", function() vim.lsp.buf.references() end, opts)
         vim.keymap.set("n", "<leader>crn", function() vim.lsp.buf.rename() end,
             vim.tbl_deep_extend("force", opts, { desc = "Rename variable at point" }))
-        vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help() end,
-            vim.tbl_deep_extend("force", opts, { desc = "LSP Signature Help" }))
+        -- vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help() end,
+            -- vim.tbl_deep_extend("force", opts, { desc = "LSP Signature Help" }))
     end,
     capabilities = require("cmp_nvim_lsp").default_capabilities(),
 }
