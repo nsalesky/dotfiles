@@ -3,12 +3,12 @@
 local c = require("catppuccin.palettes").get_palette()
 
 -- Show Git diff status
-local function diff_source()
-    local gitsigns = vim.b.gitsigns_status_dict
-    if gitsigns then
-        return { added = gitsigns.added, modified = gitsigns.changed, removed = gitsigns.removed } 
-    end
-end
+-- local function diff_source()
+--     local gitsigns = vim.b.gitsigns_status_dict
+--     if gitsigns then
+--         return { added = gitsigns.added, modified = gitsigns.changed, removed = gitsigns.removed }
+--     end
+-- end
 
 -- Get the current buffer's filetype
 local function get_current_filetype()
@@ -53,11 +53,8 @@ local function get_git_compare()
 
     -- No file, so no git
     if get_current_buftype() == "nofile" then return "" end
-    local string = ""
-    if behind ~= "0" then string = string .. "󱦳" .. behind end
-    if ahead ~= "0" then string = string .. "󱦲" .. ahead end
 
-    return string
+    return " 󱦳" .. behind .. " 󱦲" .. ahead
 end
 
 
@@ -76,7 +73,7 @@ local telescope = {
             {
                 telescope_text,
                 icon = { "  ", },
-                color = { bg = c.surface1 },
+                color = { fg = c.text, bg = c.surface1 },
             }
         },
         lualine_c = {},
@@ -123,9 +120,9 @@ return {
         lualine_b = {
             {
                 "filetype",
-                colored = true,
+                colored = false,
                 icon_only = true,
-                color = { fg = c.text, bg = c.surface1 },
+                color = { fg = c.mauve, bg = c.surface1 },
             },
             {
                 "filename",
@@ -147,12 +144,13 @@ return {
         lualine_c = {
             {
                 "branch",
-                icon = { '   ', },
+                icon = { "", color = { fg = c.mauve } },
                 separator = " ",
                 padding = 0,
             },
             {
                 get_git_compare,
+                icon = { "", color = { fg = c.mauve } },
                 separator = " ",
                 padding = 0,
             },
@@ -161,18 +159,18 @@ return {
                 padding = 0,
                 icon = { " ", },
                 symbols = { added = " ", modified = " ", removed = " " },
-                -- diff_color = {
-                --     added = { fg = c.gray4 },
-                --     modified = { fg = c.gray4 },
-                --     removed = { fg = c.gray4 },
-                -- }
+                diff_color = {
+                    added = { fg = c.surface1 },
+                    modified = { fg = c.surface1 },
+                    removed = { fg = c.surface1 },
+                }
             },
         },
         lualine_x = {
             {
                 "diagnostics",
                 sources = { "nvim_diagnostic" },
-                symbols = { error = " ", warn = " ", info = " ", hint = "󱤅 ", other = "󰠠 " },
+                -- symbols = { error = " ", warn = " ", info = " ", hint = "󱤅 ", other = "󰠠 " },
                 -- diagnostics_color = {
                 --     error = { fg = c.error },
                 --     warn = { fg = c.warn },
@@ -189,7 +187,7 @@ return {
                 padding = 2,
                 separator = " ",
                 color = { fg = c.text, bg = c.surface1 },
-                icon = { " ", },
+                icon = { " ", color = { fg = c.mauve }, },
             },
 
         },
