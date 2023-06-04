@@ -12,18 +12,29 @@ def set_wallpaper(mode: str):
     wallpaper_dir = f"{WALLPAPER_BASE_DIR}/{mode}"
     wallpaper_name = random.choice(os.listdir(wallpaper_dir))
 
-    subprocess.run(["swww", "img", f"{wallpaper_dir}/{wallpaper_name}",
-                    "--transition-bezier", ".43,1.19,1,.4",
-                    "--transition-type", "grow",
-                    "--transition-duration", "1",
-                    "--transition-fps", "144",
-                    "--transition-pos", "bottom-right"])
+    subprocess.run(
+        [
+            "swww",
+            "img",
+            f"{wallpaper_dir}/{wallpaper_name}",
+            "--transition-bezier",
+            ".43,1.19,1,.4",
+            "--transition-type",
+            "grow",
+            "--transition-duration",
+            "1",
+            "--transition-fps",
+            "144",
+            "--transition-pos",
+            "bottom-right",
+        ]
+    )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-                prog="wallpaper-control",
-                description="Control wallpapers using SWWW")
+        prog="wallpaper-control", description="Control wallpapers using SWWW"
+    )
     parser.add_argument("mode", choices=["light", "dark"])
     args = parser.parse_args()
 
@@ -32,4 +43,3 @@ if __name__ == "__main__":
 
     if args.mode is not None:
         set_wallpaper(args.mode)
-

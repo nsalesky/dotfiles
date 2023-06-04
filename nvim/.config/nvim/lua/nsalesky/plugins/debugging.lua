@@ -1,13 +1,12 @@
 return {
     {
-       "mfussenegger/nvim-dap",
-        config = function()
-            vim.keymap.set('n', '<leader>db', ':DapToggleBreakpoint <CR>', { desc = "Toggle Breakpoint" })
-            vim.keymap.set('n', '<leader>dx', ':DapTerminate <CR>', { desc = "Terminate Debugger" })
-            vim.keymap.set('n', '<leader>do', ':DapStepOver <CR>', { desc = "Step Over" })
-            vim.keymap.set('n', '<leader>di', ':DapStepInto <CR>', { desc = "Step Into" })
-            vim.keymap.set('n', '<leader>dc', ':DapContinue <CR>', { desc = "Continue Execution" })
-        end,
+        "mfussenegger/nvim-dap",
+        keys = {
+            { "<leader>db", ":DapToggleBreakpoint<CR>", desc = "Toggle breakpoint" },
+            { "<leader>do", ":DapStepOver <CR>", desc = "Step over" },
+            { "<leader>di", ":DapStepInto <CR>", desc = "Step Into" },
+            { "<leader>dc", ":DapContinue <CR>", desc = "Continue Execution" },
+        },
     },
     {
         "rcarriga/nvim-dap-ui",
@@ -29,8 +28,6 @@ return {
             dap.listeners.before.event_exited["dapui_config"] = function()
                 dapui.close()
             end
-
-        end
+        end,
     },
-
 }

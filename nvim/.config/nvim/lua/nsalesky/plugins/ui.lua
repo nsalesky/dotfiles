@@ -37,7 +37,7 @@ return {
             vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "Focus nvimtree" })
         end,
         opts = function()
-            return require("nsalesky.configs.nvim_tree")
+            return require("nsalesky.configs.nvim-tree")
         end,
         cmd = { "NvimTreeToggle", "NvimTreeFocus" },
     }
