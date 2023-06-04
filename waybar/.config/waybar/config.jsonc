@@ -80,7 +80,8 @@
     "backlight": {
         "device": "intel_backlight",
         "format": "<span color='#b4befe'>{icon}</span> {percent}%",
-        "format-icons": ["", "", "", "", "", "", "", "", ""]
+        "format-icons": ["", "", "", "", "", "", "", "", ""],
+        "tooltip": false
     },
     "wireplumber": {
         "format": "<span color='#b4befe'>{icon}</span> {volume}%",
