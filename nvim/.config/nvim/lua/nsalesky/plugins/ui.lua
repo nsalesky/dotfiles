@@ -30,6 +30,17 @@ return {
             vim.notify = require("notify")
         end,
     },
+    {
+        "nvim-tree/nvim-tree.lua",
+        init = function()
+            vim.keymap.set("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle nvimtree" })
+            vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "Focus nvimtree" })
+        end,
+        opts = function()
+            return require("nsalesky.configs.nvim_tree")
+        end,
+        cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+    }
     -- {
     --     "romgrk/barbar.nvim",
     --     dependencies = {
