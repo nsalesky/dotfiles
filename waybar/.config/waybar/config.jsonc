@@ -14,7 +14,7 @@
     "custom/arch": {
         "format": "  ",
         "tooltip": false,
-        "on-click": "~/.local/bin/wallpaper-ctl dark" // just dark mode for now
+        "on-click": "~/.local/bin/wallpaper-ctl light" // just light wallpaper for now
     },
     "wlr/workspaces": {
         "disable-scroll": true,
