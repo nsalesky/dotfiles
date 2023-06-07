@@ -23,7 +23,9 @@ end
 local function get_native_lsp()
     local buf_ft = get_current_filetype()
     local clients = vim.lsp.get_active_clients()
-    if next(clients) == nil then return "" end
+    if next(clients) == nil then
+        return ""
+    end
     for _, client in ipairs(clients) do
         local filetypes = client.config.filetypes
         if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
@@ -40,26 +42,32 @@ local function get_git_compare()
 
     -- Run job to fetch git info
     local result = Job:new({
-        command = "git",
-        cwd = curr_dir,
-        args = { "rev-list", "--left-right", "--count", "HEAD...@{upstream}" },
-    })
-    :sync(100)[1]
+            command = "git",
+            cwd = curr_dir,
+            args = { "rev-list", "--left-right", "--count", "HEAD...@{upstream}" },
+        })
+        :sync(100)[1]
 
     -- Process the result
-    if type(result) ~= "string" then return "" end
+    if type(result) ~= "string" then
+        return ""
+    end
     local ok, ahead, behind = pcall(string.match, result, "(%d+)%s*(%d+)")
-    if not ok then return "" end
+    if not ok then
+        return ""
+    end
 
     -- No file, so no git
-    if get_current_buftype() == "nofile" then return "" end
+    if get_current_buftype() == "nofile" then
+        return ""
+    end
 
     return "󰁅 " .. behind .. " 󰁝 " .. ahead
-
 end
 
-
-local function telescope_text() return "Telescope" end
+local function telescope_text()
+    return "Telescope"
+end
 
 local telescope = {
     sections = {
@@ -73,9 +81,9 @@ local telescope = {
         lualine_b = {
             {
                 telescope_text,
-                icon = { "  ", },
+                icon = { "  " },
                 color = { fg = c.text, bg = c.surface1 },
-            }
+            },
         },
         lualine_c = {},
         lualine_x = {},
@@ -83,13 +91,12 @@ local telescope = {
         lualine_z = {
             {
                 "location",
-                icon = { "", align = "left", },
-            }
+                icon = { "", align = "left" },
+            },
         },
     },
     filetypes = { "TelescopePrompt" },
 }
-
 
 return {
     options = {
@@ -108,7 +115,7 @@ return {
             statusline = 1000,
             tabline = 1000,
             winbar = 1000,
-        }
+        },
     },
     sections = {
         lualine_a = {
@@ -139,7 +146,7 @@ return {
                     readonly = "[-]",      -- Text to show when the file is non-modifiable or readonly.
                     unnamed = "[No Name]", -- Text to show for unnamed buffers.
                     newfile = "[New]",     -- Text to show for newly created file before first write
-                }
+                },
             },
         },
         lualine_c = {
@@ -157,14 +164,15 @@ return {
             },
             {
                 "diff",
+                -- source = diff_source,
                 padding = 0,
-                icon = { " ", },
+                icon = { " " },
                 symbols = { added = " ", modified = " ", removed = " " },
                 diff_color = {
                     added = { fg = c.surface1 },
                     modified = { fg = c.surface1 },
                     removed = { fg = c.surface1 },
-                }
+                },
             },
         },
         lualine_x = {
@@ -188,20 +196,19 @@ return {
                 padding = 2,
                 separator = " ",
                 color = { fg = c.text, bg = c.surface1 },
-                icon = { " ", color = { fg = c.mauve }, },
+                icon = { " ", color = { fg = c.mauve } },
             },
-
         },
         lualine_z = {
             {
                 "location",
-                icon = { "", align = "left", },
+                icon = { "", align = "left" },
             },
             {
                 "progress",
-                icon = { "", align = "left", },
+                icon = { "", align = "left" },
                 separator = { right = "", left = "" },
-            }
+            },
         },
     },
     tabline = {},

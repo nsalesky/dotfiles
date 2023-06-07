@@ -1,14 +1,23 @@
 return {
-	{
-		"kdheepak/lazygit.nvim",
-		config = function()
-			vim.keymap.set("n", "<leader>gs", ":LazyGit <CR>")
-		end,
-	},
+    {
+        "kdheepak/lazygit.nvim",
+        keys = {
+            {
+                "<leader>gs",
+                ":LazyGit<CR>",
+                desc = "Test method",
+            },
+        },
+    },
     {
         "lewis6991/gitsigns.nvim",
-        config = function()
-            require("gitsigns").setup({})
-        end,
+        opts = {},
+        keys = {
+            {
+                "<leader>gb",
+                ":Gitsigns toggle_current_line_blame<CR>",
+                desc = "Toggle line blame",
+            },
+        },
     },
 }
