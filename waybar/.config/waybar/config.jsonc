@@ -18,26 +18,15 @@
     },
     "wlr/workspaces": {
         "disable-scroll": true,
-        // "all-outputs": true,
         "on-click": "activate",
         "format": "{icon}",
-        // "format-icons": {
-        //     "1": "  ",
-        //     "2": "󰈹  ",
-        //     "3": "  ",
-        //     "4": "  ",
-        //     "5": "  ",
-        //     "urgent": "  ",
-        //     "focused": "  ",
-        //     "default": "  "
-        // },
         "format-icons": {
-            "1": "1 ",
-            "2": "2 󰈹",
-            "3": "3 ",
-            "4": "4 ",
-            "5": "5 ",
-            "6": "6 ",
+            "1": "1 ", // main dev workspace
+            "2": "2 󰈹", // browser
+            "3": "3 ", // secondary dev / terminal
+            "4": "4 󰠮", // notes
+            "5": "5 ", // chat (i.e. discord, signal)
+            "6": "6 ", // music
             "7": "7 ",
             "8": "8 ",
             "9": "9 "
