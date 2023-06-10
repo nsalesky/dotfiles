@@ -16,14 +16,34 @@
 ;;   lctl  lmet lalt           spc            ralt rctl left down right
 ;; )
 
-;; For now, CapsLock is the only key I care about modifying
+;; For now, I'm only modifying the keys that I care about
 (defsrc 
-    caps
+    caps 
+    ret
+    spc
+    lsft
+    rsft
 )
 
 ;; CAPS acts as ESC when tapped, LCTRL when held
 (defalias ctrl-esc (tap-next esc lctrl))
 
+;; RET acts as RET when tapped, LCTRL when held
+(defalias ret-esc (tap-next ret lctrl))
+
+;; SPC acts as SPC when tapped, LMET when held
+(defalias spc-met (tap-next spc lmet))
+
+;; LSHIFT/RSHIFT is sticky for 500 ms
+;; I feel like this eases some of the burden on pressing certain key
+;; combos on the laptop keyboard
+(defalias lsft-sticky (sticky-key 500 lsft))
+(defalias rsft-sticky (sticky-key 500 rsft))
+
 (deflayer qwerty
-    @ctrl-esc
+    @ctrl-esc 
+    @ret-esc
+    @spc-met
+    @lsft-sticky
+    @rsft-sticky
 )
