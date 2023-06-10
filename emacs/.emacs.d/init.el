@@ -50,6 +50,70 @@
 (setq user-full-name "Nick Salesky"
       user-mail-address "nicksalesky@gmail.com")
 
+(setq disabled-command-function nil)
+
+(use-package general
+  :ensure t
+  :config
+  (general-create-definer ns/leader-def
+    :prefix "SPC"))
+
+(use-package embrace
+  :straight (:type git :host github :repo "cute-jumper/embrace.el")
+  ;; :bind (("C-M-s-#" . embrace-commander))
+  :config
+  (defun embrace-markdown-mode-hook ()
+    (dolist (lst '((?* "*" . "*")
+                   (?\ "\\" . "\\")
+                   (?$ "$" . "$")
+                   (?/ "/" . "/")))
+      (embrace-add-pair (car lst) (cadr lst) (cddr lst))))
+  (add-hook 'markdown-mode-hook 'embrace-markdown-mode-hook)
+  (add-hook 'org-mode-hook 'embrace-org-mode-hook))
+
+(electric-pair-mode 1)
+(setq electric-pair-inhibit-predicate
+      (lambda (char)
+        (member major-mode '(org-mode))))
+
+(global-unset-key (kbd "ESC ESC"))
+
+(delete-selection-mode 1)
+
+;; Set the default tab settings
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 4)
+(setq-default python-indent-offset 4)
+
+;; Make the backspace properly erase the whole tab instead of removing
+;; 1 space at a time
+(setq backward-delete-char-untabify-method 'hungry)
+
+;; Keep track of recently-opened files
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
+(global-set-key (kbd "C-x C-r") 'consult-recent-file)
+
+(use-package ace-window
+  :bind ("M-o" . ace-window))
+
+(use-package hydra)
+
+(use-package dumb-jump
+  :config
+  (defhydra dumb-jump-hydra (:color blue :columns 3)
+    "Dumb Jump"
+    ("j" dumb-jump-go "Go")
+    ("o" dumb-jump-go-other-window "Other window")
+    ("e" dumb-jump-go-prefer-external "Go external")
+    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
+    ("i" dumb-jump-go-prompt "Prompt")
+    ("l" dumb-jump-quick-look "Quick look")
+    ("b" dumb-jump-back "Back"))
+  (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
+
 (use-package saveplace
   :unless noninteractive
   :config
@@ -456,64 +520,6 @@
   ;;   ;; Show `global-mode-string' in the tab bar.
   ;;   (setf tab-bar-format (append tab-bar-format '(tab-bar-format-align-right tab-bar-format-global)))))
 
-(setq disabled-command-function nil)
-
-(use-package embrace
-  :straight (:type git :host github :repo "cute-jumper/embrace.el")
-  ;; :bind (("C-M-s-#" . embrace-commander))
-  :config
-  (defun embrace-markdown-mode-hook ()
-    (dolist (lst '((?* "*" . "*")
-                   (?\ "\\" . "\\")
-                   (?$ "$" . "$")
-                   (?/ "/" . "/")))
-      (embrace-add-pair (car lst) (cadr lst) (cddr lst))))
-  (add-hook 'markdown-mode-hook 'embrace-markdown-mode-hook)
-  (add-hook 'org-mode-hook 'embrace-org-mode-hook))
-
-(electric-pair-mode 1)
-(setq electric-pair-inhibit-predicate
-      (lambda (char)
-        (member major-mode '(org-mode))))
-
-(global-unset-key (kbd "ESC ESC"))
-
-(delete-selection-mode 1)
-
-;; Set the default tab settings
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-(setq-default c-basic-offset 4)
-(setq-default python-indent-offset 4)
-
-;; Make the backspace properly erase the whole tab instead of removing
-;; 1 space at a time
-(setq backward-delete-char-untabify-method 'hungry)
-
-;; Keep track of recently-opened files
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
-(global-set-key (kbd "C-x C-r") 'consult-recent-file)
-
-(use-package ace-window
-  :bind ("M-o" . ace-window))
-
-(use-package hydra)
-
-(use-package dumb-jump
-  :config
-  (defhydra dumb-jump-hydra (:color blue :columns 3)
-    "Dumb Jump"
-    ("j" dumb-jump-go "Go")
-    ("o" dumb-jump-go-other-window "Other window")
-    ("e" dumb-jump-go-prefer-external "Go external")
-    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
-    ("i" dumb-jump-go-prompt "Prompt")
-    ("l" dumb-jump-quick-look "Quick look")
-    ("b" dumb-jump-back "Back"))
-  (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
-
 (use-package magit)
 
 ;; (use-package forge
@@ -894,76 +900,25 @@ are equal return nil."
 ;;     (lsp-ui-doc-position 'bottom)
 ;;     (lsp-ui-doc-enable nil))
 
-;; (require 'treesit)
-;; (defun ns/tree-sitter-compile-grammar (destination &optional path)
-;;   "Compile grammar at PATH, and place the resulting shared library in DESTINATION."
-;;   (interactive "fWhere should we put the shared library? \nfWhat tree-sitter grammar are we compiling? \n")
-;;   (make-directory destination 'parents)
+(setq treesit-language-source-alist
+   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+     (cmake "https://github.com/uyha/tree-sitter-cmake")
+     (css "https://github.com/tree-sitter/tree-sitter-css")
+     (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (html "https://github.com/tree-sitter/tree-sitter-html")
+     (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+     (json "https://github.com/tree-sitter/tree-sitter-json")
+     (make "https://github.com/alemuller/tree-sitter-make")
+     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+     (python "https://github.com/tree-sitter/tree-sitter-python")
+     (rust "https://github.com/tree-sitter/tree-sitter-rust")
+     (toml "https://github.com/tree-sitter/tree-sitter-toml")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
-;;   (let* ((default-directory
-;;           (expand-file-name "src/" (or path default-directory)))
-;;          (parser-name
-;;           (thread-last (expand-file-name "grammar.json" default-directory)
-;;                        (json-read-file)
-;;                        (alist-get 'name)))
-;;          (emacs-module-url
-;;           "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/emacs-module.h")
-;;          (tree-sitter-lang-in-url
-;;           "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/tree-sitter-lang.in")
-;;          (needs-cpp-compiler nil))
-;;     (message "Compiling grammar at %s" path)
-
-;;     (url-copy-file emacs-module-url "emacs-module.h" :ok-if-already-exists)
-;;     (url-copy-file tree-sitter-lang-in-url "tree-sitter-lang.in" :ok-if-already-exists)
-
-;;     (with-temp-buffer
-;;       (unless
-;;           (zerop
-;;            (apply #'call-process
-;;                   (if (file-exists-p "scanner.cc") "c++" "cc") nil t nil
-;;                   "parser.c" "-I." "--shared" "-o"
-;;                   (expand-file-name
-;;                    (format "libtree-sitter-%s%s" parser-name module-file-suffix)
-;;                    destination)
-;;                   (cond ((file-exists-p "scanner.c") '("scanner.c"))
-;;                         ((file-exists-p "scanner.cc") '("scanner.cc")))))
-;;         (user-error
-;;          "Unable to compile grammar, please file a bug report\n%s"
-;;          (buffer-string))))
-;;     (message "Completed compilation")))
-
-;; (use-package tree-sitter-rust
-;;   :straight (:type git :host github :repo "tree-sitter/tree-sitter-rust"
-;;              :post-build
-;;              (ns/tree-sitter-compile-grammar
-;;               (expand-file-name "ts-grammars" user-emacs-directory))))
-
-;; (require 'treesit)
-;; (setq treesit-extra-load-path (list (expand-file-name "ts-grammars" user-emacs-directory)))
-
-;; (defun ns/compile-tree-sitter-grammar
-;;     (language destination)
-;;   (make-directory destination 'parents)
-;;   (let ((shared-lib-name (format "libtree-sitter-%s.so" language)))
-;;     (shell-command (concat "./build.sh" language))))
-;;     ;; (f-move (concat "./dist/" shared-lib-name)
-;;     ;;         (expand-file-name shared-lib-name destination))))
-
-;; (defun ns/compile-tree-sitter-grammars
-;;     (destination)
-;;   (make-directory destination 'parents)
-  
-;;   ;; (async-start
-;;    ;; (lambda ()
-;;      (shell-command "./batch.sh")
-;;      (f-move "./dist" destination))
-
-;; (ns/compile-tree-sitter-grammars (expand-file-name "ts-grammars" user-emacs-directory))
-
-;; (use-package tree-sitter-module
-;;   :straight (:type git :host github :repo "casouri/tree-sitter-module"
-;;                    :post-build (ns/compile-tree-sitter-grammars
-;;                                 (expand-file-name "ts-grammars" user-emacs-directory))))
+(customize-set-variable 'treesit-font-lock-level 4)
 
 ;; (use-package company
 ;;     :hook (prog-mode . company-mode)

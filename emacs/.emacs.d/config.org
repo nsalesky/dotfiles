@@ -137,6 +137,238 @@ Set up the basic user information variables.
       user-mail-address "nicksalesky@gmail.com")
 #+END_SRC 
 
+* Keybindings and Basic Feature Configuration
+Here's where I configure some basic Emacs features with keybindings.
+
+** Enable all disabled keybindings
+#+BEGIN_SRC emacs-lisp
+(setq disabled-command-function nil)
+#+END_SRC
+
+** Evil 😈
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-keybinding nil
+        evil-want-integration t
+        evil-want-C-u-scroll t
+        evil-want-C-d-scroll t)
+
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+  (evil-collection-init))
+#+END_SRC
+
+** General
+
+#+BEGIN_SRC emacs-lisp
+(use-package general
+  :ensure t
+  :config
+  (general-create-definer ns/leader-def
+    :prefix "SPC"))
+#+END_SRC
+** +Meow: modal editing+
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(defun meow-setup ()
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (meow-motion-overwrite-define-key
+   '("j" . meow-next)
+   '("k" . meow-prev)
+   '("<escape>" . ignore))
+  (meow-leader-define-key
+   ;; SPC j/k will run the original command in MOTION state.
+   '("j" . "H-j")
+   '("k" . "H-k")
+   ;; Use SPC (0-9) for digit arguments.
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument)
+   '("/" . meow-keypad-describe-key)
+   '("?" . meow-cheatsheet))
+  (meow-normal-define-key
+   '("0" . meow-expand-0)
+   '("9" . meow-expand-9)
+   '("8" . meow-expand-8)
+   '("7" . meow-expand-7)
+   '("6" . meow-expand-6)
+   '("5" . meow-expand-5)
+   '("4" . meow-expand-4)
+   '("3" . meow-expand-3)
+   '("2" . meow-expand-2)
+   '("1" . meow-expand-1)
+   '("-" . negative-argument)
+   '(";" . meow-reverse)
+   '("," . meow-inner-of-thing)
+   '("." . meow-bounds-of-thing)
+   '("[" . meow-beginning-of-thing)
+   '("]" . meow-end-of-thing)
+   '("a" . meow-append)
+   '("A" . meow-open-below)
+   '("b" . meow-back-word)
+   '("B" . meow-back-symbol)
+   '("c" . meow-change)
+   '("d" . meow-delete)
+   '("D" . meow-backward-delete)
+   '("e" . meow-next-word)
+   '("E" . meow-next-symbol)
+   '("f" . meow-find)
+   '("g" . meow-cancel-selection)
+   '("G" . meow-grab)
+   '("h" . meow-left)
+   '("H" . meow-left-expand)
+   '("i" . meow-insert)
+   '("I" . meow-open-above)
+   '("j" . meow-next)
+   '("J" . meow-next-expand)
+   '("k" . meow-prev)
+   '("K" . meow-prev-expand)
+   '("l" . meow-right)
+   '("L" . meow-right-expand)
+   '("m" . meow-join)
+   '("n" . meow-search)
+   '("o" . meow-block)
+   '("O" . meow-to-block)
+   '("p" . meow-yank)
+   ;; '("q" . meow-quit)
+   '("Q" . meow-goto-line)
+   '("r" . meow-replace)
+   '("R" . meow-swap-grab)
+   '("s" . meow-kill)
+   '("S" . embrace-commander)
+   '("t" . meow-till)
+   '("u" . meow-undo)
+   '("U" . meow-undo-in-selection)
+   '("v" . meow-visit)
+   '("w" . meow-mark-word)
+   '("W" . meow-mark-symbol)
+   '("x" . meow-line)
+   '("X" . meow-goto-line)
+   '("y" . meow-save)
+   '("Y" . meow-sync-grab)
+   '("z" . meow-pop-selection)
+   '("'" . repeat)
+   '("<escape>" . ignore)))
+
+(use-package meow
+  :config
+  (meow-setup)
+  (meow-global-mode 1)
+  :hook
+  (vterm-mode . (lambda () (meow-mode 0))))
+#+END_SRC
+
+** Embrace: surround
+#+BEGIN_SRC emacs-lisp
+(use-package embrace
+  :straight (:type git :host github :repo "cute-jumper/embrace.el")
+  ;; :bind (("C-M-s-#" . embrace-commander))
+  :config
+  (defun embrace-markdown-mode-hook ()
+    (dolist (lst '((?* "*" . "*")
+                   (?\ "\\" . "\\")
+                   (?$ "$" . "$")
+                   (?/ "/" . "/")))
+      (embrace-add-pair (car lst) (cadr lst) (cddr lst))))
+  (add-hook 'markdown-mode-hook 'embrace-markdown-mode-hook)
+  (add-hook 'org-mode-hook 'embrace-org-mode-hook))
+#+END_SRC
+
+** Electric-pair-mode
+Disable ~electric-pair-mode~ for a select subset of modes. 
+
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode 1)
+(setq electric-pair-inhibit-predicate
+      (lambda (char)
+        (member major-mode '(org-mode))))
+#+END_SRC
+
+** Disable ESC ESC ESC
+
+#+BEGIN_SRC emacs-lisp
+(global-unset-key (kbd "ESC ESC"))
+#+END_SRC
+
+** Replace selected text
+Enable =delete-selection-mode= so that if there is a marked region, typing in text replaces it
+
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode 1)
+#+END_SRC
+
+** Indentation: spaces, not tabs!
+Set up the indentation behavior. I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
+
+#+begin_src emacs-lisp
+
+;; Set the default tab settings
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 4)
+(setq-default python-indent-offset 4)
+
+;; Make the backspace properly erase the whole tab instead of removing
+;; 1 space at a time
+(setq backward-delete-char-untabify-method 'hungry)
+
+#+end_src
+
+** Files
+Keybindings for working with files.
+
+#+BEGIN_SRC emacs-lisp
+
+;; Keep track of recently-opened files
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
+(global-set-key (kbd "C-x C-r") 'consult-recent-file)
+
+#+END_SRC
+
+** Windows
+Keybindings for operating windows.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+  :bind ("M-o" . ace-window))
+#+END_SRC
+
+** Dumb-jump
+
+#+BEGIN_SRC emacs-lisp
+(use-package hydra)
+
+(use-package dumb-jump
+  :config
+  (defhydra dumb-jump-hydra (:color blue :columns 3)
+    "Dumb Jump"
+    ("j" dumb-jump-go "Go")
+    ("o" dumb-jump-go-other-window "Other window")
+    ("e" dumb-jump-go-prefer-external "Go external")
+    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
+    ("i" dumb-jump-go-prompt "Prompt")
+    ("l" dumb-jump-quick-look "Quick look")
+    ("b" dumb-jump-back "Back"))
+  (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
+#+END_SRC
+
 * Configure builtin/core Emacs packages
 ** Saveplace: Remember your location in a file
 #+BEGIN_SRC emacs-lisp
@@ -884,218 +1116,6 @@ A light wrapper around ~project.el~ and ~tab-bar-mode~ providing isolated buffer
     (add-to-list 'consult-buffer-sources 'consult--source-workspace)))
 #+END_SRC
 
-* Keybindings and Basic Feature Configuration
-Here's where I configure some basic Emacs features with keybindings.
-
-** Enable all disabled keybindings
-#+BEGIN_SRC emacs-lisp
-(setq disabled-command-function nil)
-#+END_SRC
-
-** +Meow: modal editing+
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(defun meow-setup ()
-  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-  (meow-motion-overwrite-define-key
-   '("j" . meow-next)
-   '("k" . meow-prev)
-   '("<escape>" . ignore))
-  (meow-leader-define-key
-   ;; SPC j/k will run the original command in MOTION state.
-   '("j" . "H-j")
-   '("k" . "H-k")
-   ;; Use SPC (0-9) for digit arguments.
-   '("1" . meow-digit-argument)
-   '("2" . meow-digit-argument)
-   '("3" . meow-digit-argument)
-   '("4" . meow-digit-argument)
-   '("5" . meow-digit-argument)
-   '("6" . meow-digit-argument)
-   '("7" . meow-digit-argument)
-   '("8" . meow-digit-argument)
-   '("9" . meow-digit-argument)
-   '("0" . meow-digit-argument)
-   '("/" . meow-keypad-describe-key)
-   '("?" . meow-cheatsheet))
-  (meow-normal-define-key
-   '("0" . meow-expand-0)
-   '("9" . meow-expand-9)
-   '("8" . meow-expand-8)
-   '("7" . meow-expand-7)
-   '("6" . meow-expand-6)
-   '("5" . meow-expand-5)
-   '("4" . meow-expand-4)
-   '("3" . meow-expand-3)
-   '("2" . meow-expand-2)
-   '("1" . meow-expand-1)
-   '("-" . negative-argument)
-   '(";" . meow-reverse)
-   '("," . meow-inner-of-thing)
-   '("." . meow-bounds-of-thing)
-   '("[" . meow-beginning-of-thing)
-   '("]" . meow-end-of-thing)
-   '("a" . meow-append)
-   '("A" . meow-open-below)
-   '("b" . meow-back-word)
-   '("B" . meow-back-symbol)
-   '("c" . meow-change)
-   '("d" . meow-delete)
-   '("D" . meow-backward-delete)
-   '("e" . meow-next-word)
-   '("E" . meow-next-symbol)
-   '("f" . meow-find)
-   '("g" . meow-cancel-selection)
-   '("G" . meow-grab)
-   '("h" . meow-left)
-   '("H" . meow-left-expand)
-   '("i" . meow-insert)
-   '("I" . meow-open-above)
-   '("j" . meow-next)
-   '("J" . meow-next-expand)
-   '("k" . meow-prev)
-   '("K" . meow-prev-expand)
-   '("l" . meow-right)
-   '("L" . meow-right-expand)
-   '("m" . meow-join)
-   '("n" . meow-search)
-   '("o" . meow-block)
-   '("O" . meow-to-block)
-   '("p" . meow-yank)
-   ;; '("q" . meow-quit)
-   '("Q" . meow-goto-line)
-   '("r" . meow-replace)
-   '("R" . meow-swap-grab)
-   '("s" . meow-kill)
-   '("S" . embrace-commander)
-   '("t" . meow-till)
-   '("u" . meow-undo)
-   '("U" . meow-undo-in-selection)
-   '("v" . meow-visit)
-   '("w" . meow-mark-word)
-   '("W" . meow-mark-symbol)
-   '("x" . meow-line)
-   '("X" . meow-goto-line)
-   '("y" . meow-save)
-   '("Y" . meow-sync-grab)
-   '("z" . meow-pop-selection)
-   '("'" . repeat)
-   '("<escape>" . ignore)))
-
-(use-package meow
-  :config
-  (meow-setup)
-  (meow-global-mode 1)
-  :hook
-  (vterm-mode . (lambda () (meow-mode 0))))
-#+END_SRC
-
-** Embrace: surround
-#+BEGIN_SRC emacs-lisp
-(use-package embrace
-  :straight (:type git :host github :repo "cute-jumper/embrace.el")
-  ;; :bind (("C-M-s-#" . embrace-commander))
-  :config
-  (defun embrace-markdown-mode-hook ()
-    (dolist (lst '((?* "*" . "*")
-                   (?\ "\\" . "\\")
-                   (?$ "$" . "$")
-                   (?/ "/" . "/")))
-      (embrace-add-pair (car lst) (cadr lst) (cddr lst))))
-  (add-hook 'markdown-mode-hook 'embrace-markdown-mode-hook)
-  (add-hook 'org-mode-hook 'embrace-org-mode-hook))
-#+END_SRC
-
-** +Lispy: short and sweet Lisp editing+
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package lispy
-  :hook ((emacs-lisp-mode . lispy-mode)
-         (clojure-mode . lispy-mode))
-  :custom
-  (lispy-compat '(edebug cider magit-blame-mode)))
-#+END_SRC
-
-** Electric-pair-mode
-Disable ~electric-pair-mode~ for a select subset of modes. 
-
-#+BEGIN_SRC emacs-lisp
-(electric-pair-mode 1)
-(setq electric-pair-inhibit-predicate
-      (lambda (char)
-        (member major-mode '(org-mode))))
-#+END_SRC
-
-** Disable ESC ESC ESC
-
-#+BEGIN_SRC emacs-lisp
-(global-unset-key (kbd "ESC ESC"))
-#+END_SRC
-
-** Replace selected text
-Enable =delete-selection-mode= so that if there is a marked region, typing in text replaces it
-
-#+BEGIN_SRC emacs-lisp
-(delete-selection-mode 1)
-#+END_SRC
-
-** Indentation: spaces, not tabs!
-Set up the indentation behavior. I took this basic configuration from [[https://dougie.io/emacs/indentation/]]
-
-#+begin_src emacs-lisp
-
-;; Set the default tab settings
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-(setq-default c-basic-offset 4)
-(setq-default python-indent-offset 4)
-
-;; Make the backspace properly erase the whole tab instead of removing
-;; 1 space at a time
-(setq backward-delete-char-untabify-method 'hungry)
-
-#+end_src
-
-** Files
-Keybindings for working with files.
-
-#+BEGIN_SRC emacs-lisp
-
-;; Keep track of recently-opened files
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
-(global-set-key (kbd "C-x C-r") 'consult-recent-file)
-
-#+END_SRC
-
-** Windows
-Keybindings for operating windows.
-
-#+BEGIN_SRC emacs-lisp
-(use-package ace-window
-  :bind ("M-o" . ace-window))
-#+END_SRC
-
-** Dumb-jump
-
-#+BEGIN_SRC emacs-lisp
-(use-package hydra)
-
-(use-package dumb-jump
-  :config
-  (defhydra dumb-jump-hydra (:color blue :columns 3)
-    "Dumb Jump"
-    ("j" dumb-jump-go "Go")
-    ("o" dumb-jump-go-other-window "Other window")
-    ("e" dumb-jump-go-prefer-external "Go external")
-    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
-    ("i" dumb-jump-go-prompt "Prompt")
-    ("l" dumb-jump-quick-look "Quick look")
-    ("b" dumb-jump-back "Back"))
-  (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
-#+END_SRC
-
 * Version Control
 ** Magit
 
@@ -1586,98 +1606,38 @@ Give Org-mode documents some extra visual polish.
 #+end_src
  
 *** Treesitter
-This is a handy little hack I got from [[https://leba.dev/blog/2022/12/12/(ab)using-straightel-for-easy-tree-sitter-grammar-installations/]] to use ~Straight~ to compile and load Treesitter grammars for me
+
+#+BEGIN_SRC emacs-lisp
+(setq treesit-language-source-alist
+   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+     (cmake "https://github.com/uyha/tree-sitter-cmake")
+     (css "https://github.com/tree-sitter/tree-sitter-css")
+     (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+     (go "https://github.com/tree-sitter/tree-sitter-go")
+     (html "https://github.com/tree-sitter/tree-sitter-html")
+     (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+     (json "https://github.com/tree-sitter/tree-sitter-json")
+     (make "https://github.com/alemuller/tree-sitter-make")
+     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+     (python "https://github.com/tree-sitter/tree-sitter-python")
+     (rust "https://github.com/tree-sitter/tree-sitter-rust")
+     (toml "https://github.com/tree-sitter/tree-sitter-toml")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+(customize-set-variable 'treesit-font-lock-level 4)
+#+END_SRC
 
 **** treesit-auto: install Treesitter grammars automatically
 
-#+BEGIN_SRC emacs-lisp :tangle no 
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package treesit-auto
   :straight (:type git :host github :repo "renzmann/treesit-auto")
   :custom
   (treesit-auto-install 'prompt)
   :config
   (global-treesit-auto-mode))
-#+END_SRC
-
-**** +Here's the function to compile grammars+
-
-#+BEGIN_SRC emacs-lisp
-;; (require 'treesit)
-;; (defun ns/tree-sitter-compile-grammar (destination &optional path)
-;;   "Compile grammar at PATH, and place the resulting shared library in DESTINATION."
-;;   (interactive "fWhere should we put the shared library? \nfWhat tree-sitter grammar are we compiling? \n")
-;;   (make-directory destination 'parents)
-
-;;   (let* ((default-directory
-;;           (expand-file-name "src/" (or path default-directory)))
-;;          (parser-name
-;;           (thread-last (expand-file-name "grammar.json" default-directory)
-;;                        (json-read-file)
-;;                        (alist-get 'name)))
-;;          (emacs-module-url
-;;           "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/emacs-module.h")
-;;          (tree-sitter-lang-in-url
-;;           "https://raw.githubusercontent.com/casouri/tree-sitter-module/master/tree-sitter-lang.in")
-;;          (needs-cpp-compiler nil))
-;;     (message "Compiling grammar at %s" path)
-
-;;     (url-copy-file emacs-module-url "emacs-module.h" :ok-if-already-exists)
-;;     (url-copy-file tree-sitter-lang-in-url "tree-sitter-lang.in" :ok-if-already-exists)
-
-;;     (with-temp-buffer
-;;       (unless
-;;           (zerop
-;;            (apply #'call-process
-;;                   (if (file-exists-p "scanner.cc") "c++" "cc") nil t nil
-;;                   "parser.c" "-I." "--shared" "-o"
-;;                   (expand-file-name
-;;                    (format "libtree-sitter-%s%s" parser-name module-file-suffix)
-;;                    destination)
-;;                   (cond ((file-exists-p "scanner.c") '("scanner.c"))
-;;                         ((file-exists-p "scanner.cc") '("scanner.cc")))))
-;;         (user-error
-;;          "Unable to compile grammar, please file a bug report\n%s"
-;;          (buffer-string))))
-;;     (message "Completed compilation")))
-#+END_SRC 
-
-**** +And here's where I install the grammars themselves+
-#+BEGIN_SRC emacs-lisp
-;; (use-package tree-sitter-rust
-;;   :straight (:type git :host github :repo "tree-sitter/tree-sitter-rust"
-;;              :post-build
-;;              (ns/tree-sitter-compile-grammar
-;;               (expand-file-name "ts-grammars" user-emacs-directory))))
-#+END_SRC
-
-**** (/for now/) just using the bash script directly
-#+BEGIN_SRC emacs-lisp
-;; (require 'treesit)
-;; (setq treesit-extra-load-path (list (expand-file-name "ts-grammars" user-emacs-directory)))
-
-;; (defun ns/compile-tree-sitter-grammar
-;;     (language destination)
-;;   (make-directory destination 'parents)
-;;   (let ((shared-lib-name (format "libtree-sitter-%s.so" language)))
-;;     (shell-command (concat "./build.sh" language))))
-;;     ;; (f-move (concat "./dist/" shared-lib-name)
-;;     ;;         (expand-file-name shared-lib-name destination))))
-
-;; (defun ns/compile-tree-sitter-grammars
-;;     (destination)
-;;   (make-directory destination 'parents)
-  
-;;   ;; (async-start
-;;    ;; (lambda ()
-;;      (shell-command "./batch.sh")
-;;      (f-move "./dist" destination))
-
-;; (ns/compile-tree-sitter-grammars (expand-file-name "ts-grammars" user-emacs-directory))
-
-;; (use-package tree-sitter-module
-;;   :straight (:type git :host github :repo "casouri/tree-sitter-module"
-;;                    :post-build (ns/compile-tree-sitter-grammars
-;;                                 (expand-file-name "ts-grammars" user-emacs-directory))))
 #+END_SRC
 
 *** Company: Auto completion
