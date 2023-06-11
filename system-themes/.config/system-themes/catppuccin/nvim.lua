@@ -15,7 +15,6 @@ end
 -- Set up the overall Neovim colorscheme
 function M.set_initial_colorscheme()
 	vim.cmd.colorscheme("catppuccin-macchiato")
-	-- vim.cmd.colorscheme("catppuccin")
 end
 
 -- Set up some custom Telescope theming
