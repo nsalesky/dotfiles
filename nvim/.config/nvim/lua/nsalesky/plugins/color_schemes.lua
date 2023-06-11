@@ -13,8 +13,6 @@ return {
                     nvimtree = true,
                 },
             })
-
-            vim.cmd.colorscheme("catppuccin")
         end,
     },
     "rebelot/kanagawa.nvim",

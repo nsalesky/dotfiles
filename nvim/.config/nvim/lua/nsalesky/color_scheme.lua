@@ -1,0 +1,1 @@
+/home/nsalesky/.config/color-schemes/current/nvim.lua
