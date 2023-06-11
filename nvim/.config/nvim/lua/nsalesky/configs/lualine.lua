@@ -1,6 +1,6 @@
 -- Main body of the config inspired/taken from https://github.com/AlexvZyl/.dotfiles/blob/main/.config/nvim/lua/alex/ui/lualine.lua
 
-local c = require("catppuccin.palettes").get_palette()
+local c = require("nsalesky.theme").get_lualine_colors()
 
 -- Show Git diff status
 -- local function diff_source()
@@ -82,7 +82,8 @@ local telescope = {
             {
                 telescope_text,
                 icon = { "  " },
-                color = { fg = c.text, bg = c.surface1 },
+                color = { fg = c.inner_pill_text, bg = c.inner_pill_bg },
+                separator = { right = "" },
             },
         },
         lualine_c = {},
@@ -101,7 +102,7 @@ local telescope = {
 return {
     options = {
         icons_enabled = true,
-        theme = "catppuccin",
+        theme = "auto",
         section_separators = { left = " ", right = " " },
         component_separators = { left = "", right = "" },
         disabled_filetypes = {
@@ -122,6 +123,7 @@ return {
             {
                 "mode",
                 icon = { "" },
+                color = { fg = c.outer_pill_text },
                 separator = { right = " ", left = "" },
             },
         },
@@ -130,12 +132,12 @@ return {
                 "filetype",
                 colored = false,
                 icon_only = true,
-                color = { fg = c.mauve, bg = c.surface1 },
+                color = { fg = c.inner_pill_icon, bg = c.inner_pill_bg },
             },
             {
                 "filename",
-                color = { fg = c.text, bg = c.surface1 },
-                separator = " ",
+                color = { fg = c.inner_pill_text, bg = c.inner_pill_bg },
+                separator = { right = " " },
                 padding = 0,
 
                 file_status = true,
@@ -152,26 +154,29 @@ return {
         lualine_c = {
             {
                 "branch",
-                icon = { "", color = { fg = c.mauve } },
+                color = { bg = c.inner_bg },
+                icon = { "", color = { fg = c.inner_pill_icon } },
                 separator = " ",
                 padding = 0,
             },
             {
                 get_git_compare,
-                icon = { "", color = { fg = c.mauve } },
+                color = { bg = c.inner_bg },
+                icon = { "", color = { fg = c.inner_pill_icon } },
                 separator = " ",
                 padding = 0,
             },
             {
                 "diff",
                 -- source = diff_source,
+                color = { bg = c.inner_bg },
                 padding = 0,
                 icon = { " " },
                 symbols = { added = " ", modified = " ", removed = " " },
                 diff_color = {
-                    added = { fg = c.surface1 },
-                    modified = { fg = c.surface1 },
-                    removed = { fg = c.surface1 },
+                    added = { fg = c.inner_pill_bg },
+                    modified = { fg = c.inner_pill_bg },
+                    removed = { fg = c.inner_pill_bg },
                 },
             },
         },
@@ -179,6 +184,7 @@ return {
             {
                 "diagnostics",
                 sources = { "nvim_diagnostic" },
+                color = { bg = c.inner_bg },
                 -- symbols = { error = " ", warn = " ", info = " ", hint = "󱤅 ", other = "󰠠 " },
                 -- diagnostics_color = {
                 --     error = { fg = c.error },
@@ -195,17 +201,19 @@ return {
                 get_native_lsp,
                 padding = 2,
                 separator = " ",
-                color = { fg = c.text, bg = c.surface1 },
-                icon = { " ", color = { fg = c.mauve } },
+                color = { fg = c.inner_pill_text, bg = c.inner_pill_bg },
+                icon = { " ", color = { fg = c.inner_pill_icon } },
             },
         },
         lualine_z = {
             {
                 "location",
+                color = { fg = c.outer_pill_text },
                 icon = { "", align = "left" },
             },
             {
                 "progress",
+                color = { fg = c.outer_pill_text },
                 icon = { "", align = "left" },
                 separator = { right = "", left = "" },
             },
