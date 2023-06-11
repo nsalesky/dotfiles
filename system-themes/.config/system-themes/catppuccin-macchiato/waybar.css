@@ -1,0 +1,13 @@
+@define-color bg-color rgba(0,0,0,0);
+@define-color icon-fg #b4befe;
+@define-color text-fg #cdd6f4;
+
+@define-color pill-bg #11111b;
+
+@define-color tooltip-fg #cdd6f4;
+@define-color tooltip-bg #1e1e2e;
+@define-color tooptip-border #11111b;
+
+@define-color active-workspace-fg #353535;
+@define-color active-workspace-bg #c6c6db;
+
