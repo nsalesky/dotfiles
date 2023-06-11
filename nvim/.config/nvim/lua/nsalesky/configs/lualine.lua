@@ -42,10 +42,10 @@ local function get_git_compare()
 
     -- Run job to fetch git info
     local result = Job:new({
-            command = "git",
-            cwd = curr_dir,
-            args = { "rev-list", "--left-right", "--count", "HEAD...@{upstream}" },
-        })
+        command = "git",
+        cwd = curr_dir,
+        args = { "rev-list", "--left-right", "--count", "HEAD...@{upstream}" },
+    })
         :sync(100)[1]
 
     -- Process the result
@@ -144,10 +144,10 @@ return {
                 path = 4,
                 shorting_target = 40,
                 symbols = {
-                    modified = "[+]",      -- Text to show when the file is modified.
-                    readonly = "[-]",      -- Text to show when the file is non-modifiable or readonly.
+                    modified = "[+]", -- Text to show when the file is modified.
+                    readonly = "[-]", -- Text to show when the file is non-modifiable or readonly.
                     unnamed = "[No Name]", -- Text to show for unnamed buffers.
-                    newfile = "[New]",     -- Text to show for newly created file before first write
+                    newfile = "[New]", -- Text to show for newly created file before first write
                 },
             },
         },
