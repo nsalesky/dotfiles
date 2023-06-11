@@ -17,7 +17,7 @@ return {
         vim.keymap.set("n", "<leader>tt", builtin.colorscheme, { desc = "Color scheme" })
 
         -- Set up some custom theming
-        require("nsalesky.color_scheme").set_telescope_colors()
+        require("nsalesky.theme").set_telescope_colors()
 
         -- Open Telescope results in trouble
         local telescope = require("telescope")

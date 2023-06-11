@@ -4,4 +4,4 @@ require("nsalesky.remap")
 require("nsalesky.utils")
 
 -- Set up the current colorscheme
-require("nsalesky.color_scheme").set_initial_color_scheme()
+require("nsalesky.theme").set_initial_colorscheme()

@@ -1,0 +1,1 @@
+/home/nsalesky/.config/system-themes/current/nvim.lua

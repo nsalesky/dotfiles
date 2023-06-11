@@ -1,7 +1,7 @@
 local M = {}
 
 -- Set up the overall Neovim colorscheme
-function M.set_initial_color_scheme()
+function M.set_initial_colorscheme()
     vim.cmd.colorscheme("catppuccin")
 end
 
