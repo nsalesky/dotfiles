@@ -20,7 +20,7 @@
 (defsrc 
     caps 
     ret
-    spc
+    ;; spc
     lsft
     rsft
 )
@@ -43,7 +43,7 @@
 (deflayer qwerty
     @ctrl-esc 
     @ret-esc
-    @spc-met
+    ;; @spc-met
     @lsft-sticky
     @rsft-sticky
 )
