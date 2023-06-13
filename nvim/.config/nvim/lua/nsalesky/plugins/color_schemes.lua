@@ -16,4 +16,5 @@ return {
         end,
     },
     "rebelot/kanagawa.nvim",
+    "sainnhe/everforest",
 }
