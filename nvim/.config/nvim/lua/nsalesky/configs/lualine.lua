@@ -154,14 +154,14 @@ return {
         lualine_c = {
             {
                 "branch",
-                color = { bg = c.inner_bg },
+                color = { fg = c.inner_fg, bg = c.inner_bg },
                 icon = { "", color = { fg = c.inner_pill_icon } },
                 separator = " ",
                 padding = 0,
             },
             {
                 get_git_compare,
-                color = { bg = c.inner_bg },
+                color = { fg = c.inner_fg, bg = c.inner_bg },
                 icon = { "", color = { fg = c.inner_pill_icon } },
                 separator = " ",
                 padding = 0,
@@ -169,7 +169,7 @@ return {
             {
                 "diff",
                 -- source = diff_source,
-                color = { bg = c.inner_bg },
+                color = { fg = c.inner_fg, bg = c.inner_bg },
                 padding = 0,
                 icon = { " " },
                 symbols = { added = " ", modified = " ", removed = " " },
@@ -184,7 +184,7 @@ return {
             {
                 "diagnostics",
                 sources = { "nvim_diagnostic" },
-                color = { bg = c.inner_bg },
+                color = { fg = c.inner_fg, bg = c.inner_bg },
                 -- symbols = { error = " ", warn = " ", info = " ", hint = "󱤅 ", other = "󰠠 " },
                 -- diagnostics_color = {
                 --     error = { fg = c.error },
