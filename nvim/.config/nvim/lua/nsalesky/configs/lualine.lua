@@ -162,7 +162,7 @@ return {
             {
                 get_git_compare,
                 color = { fg = c.inner_fg, bg = c.inner_bg },
-                icon = { "", color = { fg = c.inner_pill_icon } },
+                icon = { " ", color = { fg = c.inner_pill_icon } },
                 separator = " ",
                 padding = 0,
             },

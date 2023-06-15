@@ -20,9 +20,6 @@ return {
     {
         "nvim-lualine/lualine.nvim",
         opts = require("nsalesky.configs.lualine"),
-        config = function(_, opts)
-            require("lualine").setup(opts)
-        end,
     },
     {
         "rcarriga/nvim-notify",
