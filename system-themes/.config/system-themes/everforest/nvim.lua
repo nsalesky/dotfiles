@@ -3,21 +3,10 @@ local M = {}
 -- local configuration = vim.fn["everforest#get_configuration"]()
 -- local palette = vim.fn["everforest#get_palette"](configuration.background, configuration.colors_override)
 
--- Hard Dark
--- local colors = {
---     fg = "#D3C6AA",
---     bg0 = "#2D353B",
---     bg1 = "#343F44",
---     bg2 = "#3D484D",
---     bg3 = "#475258",
---     bg4 = "#4F585E",
---     grey1 = "#859289",
--- }
-
 -- this is a bit of a hack since I couldn't get the above lines working
 -- this works, but it won't adjust if I switch to a different variant
 
--- NOTE this currently corresponds to Medium Dark
+-- Medium Dark
 local colors = {
     fg = "#D3C6AA",
     bg0 = "#2D353B",
