@@ -24,7 +24,13 @@ function _toggle_mute
     end
 end
 
+function _unmute
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
+end
+
 function _change_volume -a delta # delta should be something like "5%+" or "5%-"
+    _unmute # changing the volume should always unmute first
+
     wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ $delta
 
     set volume_status (wpctl get-volume @DEFAULT_AUDIO_SINK@)
