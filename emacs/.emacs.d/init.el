@@ -185,7 +185,7 @@
 (defvar ns/fixed-pitch-font "JetBrainsMono Nerd Font"
   "My custom fixed pitch font choice.")
 
-(defvar ns/variable-pitch-font "Iosevka Aile"
+(defvar ns/variable-pitch-font "JetBrainsMono Nerd Font"
   "My custom variable pitch font choice.")
 
 (custom-set-faces
@@ -1103,6 +1103,9 @@ are equal return nil."
 
 (use-package markdown-mode
   :mode "\\.md\\'")
+
+(use-package nix-mode
+  :mode "\\.nix\\'")
 
 (use-package protobuf-mode
   :mode "\\.proto\\'")

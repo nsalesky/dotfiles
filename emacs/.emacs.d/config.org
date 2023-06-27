@@ -510,7 +510,7 @@ Here are my current font settings
 (defvar ns/fixed-pitch-font "JetBrainsMono Nerd Font"
   "My custom fixed pitch font choice.")
 
-(defvar ns/variable-pitch-font "Iosevka Aile"
+(defvar ns/variable-pitch-font "JetBrainsMono Nerd Font"
   "My custom variable pitch font choice.")
 
 (custom-set-faces
@@ -1932,6 +1932,12 @@ Recompile LaTeX documents automatically when saved.
 (use-package markdown-mode
   :mode "\\.md\\'")
 #+END_SRC 
+
+*** Nix
+#+BEGIN_SRC emacs-lisp
+(use-package nix-mode
+  :mode "\\.nix\\'")
+#+END_SRC
 
 *** Protobuf
 #+BEGIN_SRC emacs-lisp
