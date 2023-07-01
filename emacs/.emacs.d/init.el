@@ -195,9 +195,9 @@
 
 (use-package all-the-icons)
 
-(use-package doom-themes)
-  ;; :config
-  ;; (load-theme 'doom-moonlight t))
+(use-package doom-themes
+  :config
+  (load-theme 'doom-moonlight t))
 
 (use-package ef-themes
   :config
@@ -213,9 +213,9 @@
         (t . (variable-pitch 1.1))))
   (setq ef-themes-to-toggle '(ef-summer ef-cherie)
         ef-themes-mixed-fonts t
-        ef-themes-variable-pitch-ui t)
+        ef-themes-variable-pitch-ui t))
   
-  (ef-themes-select 'ef-summer))
+  ;; (ef-themes-select 'ef-summer))
 
 (use-package modus-themes)
   ;; :init
@@ -854,6 +854,7 @@ are equal return nil."
   (term-mode . eterm-256color-mode))
 
 (use-package vterm
+  :straight nil
   :custom
   (vterm-shell "fish")
   (vterm-max-scrollback 10000))
@@ -1032,10 +1033,6 @@ are equal return nil."
   (:map flymake-mode-map
         ("M-p" . flymake-goto-prev-error)
         ("M-n" . flymake-goto-next-error)))
-
-(use-package breadcrumb
-  :straight (:type git :host github :repo "joaotavora/breadcrumb")
-  :hook (prog-mode . breadcrumb-local-mode))
 
 (use-package realgud)
 
@@ -1240,6 +1237,7 @@ are equal return nil."
 (use-package tablist)
 
 (use-package pdf-tools
+  :straight nil
   :config
   (pdf-loader-install))
 

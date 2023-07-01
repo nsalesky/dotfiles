@@ -534,9 +534,9 @@ Give Emacs a nice color scheme! Other themes that I like include:
 - mindre-theme
 
 #+BEGIN_SRC emacs-lisp
-(use-package doom-themes)
-  ;; :config
-  ;; (load-theme 'doom-moonlight t))
+(use-package doom-themes
+  :config
+  (load-theme 'doom-moonlight t))
 
 (use-package ef-themes
   :config
@@ -552,9 +552,9 @@ Give Emacs a nice color scheme! Other themes that I like include:
         (t . (variable-pitch 1.1))))
   (setq ef-themes-to-toggle '(ef-summer ef-cherie)
         ef-themes-mixed-fonts t
-        ef-themes-variable-pitch-ui t)
+        ef-themes-variable-pitch-ui t))
   
-  (ef-themes-select 'ef-summer))
+  ;; (ef-themes-select 'ef-summer))
 
 (use-package modus-themes)
   ;; :init
@@ -1550,6 +1550,7 @@ Give Org-mode documents some extra visual polish.
 #+BEGIN_SRC emacs-lisp
 
 (use-package vterm
+  :straight nil
   :custom
   (vterm-shell "fish")
   (vterm-max-scrollback 10000))
@@ -1783,8 +1784,8 @@ A simple code formatting system for a ton of languages.
         ("M-n" . flymake-goto-next-error)))
 #+END_SRC 
 
-*** Breadcrumb: header line for project structure
-#+BEGIN_SRC emacs-lisp
+*** +Breadcrumb: header line for project structure+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package breadcrumb
   :straight (:type git :host github :repo "joaotavora/breadcrumb")
   :hook (prog-mode . breadcrumb-local-mode))
@@ -2122,6 +2123,7 @@ A little transient function for visiting my common files that aren't accessible 
 (use-package tablist)
 
 (use-package pdf-tools
+  :straight nil
   :config
   (pdf-loader-install))
 #+END_SRC
