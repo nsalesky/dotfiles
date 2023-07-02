@@ -1,0 +1,24 @@
+{
+    "workspace.library": [
+        "/home/nsalesky/.config/nvim",
+        "/home/nsalesky/.local/share/nvim/lazy/lazy.nvim",
+        "/home/nsalesky/.local/share/nvim/lazy/cmp-nvim-lsp",
+        "/home/nsalesky/.local/share/nvim/lazy/nvim-lspconfig",
+        "/home/nsalesky/.local/share/nvim/lazy/friendly-snippets",
+        "/home/nsalesky/.local/share/nvim/lazy/LuaSnip",
+        "/home/nsalesky/.local/share/nvim/lazy/rust.vim",
+        "/home/nsalesky/.local/share/nvim/lazy/oil.nvim",
+        "/home/nsalesky/.local/share/nvim/lazy/kmonad-vim",
+        "/home/nsalesky/.local/share/nvim/lazy/nvim-notify",
+        "/home/nsalesky/.local/share/nvim/lazy/nvim-web-devicons",
+        "/home/nsalesky/.local/share/nvim/lazy/todo-comments.nvim",
+        "/home/nsalesky/.local/share/nvim/lazy/nvim-dap",
+        "/home/nsalesky/.local/share/nvim/lazy/nvim-dap-ui",
+        "/nix/store/ypc27qm8i9vp96yh1wk5aq3giibyi1f4-neovim-unwrapped-0.9.1/share/nvim/runtime",
+        "/nix/store/ypc27qm8i9vp96yh1wk5aq3giibyi1f4-neovim-unwrapped-0.9.1/lib/nvim",
+        "/home/nsalesky/.local/state/nvim/lazy/readme",
+        "/home/nsalesky/.local/share/nvim/lazy/cmp-nvim-lsp/after",
+        "/home/nsalesky/.local/share/nvim/lazy/rust.vim/after",
+        "${3rd}/luassert/library"
+    ]
+}

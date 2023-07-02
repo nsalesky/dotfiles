@@ -1,11 +1,5 @@
 return {
     {
-        "jose-elias-alvarez/null-ls.nvim",
-        opts = function()
-            return require("nsalesky.configs.null-ls")
-        end,
-    },
-    {
         "numtostr/comment.nvim",
         opts = {
             toggler = {
