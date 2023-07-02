@@ -4,18 +4,20 @@ local utils = require("nsalesky.utils")
 
 local function format(_, item)
     local MAX_LABEL_WIDTH = 55
-    local function whitespace(max, len) return (' '):rep(max - len) end
+    local function whitespace(max, len)
+        return (" "):rep(max - len)
+    end
 
     -- Limit content width.
     local content = item.abbr
     if #content > MAX_LABEL_WIDTH then
-        item.abbr = vim.fn.strcharpart(content, 0, MAX_LABEL_WIDTH) .. '…'
+        item.abbr = vim.fn.strcharpart(content, 0, MAX_LABEL_WIDTH) .. "…"
     else
         item.abbr = content .. whitespace(MAX_LABEL_WIDTH, #content)
     end
 
     -- Replace kind with icons.
-    item.kind = ' ' .. (utils.kind_icons[item.kind] or utils.kind_icons.Unknown) .. '│'
+    item.kind = " " .. (utils.kind_icons[item.kind] or utils.kind_icons.Unknown) .. "│"
 
     -- Remove gibberish.
     item.menu = nil
@@ -38,7 +40,7 @@ return {
         ["<Tab>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
-                -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
+                -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
                 -- they way you will only jump inside the snippet region
             elseif luasnip.expand_or_jumpable() then
                 luasnip.expand_or_jump()
@@ -90,4 +92,3 @@ return {
     --     },
     -- }
 }
-

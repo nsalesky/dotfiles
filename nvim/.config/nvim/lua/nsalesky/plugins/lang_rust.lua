@@ -17,13 +17,13 @@ return {
                 server = {
                     on_attach = on_attach,
                     capabilities = capabilities,
-                }
+                },
             })
         end,
     },
     {
         "saecki/crates.nvim",
-        ft = {"rust", "toml"},
+        ft = { "rust", "toml" },
         config = function()
             local crates = require("crates")
             crates.setup({})
