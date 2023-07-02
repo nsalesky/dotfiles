@@ -30,4 +30,8 @@ vim.opt.colorcolumn = "80"
 -- use system clipboard as the unnamed register for yank/paste
 vim.opt.clipboard = "unnamedplus"
 
+-- Disable netrw
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 vim.g.mapleader = " "
