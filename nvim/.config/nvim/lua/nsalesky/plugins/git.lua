@@ -1,13 +1,12 @@
 return {
     {
         "kdheepak/lazygit.nvim",
-        keys = {
-            {
-                "<leader>gs",
-                ":LazyGit<CR>",
-                desc = "Test method",
-            },
-        },
+        -- keys = {
+        --     {
+        --         "<leader>gs",
+        --         ":LazyGit<CR>",
+        --     },
+        -- },
     },
     {
         "lewis6991/gitsigns.nvim",
@@ -19,5 +18,25 @@ return {
                 desc = "Toggle line blame",
             },
         },
+    },
+    {
+        "NeogitOrg/neogit",
+        opts = {
+            integrations = {
+                diffview = true,
+            },
+        },
+        keys = {
+            {
+                "<leader>gs",
+                function()
+                    require("neogit").open()
+                end,
+                desc = "Neogit status",
+            },
+        },
+    },
+    {
+        "sindrets/diffview.nvim",
     },
 }
