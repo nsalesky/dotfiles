@@ -23,10 +23,10 @@ return {
         vim.keymap.set("n", "<leader>ca", function()
             vim.lsp.buf.code_action()
         end, vim.tbl_deep_extend("force", opts, { desc = "Code Actions" }))
-        vim.keymap.set("n", "<leader>crr", function()
+        vim.keymap.set("n", "<leader>cr", function()
             vim.lsp.buf.references()
-        end, opts)
-        vim.keymap.set("n", "<leader>crn", function()
+        end, vim.tbl_deep_extend("force", opts, { desc = "References" }))
+        vim.keymap.set("n", "<leader>cn", function()
             vim.lsp.buf.rename()
         end, vim.tbl_deep_extend("force", opts, { desc = "Rename variable at point" }))
         -- vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help() end,
