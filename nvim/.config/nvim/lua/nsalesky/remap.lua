@@ -32,3 +32,6 @@ vim.keymap.set("n", "]b", "<cmd>bnext<CR>", { desc = "Next buffer" })
 -- Swapping between tabs
 vim.keymap.set("n", "[t", "<cmd>tabprev<CR>", { desc = "Previous tab" })
 vim.keymap.set("n", "]t", "<cmd>tabnext<CR>", { desc = "Next tab" })
+
+-- Terminal mode bindings
+vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]]) -- exit terminal mode with Esc

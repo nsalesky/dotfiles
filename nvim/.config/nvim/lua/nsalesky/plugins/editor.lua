@@ -33,6 +33,7 @@ return {
     },
     {
         "stevearc/oil.nvim",
+        opts = {},
         keys = {
             {
                 "-",
