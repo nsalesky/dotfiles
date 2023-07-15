@@ -7,7 +7,7 @@ wezterm.add_to_config_reload_watch_list(wezterm.config_dir)
 local config = {}
 
 if wezterm.config_builder then
-	config = wezterm.config_builder()
+    config = wezterm.config_builder()
 end
 
 -- Font settings
@@ -22,28 +22,28 @@ config.scrollback_lines = 5000
 config.hide_tab_bar_if_only_one_tab = true
 
 config.window_padding = {
-	left = 2,
-	right = 2,
-	top = 0,
-	bottom = 0,
+    left = 2,
+    right = 2,
+    top = 0,
+    bottom = 0,
 }
 
 -- Keybindings
 --config.disable_default_key_bindings = false
 
 config.keys = {
-	{
-		key = "E",
-		mods = "CTRL|SHIFT",
-		action = act.PromptInputLine({
-			description = "Enter new name for tab",
-			action = wezterm.action_callback(function(window, _, line)
-				if line then
-					window:active_tab():set_title(line)
-				end
-			end),
-		}),
-	},
+    {
+        key = "E",
+        mods = "CTRL|SHIFT",
+        action = act.PromptInputLine({
+            description = "Enter new name for tab",
+            action = wezterm.action_callback(function(window, _, line)
+                if line then
+                    window:active_tab():set_title(line)
+                end
+            end),
+        }),
+    },
 }
 
 return config
