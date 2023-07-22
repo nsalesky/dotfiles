@@ -18,6 +18,15 @@ return {
                     on_attach = on_attach,
                     capabilities = capabilities,
                 },
+
+                --debugging
+                -- dap = {
+                --     adapter = {
+                --         type = "executable",
+                --         command = "lldb",
+                --         name = "rt_lldb",
+                --     },
+                -- },
             })
         end,
     },
