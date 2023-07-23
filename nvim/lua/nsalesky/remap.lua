@@ -33,5 +33,13 @@ vim.keymap.set("n", "]b", "<cmd>bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "[t", "<cmd>tabprev<CR>", { desc = "Previous tab" })
 vim.keymap.set("n", "]t", "<cmd>tabnext<CR>", { desc = "Next tab" })
 
+-- Jumping between diagnostics
+vim.keymap.set("n", "[d", function()
+    vim.diagnostic.goto_prev()
+end, { desc = "Previous diagnostic" })
+vim.keymap.set("n", "]d", function()
+    vim.diagnostic.goto_next()
+end, { desc = "Next diagnostic" })
+
 -- Terminal mode bindings
 vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]]) -- exit terminal mode with Esc
