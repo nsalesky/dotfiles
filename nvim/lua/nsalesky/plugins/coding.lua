@@ -1,5 +1,11 @@
 return {
     {
+        "folke/neodev.nvim",
+    },
+    {
+        "folke/neoconf.nvim",
+    },
+    {
         "numtostr/comment.nvim",
         opts = {
             toggler = {
@@ -30,11 +36,11 @@ return {
         "folke/trouble.nvim",
         opts = {},
         keys = {
-            { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Trouble Toggle" },
+            { "<leader>xx", "<cmd>TroubleToggle<cr>",                       desc = "Trouble Toggle" },
             { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Trouble Workspace" },
-            { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Trouble Document" },
-            { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Trouble Quickfix" },
-            { "<leader>gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
+            { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>",  desc = "Trouble Document" },
+            { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>",              desc = "Trouble Quickfix" },
+            { "<leader>gR", "<cmd>TroubleToggle lsp_references<cr>",        desc = "LSP References" },
         },
     },
 }

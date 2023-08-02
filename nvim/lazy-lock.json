@@ -19,6 +19,8 @@
   "lspsaga.nvim": { "branch": "main", "commit": "b1b43c12be028330eb259de241449f5a64d3f26c" },
   "lualine.nvim": { "branch": "master", "commit": "05d78e9fd0cdfb4545974a5aa14b1be95a86e9c9" },
   "mini.nvim": { "branch": "main", "commit": "aac602e097b99a06bc84e43356f080eb6256dd21" },
+  "neoconf.nvim": { "branch": "main", "commit": "08f146d53e075055500dca35e93281faff95716b" },
+  "neodev.nvim": { "branch": "main", "commit": "2973d6c56cbde46c04e12476bb40eefd516d5f35" },
   "neogit": { "branch": "master", "commit": "2118729749a5b500e6d52bfeac22559c5a0866cc" },
   "null-ls.nvim": { "branch": "main", "commit": "db09b6c691def0038c456551e4e2772186449f35" },
   "nvim": { "branch": "main", "commit": "057c34f849cf21059487d849e2f3b3efcd4ee0eb" },

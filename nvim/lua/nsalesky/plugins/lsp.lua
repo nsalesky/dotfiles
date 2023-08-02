@@ -4,7 +4,11 @@ return {
         config = function()
             local lspconfig = require("lspconfig")
             local on_attach = require("nsalesky.configs.lspconfig").on_attach
+
             local capabilities = require("nsalesky.configs.lspconfig").capabilities
+
+            require("neodev").setup({})
+            require("neoconf").setup({})
 
             lspconfig.lua_ls.setup({
                 on_attach = on_attach,
@@ -18,7 +22,6 @@ return {
                             version = "LuaJIT",
                         },
                         workspace = {
-                            library = vim.api.nvim_get_runtime_file("", true),
                             checkThirdParty = false,
                         },
                         telemetry = {
