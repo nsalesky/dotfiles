@@ -2,10 +2,14 @@ local cmp = require("cmp")
 local luasnip = require("luasnip")
 local utils = require("nsalesky.utils")
 
-local function format(_, item)
+local function format(entry, item)
     local MAX_LABEL_WIDTH = 55
     local function whitespace(max, len)
         return (" "):rep(max - len)
+    end
+
+    if entry.source.name == "vim-dadbod-completion" then
+        item.kind = "Field"
     end
 
     -- Limit content width.

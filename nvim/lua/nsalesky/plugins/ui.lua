@@ -13,6 +13,7 @@ return {
                 f = { "file" },
                 g = { "git" },
                 u = { "Undo Tree" },
+                m = { "Database" },
             }, { prefix = "<leader>" })
         end,
     },
