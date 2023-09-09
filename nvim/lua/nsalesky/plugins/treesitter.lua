@@ -49,5 +49,5 @@ return {
             require("treesitter-context").setup(opts)
         end,
     },
-    "nvim-treesitter/playground",
+    -- "nvim-treesitter/playground",
 }

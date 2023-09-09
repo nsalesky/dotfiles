@@ -17,6 +17,29 @@ return {
         },
     },
     {
+        "mhartington/formatter.nvim",
+        opts = function()
+            return {
+                logging = false,
+                filetype = {
+                    lua = {
+                        require("formatter.filetypes.lua").stylua,
+                    },
+                    python = {
+                        require("formatter.filetypes.python").black,
+                    },
+                    ["*"] = {
+                        require("formatter.filetypes.any").remove_trailing_whitespace,
+                    },
+                },
+            }
+        end,
+        config = function(_, opts)
+            require("formatter").setup(opts)
+            -- vim.cmd("autocmd BufWritePost * FormatWriteLock") -- auto format on save
+        end,
+    },
+    {
         "kylechui/nvim-surround",
         version = "*",
         event = "VeryLazy",
@@ -24,7 +47,9 @@ return {
     },
     {
         "folke/todo-comments.nvim",
-        requires = "nvim-lua/plenary.nvim",
+        dependencies = "nvim-lua/plenary.nvim",
+        event = "VeryLazy",
+        opts = {},
     },
     {
         "windwp/nvim-autopairs",
@@ -36,11 +61,17 @@ return {
         "folke/trouble.nvim",
         opts = {},
         keys = {
-            { "<leader>xx", "<cmd>TroubleToggle<cr>",                       desc = "Trouble Toggle" },
+            { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Trouble Toggle" },
             { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Trouble Workspace" },
-            { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>",  desc = "Trouble Document" },
-            { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>",              desc = "Trouble Quickfix" },
-            { "<leader>gR", "<cmd>TroubleToggle lsp_references<cr>",        desc = "LSP References" },
+            { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Trouble Document" },
+            { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Trouble Quickfix" },
+            { "<leader>gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
         },
     },
+    -- {
+    --     "michaelb/sniprun",
+    --     event = "VeryLazy",
+    --     build = "sh ./install.sh",
+    --     opts = {}
+    -- }
 }

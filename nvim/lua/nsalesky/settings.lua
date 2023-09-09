@@ -30,6 +30,11 @@ vim.opt.colorcolumn = "120"
 -- use system clipboard as the unnamed register for yank/paste
 vim.opt.clipboard = "unnamedplus"
 
+-- Set up Treesitter-based folding
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldenable = false
+
 -- Disable netrw
 -- vim.g.loaded_netrw = 1
 -- vim.g.loaded_netrwPlugin = 1

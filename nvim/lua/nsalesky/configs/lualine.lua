@@ -72,7 +72,6 @@ return {
         },
         ignore_focus = {},
         always_divide_middle = true,
-        globalstatus = true,
         refresh = {
             statusline = 1000,
             tabline = 1000,
@@ -84,7 +83,7 @@ return {
             {
                 "filename",
                 file_status = true,
-                -- path = 4,
+                path = 1,
                 shorting_target = 40,
                 symbols = {
                     modified = "", -- Text to show when the file is modified.
@@ -160,7 +159,14 @@ return {
             },
         },
     },
-    tabline = {},
+    tabline = {
+        lualine_a = {
+            {
+                "tabs",
+                mode = 2,
+            },
+        },
+    },
     winbar = {},
     inactive_winbar = {},
     extensions = {

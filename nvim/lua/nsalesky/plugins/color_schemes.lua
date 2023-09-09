@@ -17,4 +17,5 @@ return {
     },
     "rebelot/kanagawa.nvim",
     "sainnhe/everforest",
+    "folke/tokyonight.nvim",
 }

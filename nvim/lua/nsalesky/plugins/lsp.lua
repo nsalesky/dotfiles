@@ -4,7 +4,6 @@ return {
         config = function()
             local lspconfig = require("lspconfig")
             local on_attach = require("nsalesky.configs.lspconfig").on_attach
-
             local capabilities = require("nsalesky.configs.lspconfig").capabilities
 
             require("neodev").setup({})
@@ -31,21 +30,10 @@ return {
                 },
             })
 
-            -- lspconfig.jedi_language_server.setup({
-            --     on_attach = on_attach,
-            --     capabilities = capabilities,
-            -- })
-
-            lspconfig.pylsp.setup({
+            lspconfig.pyright.setup({
                 on_attach = on_attach,
                 capabilities = capabilities,
             })
-        end,
-    },
-    {
-        "jose-elias-alvarez/null-ls.nvim",
-        opts = function()
-            return require("nsalesky.configs.null-ls")
         end,
     },
     {

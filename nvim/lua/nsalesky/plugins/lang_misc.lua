@@ -1,5 +1,8 @@
 return {
-    "tikhomirov/vim-glsl",
+    {
+        "tikhomirov/vim-glsl",
+        ft = "glsl",
+    },
     -- "Bakudankun/PICO-8.vim",
-    "kmonad/kmonad-vim",
+    -- "kmonad/kmonad-vim",
 }

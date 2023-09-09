@@ -34,7 +34,7 @@ local has_words_before = function()
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
-return {
+cmp.setup({
     mapping = cmp.mapping.preset.insert({
         ["<C-b>"] = cmp.mapping.scroll_docs(-4),
         ["<C-f>"] = cmp.mapping.scroll_docs(4),
@@ -98,4 +98,12 @@ return {
     --         side_padding = 1, -- Not working?
     --     },
     -- }
-}
+})
+
+cmp.setup.filetype("gitcommit", {
+    sources = cmp.config.sources({
+        { name = "git" },
+    }, {
+        { name = "buffer" },
+    }),
+})
