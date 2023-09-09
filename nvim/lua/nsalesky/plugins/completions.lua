@@ -10,8 +10,8 @@ return {
             "saadparwaiz1/cmp_luasnip",
             "petertriho/cmp-git",
         },
-        opts = function()
-            return require("nsalesky.configs.cmp")
+        config = function()
+            require("nsalesky.configs.cmp")
         end,
     },
     "hrsh7th/cmp-nvim-lsp",
