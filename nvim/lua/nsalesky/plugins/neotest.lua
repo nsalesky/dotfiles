@@ -8,6 +8,7 @@ return {
         -- Adapters
         "nvim-neotest/neotest-python",
         "nvim-neotest/neotest-plenary",
+        "rouge8/neotest-rust",
     },
     config = function()
         require("neotest").setup({
@@ -16,6 +17,9 @@ return {
                     dap = { justMyCode = false },
                 }),
                 require("neotest-plenary"),
+                require("neotest-rust")({
+                    dap_adapter = "lldb",
+                }),
             },
         })
     end,
