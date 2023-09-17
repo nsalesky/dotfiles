@@ -28,6 +28,9 @@ return {
                     python = {
                         require("formatter.filetypes.python").black,
                     },
+                    go = {
+                        require("formatter.filetypes.go").gofmt,
+                    },
                     ["*"] = {
                         require("formatter.filetypes.any").remove_trailing_whitespace,
                     },
@@ -36,7 +39,7 @@ return {
         end,
         config = function(_, opts)
             require("formatter").setup(opts)
-            -- vim.cmd("autocmd BufWritePost * FormatWriteLock") -- auto format on save
+            vim.cmd("autocmd BufWritePost * FormatWrite") -- auto format on save
         end,
     },
     {
