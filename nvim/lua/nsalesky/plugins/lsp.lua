@@ -40,12 +40,17 @@ return {
                 capabilities = capabilities,
             })
 
-            lspconfig.tailwindcss.setup({
+            lspconfig.svelte.setup({
                 on_attach = on_attach,
                 capabilities = capabilities,
             })
 
-            lspconfig.marksman.setup({
+            lspconfig.tsserver.setup({
+                on_attach = on_attach,
+                capabilities = capabilities,
+            })
+
+            lspconfig.tailwindcss.setup({
                 on_attach = on_attach,
                 capabilities = capabilities,
             })
