@@ -1688,7 +1688,9 @@ A good code-completion package. I might consider switching to Corfu at some poin
                                                          :enable t)
                                  :cargo (:buildScripts (:enable t))
                                  :diagnostics (:disabled ["unresolved-proc-macro"
-                                                          "unresolved-macro-call"]))))))
+                                                          "unresolved-macro-call"])))))
+  (add-to-list 'eglot-server-programs
+               '(svelte-mode . ("svelteserver" "--stdio"))))
 #+END_SRC 
 
 *** Corfu: Completion at point
@@ -1962,6 +1964,16 @@ Recompile LaTeX documents automatically when saved.
   :hook (python-mode . pipenv-mode))
 #+END_SRC
 
+*** Svelte
+#+BEGIN_SRC emacs-lisp
+(define-derived-mode svelte-mode
+  web-mode "Svelte"
+  "Major mode for Svelte.")
+
+(use-package svelte-mode :straight nil
+  :hook (svelte-mode . eglot-ensure)
+  :mode "\\.svelte\\'")
+#+END_SRC
 *** Typescript
 
 #+begin_src emacs-lisp :results output
@@ -2067,7 +2079,8 @@ Editing in a mixed-language web format.
             ("\\.phtml\\'" . web-mode)
             ("\\.as[cp]x\\'" . web-mode)
             ("\\.erb\\'" . web-mode)
-            ("\\.sgml\\'" . web-mode)))
+            ("\\.sgml\\'" . web-mode)
+            ("\\.svelte\\'" . web-mode)))
     ;; :bind
     ;; ("C-c h" . ns/toggle-web-mode))
 #+END_SRC 

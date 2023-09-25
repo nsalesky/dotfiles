@@ -958,7 +958,9 @@ are equal return nil."
                                                          :enable t)
                                  :cargo (:buildScripts (:enable t))
                                  :diagnostics (:disabled ["unresolved-proc-macro"
-                                                          "unresolved-macro-call"]))))))
+                                                          "unresolved-macro-call"])))))
+  (add-to-list 'eglot-server-programs
+               '(svelte-mode . ("svelteserver" "--stdio"))))
 
 (use-package corfu
   :straight (corfu :files (:defaults "extensions/*")
@@ -1120,6 +1122,14 @@ are equal return nil."
 (use-package pipenv
   :hook (python-mode . pipenv-mode))
 
+(define-derived-mode svelte-mode
+  web-mode "Svelte"
+  "Major mode for Svelte.")
+
+(use-package svelte-mode :straight nil
+  :hook (svelte-mode . eglot-ensure)
+  :mode "\\.svelte\\'")
+
 (use-package typescript-mode
   :mode ("\\.ts\\'" "\\.tsx\\'" "\\.js\\'" "\\.jsx\\'")
   :hook (typescript-mode . eglot-ensure)
@@ -1201,7 +1211,8 @@ are equal return nil."
             ("\\.phtml\\'" . web-mode)
             ("\\.as[cp]x\\'" . web-mode)
             ("\\.erb\\'" . web-mode)
-            ("\\.sgml\\'" . web-mode)))
+            ("\\.sgml\\'" . web-mode)
+            ("\\.svelte\\'" . web-mode)))
     ;; :bind
     ;; ("C-c h" . ns/toggle-web-mode))
 
