@@ -40,7 +40,7 @@
 (setq straight-host-usernames
       '((github . "nsalesky")))
 
-(straight-use-package 'use-package)
+;; (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
 (use-package exec-path-from-shell
@@ -270,8 +270,6 @@
   :config
   (global-hl-todo-mode))
 
-;; (add-hook 'prog-mode-hook 'hl-line-mode)
-
 (defun ns/toggle-window-transparency ()
   "Toggle transparency."
   (interactive)
@@ -428,44 +426,8 @@
   ("C-a" . mwim-beginning)
   ("C-e" . mwim-end))
 
-(setq mail-user-agent 'message-user-agent
-      user-mail-address "nicksalesky@gmail.com"
-      user-full-name "Nicholas Salesky"
-      )
-
-(use-package smtpmail-multi
-  :config
-  (setq smtpmail-multi-accounts
-        '((gmail-main . ("nicksalesky@gmail.com" "smtp.gmail.com" 587 "nicksalesky@gmail.com" nil nil nil nil))))
-
-  (setq smtpmail-multi-associations
-        '(("nicksalesky@gmail.com" gmail-main)))
-
-  (setq smtpmail-multi-default-account 'gmail-main)
-  (setq message-send-mail-function 'smtpmail-multi-send-it)
-
-  (setq smtpmail-debug-info t)
-  (setq smtpmail-debug-verbose t)
-
-  (when (>= emacs-major-version 25)
-    (setq smtpmail-local-domain (car (split-string (shell-command-to-string "hostname -f"))))))
-
-(use-package notmuch
-  :bind
-  ("C-c b" . notmuch)
-  :hook
-  (notmuch-show . variable-pitch-mode)
-  :custom
-  (notmuch-search-oldest-first nil)
-  (notmuch-kill-buffer-on-exit t))
-
-(use-package auth-source-pass
-  :diminish t
-  :config
-  (auth-source-pass-enable))
-
 (use-package dired
-  :straight (:type built-in)
+  :straight nil
   :custom
   (dired-kill-when-opening-new-dired-buffer t))
 
@@ -484,41 +446,6 @@
 ;; (use-package consult-projectile)
 
 (use-package ripgrep)
-
-;; (defun ns/tab-bar-switch-or-create (name func)
-;;   (if (ns/tab-bar-tab-exists name)
-;;       (tab-bar-switch-to-tab name)
-;;     (ns/tab-bar-new-tab name func)))
-
-;; (defun ns/tab-bar-tab-exists (name)
-;;   (member name
-;;           (mapcar #'(lambda (tab) (alist-get 'name tab))
-;;                   (tab-bar-tabs))))
-
-;; (defun ns/tab-bar-new-tab (name func)
-;;   (when (eq nil tab-bar-mode)
-;;     (tab-bar-mode))
-;;   (tab-bar-new-tab)
-;;   (tab-bar-rename-tab name)
-;;   (when func ;; If func is nil, don't try to run it
-;;       (funcall func)))
-
-(use-package tab-bar
-  :straight (:type built-in)
-  :custom
-  (tab-bar-show nil))
-
-  ;; :config
-  ;; (setf mode-line-misc-info ;; I got this from the Hammy README.md
-  ;;       ;; When the tab-bar is active, don't show global-mode-string
-  ;;       ;; in mode-line-misc-info, because we now show that in the
-  ;;       ;; tab-bar using `tab-bar-format-align-right' and
-  ;;       ;; `tab-bar-format-global'.
-  ;;       (remove '(global-mode-string ("" global-mode-string))
-  ;;               mode-line-misc-info))
-  ;; (unless (member 'tab-bar-format-global tab-bar-format)
-  ;;   ;; Show `global-mode-string' in the tab bar.
-  ;;   (setf tab-bar-format (append tab-bar-format '(tab-bar-format-align-right tab-bar-format-global)))))
 
 (use-package magit)
 
@@ -601,7 +528,7 @@
 (add-to-list 'org-tags-exclude-from-inheritance "project")
 (add-to-list 'org-tags-exclude-from-inheritance "rez")
 
-(require 'cl)
+;; (require 'cl)
 (defun cmp-date-property-stamp (prop)
   "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
 If a is before b, return -1. If a is after b, return 1. If they
@@ -845,14 +772,6 @@ are equal return nil."
 
 (keymap-global-set "M-&" 'with-editor-async-shell-command)
 
-(use-package term
-  :custom
-  (explicit-shell-file-name "/usr/bin/fish"))
-
-(use-package eterm-256color
-  :hook
-  (term-mode . eterm-256color-mode))
-
 (use-package vterm
   :straight nil
   :custom
@@ -1035,8 +954,6 @@ are equal return nil."
   (:map flymake-mode-map
         ("M-p" . flymake-goto-prev-error)
         ("M-n" . flymake-goto-next-error)))
-
-(use-package realgud)
 
 (use-package verb
   :after (org)
@@ -1253,5 +1170,3 @@ are equal return nil."
   (pdf-loader-install))
 
 (use-package saveplace-pdf-view)
-
-(use-package request)
