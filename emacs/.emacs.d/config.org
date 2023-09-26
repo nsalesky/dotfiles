@@ -166,15 +166,16 @@ Here's where I configure some basic Emacs features with keybindings.
   (evil-collection-init))
 #+END_SRC
 
-** General
+** +General+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package general
   :ensure t
   :config
   (general-create-definer ns/leader-def
     :prefix "SPC"))
 #+END_SRC
+
 ** +Meow: modal editing+
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1926,12 +1927,6 @@ Editing in a mixed-language web format.
     ;; ("C-c h" . ns/toggle-web-mode))
 #+END_SRC 
 
-*** Yuck (Eww)
-
-#+BEGIN_SRC emacs-lisp
-(use-package yuck-mode
-  :mode "\\.yuck\\'")
-#+END_SRC
 
 * Utilities
 ** Visit Important files

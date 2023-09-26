@@ -1,5 +1,4 @@
-(("Emacs-D-Mode" . "1f5cde29f67c8f68c58fa1530a09b49e9787ecfa")
- ("ace-window" . "77115afc1b0b9f633084cf7479c767988106c196")
+(("ace-window" . "77115afc1b0b9f633084cf7479c767988106c196")
  ("aggressive-indent-mode" . "a437a45868f94b77362c6b913c5ee8e67b273c42")
  ("all-the-icons-completion" . "8eb3e410d63f5d0657b41829e7898793e81f31c0")
  ("all-the-icons.el" . "be9d5dcda9c892e8ca1535e288620eec075eb0be")
@@ -39,7 +38,6 @@
  ("external-completion" . "d0c30edf2d6c134cb2ee60ec2c47cfdeb0b1bb18")
  ("f.el" . "ab3ee3811c53f9c2144ff45130361f3da242ffa2")
  ("flymake" . "a55108fbb575932a02b21bbf64b4016ba8f1f43a")
- ("general.el" . "833dea2c4a60e06fcd552b653dfc8960935c9fb4")
  ("glsl-mode" . "9b2e5f28e489a1f73c4aed734105618ac0dc0c43")
  ("gnu-elpa-mirror" . "ebf10357d7e2e8d5d1ebca1ac7bfa225e05b1b4b")
  ("go-mode.el" . "8dce1e3ba1cdc34a856ad53c8421413cfe33660e")
@@ -107,6 +105,5 @@
  ("xref" . "5d708092fd70864ae898628b0ba2aa850886566f")
  ("xterm-color" . "2ad407c651e90fff2ea85d17bf074cee2c022912")
  ("yaml-mode" . "13728b4b1b1bd33d3a754236a0f23e4c76d6ba91")
- ("yasnippet" . "76e1eee654ea9479ba1441f9c17567694e6a2096")
- ("yuck-mode" . "e084416fa3e7f91bb429edbf7ff1585aa5674367"))
+ ("yasnippet" . "76e1eee654ea9479ba1441f9c17567694e6a2096"))
 :gamma

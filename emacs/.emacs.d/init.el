@@ -52,12 +52,6 @@
 
 (setq disabled-command-function nil)
 
-(use-package general
-  :ensure t
-  :config
-  (general-create-definer ns/leader-def
-    :prefix "SPC"))
-
 (use-package embrace
   :straight (:type git :host github :repo "cute-jumper/embrace.el")
   ;; :bind (("C-M-s-#" . embrace-commander))
@@ -977,15 +971,6 @@ are equal return nil."
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
-(use-package d-mode
-  :straight (:type git :host github :repo "nsalesky/Emacs-D-Mode")
-  :mode "\\.d\\'"
-  :hook
-  (d-mode . eglot-ensure)
-  :config
-  (add-to-list 'org-src-lang-modes '("d" . d))
-  (add-to-list 'eglot-server-programs '(d-mode . ("/home/nsalesky/bin/serve-d"))))
-
 ;; (use-package dockerfile-mode
 ;;   :mode "Dockerfile\\'")
 
@@ -1132,9 +1117,6 @@ are equal return nil."
             ("\\.svelte\\'" . web-mode)))
     ;; :bind
     ;; ("C-c h" . ns/toggle-web-mode))
-
-(use-package yuck-mode
-  :mode "\\.yuck\\'")
 
 (require 'transient)
 
