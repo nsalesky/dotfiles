@@ -996,13 +996,15 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 (use-package ripgrep)
 #+end_src
 
-** +Tab-bar-mode+
+** Tab-bar-mode
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package tab-bar
   :straight nil
+  :init
+  (tab-bar-mode)
   :custom
-  (tab-bar-show nil)
+  (tab-bar-show nil))
 #+END_SRC 
 
 * Version Control

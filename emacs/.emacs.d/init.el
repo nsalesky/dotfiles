@@ -433,6 +433,13 @@
   :init
   (bufler-mode))
 
+(use-package tab-bar
+  :straight nil
+  :init
+  (tab-bar-mode)
+  :custom
+  (tab-bar-show nil))
+
 (use-package magit)
 
 ;; (use-package forge
