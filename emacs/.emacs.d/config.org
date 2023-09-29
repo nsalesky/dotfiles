@@ -722,8 +722,12 @@ Sets up minibuffer completion with Vertico.
   :init
   (setq consult-narrow-key (kbd "<"))
 
-  (autoload 'projectile-project-root "projectile")
-  (setq consult-project-function (lambda (_) (projectile-project-root))))
+  ;; Projectile
+  ;; (autoload 'projectile-project-root "projectile")
+  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+
+  ;; Project.el
+  (setq consult-project-function #'consult--default-project-function))
 #+END_SRC 
 
 ** Orderless: match the different parts of completion candidates
@@ -965,8 +969,16 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   (dired-kill-when-opening-new-dired-buffer t))
 #+END_SRC
 
-** Projectile
-#+begin_src emacs-lisp
+** Bufler.el: a butler for your buffers
+
+#+BEGIN_SRC emacs-lisp
+(use-package bufler
+  :init
+  (bufler-mode))
+#+END_SRC
+
+** +Projectile+
+#+begin_src emacs-lisp :tangle no
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
@@ -1926,7 +1938,6 @@ Editing in a mixed-language web format.
     ;; :bind
     ;; ("C-c h" . ns/toggle-web-mode))
 #+END_SRC 
-
 
 * Utilities
 ** Visit Important files

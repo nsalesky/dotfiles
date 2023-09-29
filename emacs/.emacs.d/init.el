@@ -328,8 +328,12 @@
   :init
   (setq consult-narrow-key (kbd "<"))
 
-  (autoload 'projectile-project-root "projectile")
-  (setq consult-project-function (lambda (_) (projectile-project-root))))
+  ;; Projectile
+  ;; (autoload 'projectile-project-root "projectile")
+  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+
+  ;; Project.el
+  (setq consult-project-function #'consult--default-project-function))
 
 (use-package orderless
   :custom
@@ -425,21 +429,9 @@
   :custom
   (dired-kill-when-opening-new-dired-buffer t))
 
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  ;; :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
+(use-package bufler
   :init
-  ;(when (file-directory-p "~/Documents")
-    ;(setq projectile-project-search-path '("~/Documents")))
-  (setq projectile-switch-project-action #'magit-status
-        projectile-completion-system 'default))
-
-;; (use-package consult-projectile)
-
-(use-package ripgrep)
+  (bufler-mode))
 
 (use-package magit)
 
