@@ -11,8 +11,7 @@ return {
         preserve_window_proportions = true,
     },
     git = {
-        enable = false,
-        ignore = true,
+        enable = true,
     },
     filesystem_watchers = {
         enable = true,
@@ -62,5 +61,7 @@ return {
     },
     filters = {
         dotfiles = false,
+        git_ignored = true,
+        custom = { "^\\.git" },
     },
 }
