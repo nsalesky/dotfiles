@@ -2,6 +2,9 @@ return {
     {
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
+        dependencies = {
+            "RRethy/nvim-treesitter-endwise",
+        },
         opts = {
             auto_install = true,
             highlight = {
@@ -19,10 +22,14 @@ return {
                 "markdown_inline",
                 "python",
                 "regex",
+                "ruby",
                 "rust",
                 "vim",
                 "vimdoc",
                 "yaml",
+            },
+            endwise = {
+                enable = true,
             },
         },
         config = function(_, opts)
