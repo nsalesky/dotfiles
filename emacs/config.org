@@ -332,7 +332,7 @@ Keybindings for working with files.
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 
 (ns/leader-def
-  "." '(find-file :which-key "find file"
+  "." '(find-file :which-key "find file")
   "f" '(:ignore t :which-key "files")
   "fs" '(find-file :which-key "find file")
   "fr" '(consult-recent-file :which-key "find recent file"))
@@ -833,10 +833,8 @@ Sets up minibuffer completion with Vertico.
 Give parenthases rainbow coloring depending on their nested level in all programming modes.
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
-
 #+END_SRC 
 
 ** YASnippet: Create common snippets
@@ -850,29 +848,23 @@ Add various templates to Emacs.
 #+END_SRC
 
 ** Which-key: List commands for current prefix
-
 #+begin_src emacs-lisp
-
 (use-package which-key
-  ;; :after (ivy)
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.3))
-
 #+end_src
 
 ** Olivetti: Centered document editing
 
 #+BEGIN_SRC emacs-lisp
-
 (use-package olivetti
   :custom
   (olivetti-body-width 110)
   (olivetti-style t))
   ;; :hook
   ;; (org-mode . olivetti-mode))
-
 #+END_SRC
 
 ** Iedit: Simple multi-cursor editing
@@ -1690,12 +1682,6 @@ A simple code formatting system for a ton of languages.
   :hook (prog-mode . breadcrumb-local-mode))
 #+END_SRC
 
-*** +Realgud: Improved Grand Unified Debugger (GUD)+
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package realgud)
-#+END_SRC 
-
 *** Verb
 
 #+BEGIN_SRC emacs-lisp
@@ -1703,16 +1689,6 @@ A simple code formatting system for a ton of languages.
   :after (org)
   :config
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
-#+END_SRC
-
-*** +Wakatime+
-Wakatime makes it easy for me to keep track of how much time I'm spending on various projects.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package wakatime-mode
-  :diminish wakatime-mode
-  :config
-  (global-wakatime-mode))
 #+END_SRC
 
 *** ws-butler
@@ -1842,9 +1818,6 @@ Recompile LaTeX documents automatically when saved.
   (python-shell-interpreter "python3")
   :config
   (setq python-ts-mode-hook python-mode-hook))
-
-(use-package pipenv
-  :hook (python-mode . pipenv-mode))
 #+END_SRC
 
 *** Svelte

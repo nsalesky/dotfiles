@@ -1,2 +1,17 @@
 /.doom.d/marginalia.org
 /.emacs.d/transient/
+emacs/eln-cache
+emacs/backups
+emacs/auto-save-list
+emacs/straight/build
+emacs/straight/modified
+emacs/straight/repos
+emacs/straight/build-cache.el
+emacs/transient
+emacs/history
+emacs/org-roam.db
+emacs/places
+emacs/projectile-bookmarks.eld
+emacs/projects
+emacs/recentf
+emacs/.cache/svg-lib

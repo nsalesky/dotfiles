@@ -364,6 +364,12 @@
    ("M-s" . consult-history)
    ("M-r" . consult-history))
 
+  :general
+  (ns/leader-def
+    "s" '(:ignore t :which-key "search")
+    "sr" '(consult-ripgrep :which-key "ripgrep")
+    "sl" '(consult-line :which-key "line search"))
+
   :init
   (setq consult-narrow-key (kbd "<"))
 
@@ -435,7 +441,6 @@
   (yas-global-mode))
 
 (use-package which-key
-  ;; :after (ivy)
   :init (which-key-mode)
   :diminish which-key-mode
   :config
@@ -825,7 +830,14 @@ are equal return nil."
                ("n" . multi-vterm-next)
                ("t" . multi-vterm-dedicated-toggle)
                ("p" . multi-vterm-project)
-               ("r" . multi-vterm-rename-buffer)))
+               ("r" . multi-vterm-rename-buffer))
+  :general
+  (ns/leader-def
+    "v" '(:ignore t :which-key "terminal")
+    "vv" '(multi-vterm :which-key "open new term")
+    "vp" '(multi-vterm-prev :which-key "prev term")
+    "vn" '(multi-vterm-next :which-key "next term")
+    "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 
 ;; (use-package lsp-mode
 ;;     :commands (lsp lsp-deferred)
@@ -1062,9 +1074,6 @@ are equal return nil."
   (python-shell-interpreter "python3")
   :config
   (setq python-ts-mode-hook python-mode-hook))
-
-(use-package pipenv
-  :hook (python-mode . pipenv-mode))
 
 (define-derived-mode svelte-mode
   web-mode "Svelte"
