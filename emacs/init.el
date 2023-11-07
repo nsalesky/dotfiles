@@ -44,36 +44,6 @@
 
 (setq disabled-command-function nil)
 
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-keybinding nil
-        evil-want-integration t
-        evil-want-C-u-scroll t
-        evil-want-C-d-scroll t)
-
-  :config
-  (evil-mode 1))
-
-(use-package evil-collection
-  :ensure t
-  :after evil
-  :config
-  (evil-collection-init))
-
-(use-package general
-  :ensure t
-  :config
-  (general-evil-setup t)
-  (general-create-definer ns/leader-def
-    :keymaps '(normal visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-  (general-create-definer ns/local-leader-def
-    :keymaps '(normal visual emacs)
-    :prefix "SPC m"
-    :global-prefix "C-SPC m"))
-
 (use-package embrace
   :straight (:type git :host github :repo "cute-jumper/embrace.el")
   ;; :bind (("C-M-s-#" . embrace-commander))
@@ -112,25 +82,8 @@
 (setq recentf-max-saved-items 25)
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 
-(ns/leader-def
-  "." '(find-file :which-key "find file")
-  "f" '(:ignore t :which-key "files")
-  "fs" '(find-file :which-key "find file")
-  "fr" '(consult-recent-file :which-key "find recent file"))
-
-(ns/leader-def
-  "," '(consult-buffer :which-key "select buffer")
-  "b" '(:ignore t :which-key "buffers")
-  "bb" '(consult-buffer :which-key "select buffer"))
-
 (use-package ace-window
   :bind ("M-o" . ace-window))
-
-(ns/leader-def
-  "e" '(:ignore t :which-key "eval")
-  "el" '(eval-last-sexp :which-key "eval last sexpr")
-  "ed" '(eval-defun :which-key "eval defun")
-  "e:" '(eval-expression :which-key "eval expression"))
 
 (use-package hydra)
 
@@ -222,9 +175,18 @@
   "My custom variable pitch font choice.")
 
 (custom-set-faces
- `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 120 :width normal :foundry "JB  "))))
- `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 120))))
- `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
+ `(default ((t (:family ,ns/default-font
+                        :slant
+                        normal
+                        :weight
+                        regular
+                        :height
+                        110
+                        :width
+                        normal)))))
+ ;; `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 110 :width normal :foundry "JB  "))))
+ ;; `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 110))))
+ ;; `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
 
 (use-package all-the-icons)
 
@@ -364,11 +326,11 @@
    ("M-s" . consult-history)
    ("M-r" . consult-history))
 
-  :general
-  (ns/leader-def
-    "s" '(:ignore t :which-key "search")
-    "sr" '(consult-ripgrep :which-key "ripgrep")
-    "sl" '(consult-line :which-key "line search"))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "s" '(:ignore t :which-key "search")
+  ;;   "sr" '(consult-ripgrep :which-key "ripgrep")
+  ;;   "sl" '(consult-line :which-key "line search"))
 
   :init
   (setq consult-narrow-key (kbd "<"))
@@ -515,11 +477,11 @@
   (org-default-notes-file "~/Documents/notes/notes.org")
 
   (org-src-tab-acts-natively t)
-  (org-src-preserve-indentation t)
+  (org-src-preserve-indentation t))
 
-  :general
-  (:keymaps 'org-mode-map :states '(normal emacs visual)
-    "SPC m t" '(org-babel-tangle :which-key "Tangle current file")))
+  ;; :general
+  ;; (:keymaps 'org-mode-map :states '(normal emacs visual)
+  ;;   "SPC m t" '(org-babel-tangle :which-key "Tangle current file")))
 
 (use-package org-appear
   :straight (org-appear :type git :host github :repo "awth13/org-appear")
@@ -830,14 +792,14 @@ are equal return nil."
                ("n" . multi-vterm-next)
                ("t" . multi-vterm-dedicated-toggle)
                ("p" . multi-vterm-project)
-               ("r" . multi-vterm-rename-buffer))
-  :general
-  (ns/leader-def
-    "v" '(:ignore t :which-key "terminal")
-    "vv" '(multi-vterm :which-key "open new term")
-    "vp" '(multi-vterm-prev :which-key "prev term")
-    "vn" '(multi-vterm-next :which-key "next term")
-    "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
+               ("r" . multi-vterm-rename-buffer)))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "v" '(:ignore t :which-key "terminal")
+  ;;   "vv" '(multi-vterm :which-key "open new term")
+  ;;   "vp" '(multi-vterm-prev :which-key "prev term")
+  ;;   "vn" '(multi-vterm-next :which-key "next term")
+  ;;   "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 
 ;; (use-package lsp-mode
 ;;     :commands (lsp lsp-deferred)
@@ -989,10 +951,6 @@ are equal return nil."
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-(use-package eldoc-box
-  :hook
-  (eglot-managed-mode . eldoc-box-hover-mode))
-
 (use-package format-all)
   ;:hook
   ;(prog-mode . format-all-mode)
@@ -1007,6 +965,14 @@ are equal return nil."
   :after (org)
   :config
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+
+(use-package envrc
+  :straight (envrc :type git :host github :repo "purcell/envrc")
+  :config
+  (envrc-global-mode))
+
+; (use-package inheritenv
+;   :straight (inheritenv :type git :host github :repo "purcell/inheritenv"))
 
 (use-package ws-butler
   :diminish ws-butler-mode
@@ -1116,10 +1082,13 @@ are equal return nil."
 ;;   (tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil)))
   ;; (tide-completion-setup-company-backend t))
 
-(use-package ruby-mode
-  :hook (ruby-mode . eglot-ensure))
+(use-package ruby-mode)
 
 (use-package inf-ruby) ;; Interact with a Ruby REPL
+
+(use-package robe
+  :hook (ruby-mode . robe-mode)
+  :hook (ruby-ts-mode . robe-mode))
 
 ;; (defun ns/setup-eglot-rust ()
 ;;   (setq-local eglot-workspace-configuration

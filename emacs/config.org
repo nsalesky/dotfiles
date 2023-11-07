@@ -128,9 +128,9 @@ Here's where I configure some basic Emacs features with keybindings.
 (setq disabled-command-function nil)
 #+END_SRC
 
-** Evil 😈
+** +Evil 😈+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package evil
   :ensure t
   :init
@@ -149,9 +149,9 @@ Here's where I configure some basic Emacs features with keybindings.
   (evil-collection-init))
 #+END_SRC
 
-** General
+** +General+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package general
   :ensure t
   :config
@@ -330,7 +330,9 @@ Keybindings for working with files.
 (setq recentf-max-menu-items 25)
 (setq recentf-max-saved-items 25)
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "." '(find-file :which-key "find file")
   "f" '(:ignore t :which-key "files")
@@ -339,7 +341,7 @@ Keybindings for working with files.
 #+END_SRC
 
 ** Buffers
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "," '(consult-buffer :which-key "select buffer")
   "b" '(:ignore t :which-key "buffers")
@@ -354,8 +356,15 @@ Keybindings for operating windows.
   :bind ("M-o" . ace-window))
 #+END_SRC
 
+** Text manipulation
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(ns/leader-def
+  "/" '(comment-line :which-key "Toggle comment"))
+#+END_SRC
+
 ** Eval
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "e" '(:ignore t :which-key "eval")
   "el" '(eval-last-sexp :which-key "eval last sexpr")
@@ -527,9 +536,18 @@ Here are my current font settings
   "My custom variable pitch font choice.")
 
 (custom-set-faces
- `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 120 :width normal :foundry "JB  "))))
- `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 120))))
- `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
+ `(default ((t (:family ,ns/default-font
+                        :slant
+                        normal
+                        :weight
+                        regular
+                        :height
+                        110
+                        :width
+                        normal)))))
+ ;; `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 110 :width normal :foundry "JB  "))))
+ ;; `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 110))))
+ ;; `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
 #+END_SRC  
 
 Also install helpful icons useful for a ton of packages to add more visual detail. *NOTE* you'll have to run ~M-x all-the-icons-install-fonts~ in order to, well, install the fonts!
@@ -731,11 +749,11 @@ Sets up minibuffer completion with Vertico.
    ("M-s" . consult-history)
    ("M-r" . consult-history))
 
-  :general
-  (ns/leader-def
-    "s" '(:ignore t :which-key "search")
-    "sr" '(consult-ripgrep :which-key "ripgrep")
-    "sl" '(consult-line :which-key "line search"))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "s" '(:ignore t :which-key "search")
+  ;;   "sr" '(consult-ripgrep :which-key "ripgrep")
+  ;;   "sl" '(consult-line :which-key "line search"))
 
   :init
   (setq consult-narrow-key (kbd "<"))
@@ -1062,11 +1080,11 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   (org-default-notes-file "~/Documents/notes/notes.org")
 
   (org-src-tab-acts-natively t)
-  (org-src-preserve-indentation t)
+  (org-src-preserve-indentation t))
 
-  :general
-  (:keymaps 'org-mode-map :states '(normal emacs visual)
-    "SPC m t" '(org-babel-tangle :which-key "Tangle current file")))
+  ;; :general
+  ;; (:keymaps 'org-mode-map :states '(normal emacs visual)
+  ;;   "SPC m t" '(org-babel-tangle :which-key "Tangle current file")))
   
 
 #+end_src
@@ -1449,14 +1467,14 @@ Give Org-mode documents some extra visual polish.
                ("n" . multi-vterm-next)
                ("t" . multi-vterm-dedicated-toggle)
                ("p" . multi-vterm-project)
-               ("r" . multi-vterm-rename-buffer))
-  :general
-  (ns/leader-def
-    "v" '(:ignore t :which-key "terminal")
-    "vv" '(multi-vterm :which-key "open new term")
-    "vp" '(multi-vterm-prev :which-key "prev term")
-    "vn" '(multi-vterm-next :which-key "next term")
-    "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
+               ("r" . multi-vterm-rename-buffer)))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "v" '(:ignore t :which-key "terminal")
+  ;;   "vv" '(multi-vterm :which-key "open new term")
+  ;;   "vp" '(multi-vterm-prev :which-key "prev term")
+  ;;   "vn" '(multi-vterm-next :which-key "next term")
+  ;;   "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 #+END_SRC 
 
 * Programming
@@ -1648,13 +1666,6 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 #+END_SRC 
 
-*** Eldoc-box: move eldoc into child frames
-#+BEGIN_SRC emacs-lisp
-(use-package eldoc-box
-  :hook
-  (eglot-managed-mode . eldoc-box-hover-mode))
-#+END_SRC 
-
 *** Format All The Code: Simple code formatting
 A simple code formatting system for a ton of languages.
 
@@ -1689,6 +1700,18 @@ A simple code formatting system for a ton of languages.
   :after (org)
   :config
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+#+END_SRC
+
+*** envrc: set variables and configure project environments
+
+#+BEGIN_SRC emacs-lisp
+(use-package envrc
+  :straight (envrc :type git :host github :repo "purcell/envrc")
+  :config
+  (envrc-global-mode))
+
+; (use-package inheritenv
+;   :straight (inheritenv :type git :host github :repo "purcell/inheritenv"))
 #+END_SRC
 
 *** ws-butler
@@ -1872,12 +1895,13 @@ Recompile LaTeX documents automatically when saved.
 *** Ruby
 
 #+BEGIN_SRC emacs-lisp
-
-(use-package ruby-mode
-  :hook (ruby-mode . eglot-ensure))
+(use-package ruby-mode)
 
 (use-package inf-ruby) ;; Interact with a Ruby REPL
 
+(use-package robe
+  :hook (ruby-mode . robe-mode)
+  :hook (ruby-ts-mode . robe-mode))
 #+END_SRC
 
 *** Rust
