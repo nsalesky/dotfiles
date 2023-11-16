@@ -1783,6 +1783,14 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
   (clojurec-mode . ns/setup-cider-format-hook))
 #+END_SRC 
 
+*** Gameboy
+
+#+BEGIN_SRC emacs-lisp
+(use-package rgbds-mode
+  :straight (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
+  :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
+#+END_SRC
+
 *** GLSL: OpenGL shaders
 
 #+BEGIN_SRC emacs-lisp

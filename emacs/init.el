@@ -1007,6 +1007,10 @@ are equal return nil."
   (clojurescript-mode . ns/setup-cider-format-hook)
   (clojurec-mode . ns/setup-cider-format-hook))
 
+(use-package rgbds-mode
+  :straight (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
+  :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
+
 (use-package glsl-mode
   :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
 
