@@ -837,6 +837,19 @@ Sets up minibuffer completion with Vertico.
 #+END_SRC 
 
 * Editor
+** Ace-isearch: unify disparate searches
+
+#+BEGIN_SRC emacs-lisp
+(use-package ace-isearch
+  :custom
+  (ace-isearch-function #'avy-goto-word-1)
+  (ace-isearch-2-function #'avy-goto-char-2)
+  (ace-isearch-function-from-isearch #'ace-isearch-consult-line-from-isearch)
+  (ace-isearch-jump-based-on-one-char nil)
+  :config
+  (global-ace-isearch-mode))
+#+END_SRC
+
 ** Aggressive-indent: Always keep code properly indented
 #+BEGIN_SRC emacs-lisp
 

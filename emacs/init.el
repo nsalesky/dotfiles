@@ -390,6 +390,15 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+(use-package ace-isearch
+  :custom
+  (ace-isearch-function #'avy-goto-word-1)
+  (ace-isearch-2-function #'avy-goto-char-2)
+  (ace-isearch-function-from-isearch #'ace-isearch-consult-line-from-isearch)
+  (ace-isearch-jump-based-on-one-char nil)
+  :config
+  (global-ace-isearch-mode))
+
 (use-package aggressive-indent
   :hook
   (emacs-lisp-mode-hook . aggressive-indent-mode))
