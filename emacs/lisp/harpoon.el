@@ -90,6 +90,19 @@ defined by `harpoon-persist-filename'."
                          (harpoon--hook-file-new-project current-filename))
                        #'string-equal)))))
 
+(defun harpoon-visit-entry (index)
+  (let* ((project-root (funcall harpoon-project-root-func))
+         (project-files (plist-get harpoon--projects-plist
+                                   project-root
+                                   #'string-equal))
+         (file-info (nth index project-files)))
+    (message "file-info: '%S'" file-info)
+    (when file-info
+      (let ((filename (car file-info))
+            (point-pos (cdr file-info)))
+        (find-file filename)
+        (goto-char point-pos)))))
+
 (define-minor-mode harpoon-mode
   "Toggle Harpoon mode.
 When Harpoon mode is enabled, the position of point is tracked
@@ -105,9 +118,7 @@ restored."
 
 (harpoon--save-to-disk)
 
-(harpoon-hook-file)
-(funcall harpoon-project-root-func nil)
-(project-root)
+(harpoon-visit-entry 0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
