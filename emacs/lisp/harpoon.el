@@ -36,6 +36,12 @@
   #'harpoon-project-root-project
   "The function used to determine the project root")
 
+(defvar-local harpoon--cached-point
+    nil
+  "The previously-saved position of point for the given buffer.
+If this buffer's corresponding filename is not being tracked in
+`harpoon--projects-plist', then this will always be nil.")
+
 (defun harpoon-project-root-project ()
     "Determine the root directory of the current project using project.el"
   (project-root (project-current t)))
@@ -96,20 +102,59 @@ defined by `harpoon-persist-filename'."
                                    project-root
                                    #'string-equal))
          (file-info (nth index project-files)))
-    (message "file-info: '%S'" file-info)
     (when file-info
       (let ((filename (car file-info))
             (point-pos (cdr file-info)))
         (find-file filename)
-        (goto-char point-pos)))))
+        (goto-char poient-pos)))))
 
-(define-minor-mode harpoon-mode
-  "Toggle Harpoon mode.
-When Harpoon mode is enabled, the position of point is tracked
+(defun harpoon--update-file-pos (project-files filename point-pos)
+  (if (not project-files)
+      nil
+    (if (string-equal filename
+                      (car (car project-files)))
+        (cons `(,filename . ,point-pos)
+              (cdr project-files))
+      (cons (car project-files)
+            (harpoon--update-file-pos (cdr project-files)
+                                      filename
+                                      point-pos)))))
+
+(defun harpoon-update-tracking ()
+  "Compares the value of point to the value of `harpoon--cached-point'.
+If the values differ, then `harpoon--cached-point' and
+`harpoon--projects-plist' will be updated with the new
+value of point."
+  (unless (equal (point) harpoon--cached-point)
+    (setq harpoon--cached-point (point))
+    (let* ((current-filename (buffer-file-name))
+           (project-root (funcall harpoon-project-root-func))
+           (project-files (plist-get harpoon--projects-plist
+                                     project-root
+                                     #'string-equal)))
+      (setq harpoon--projects-plist
+            (plist-put harpoon--projects-plist
+                       project-root
+                       (harpoon--update-file-pos project-files
+                                                 current-filename
+                                                 harpoon--cached-point)
+                       #'string-equal)))))
+
+(define-minor-mode harpoon-tracking-mode
+  "Toggle Harpoon tracking mode.
+When Harpoon tracking mode is enabled, the position of point is tracked
 for files added to the harpoon list and can be interactively
 restored."
   :global t
-  :lighter " Harpoon")
+  :lighter " Harpoon"
+  (if harpoon-tracking-mode
+      (add-hook 'post-command-hook
+                #'harpoon-update-tracking
+                nil
+                t)
+    (remove-hook 'post-command-hook
+                 #'harpoon-update-tracking
+                 t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TODO: testing
