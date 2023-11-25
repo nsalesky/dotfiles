@@ -526,28 +526,19 @@ Set up the fonts for text rendering, pretty self explanatory :)
 
 Here are my current font settings
 #+BEGIN_SRC emacs-lisp
-(defvar ns/default-font "JetBrainsMono Nerd Font"
+(defvar ns/default-font "JetBrainsMono NF"
   "My custom default font choice.")
 
-(defvar ns/fixed-pitch-font "JetBrainsMono Nerd Font"
+(defvar ns/fixed-pitch-font "JetBrainsMono NF"
   "My custom fixed pitch font choice.")
 
-(defvar ns/variable-pitch-font "JetBrainsMono Nerd Font"
+(defvar ns/variable-pitch-font "JetBrainsMono NF"
   "My custom variable pitch font choice.")
 
 (custom-set-faces
- `(default ((t (:family ,ns/default-font
-                        :slant
-                        normal
-                        :weight
-                        regular
-                        :height
-                        110
-                        :width
-                        normal)))))
- ;; `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 110 :width normal :foundry "JB  "))))
- ;; `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 110))))
- ;; `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
+ `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 110 :width normal :foundry "JB  "))))
+ `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 110))))
+ `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
 #+END_SRC  
 
 Also install helpful icons useful for a ton of packages to add more visual detail. *NOTE* you'll have to run ~M-x all-the-icons-install-fonts~ in order to, well, install the fonts!
@@ -1464,7 +1455,6 @@ Give Org-mode documents some extra visual polish.
 ** Vterm
 #+BEGIN_SRC emacs-lisp
 (use-package vterm
-  :straight nil
   :custom
   (vterm-shell "fish")
   (vterm-max-scrollback 10000))
@@ -2031,7 +2021,6 @@ A little transient function for visiting my common files that aren't accessible 
 (use-package tablist)
 
 (use-package pdf-tools
-  :straight nil
   :config
   (pdf-loader-install))
 #+END_SRC

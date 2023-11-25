@@ -14,7 +14,7 @@ end
 -- wayland_gnome.apply_to_config(config)
 
 -- Font settings
-config.font = wezterm.font("JetBrainsMono Nerd Font")
+config.font = wezterm.font("JetBrainsMono NF")
 config.font_size = 10
 config.line_height = 1.0
 config.color_scheme = "Catppuccin Macchiato"

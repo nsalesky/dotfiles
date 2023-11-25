@@ -165,28 +165,19 @@
   (diminish 'visual-line-mode)
   (diminish 'abbrev))
 
-(defvar ns/default-font "JetBrainsMono Nerd Font"
+(defvar ns/default-font "JetBrainsMono NF"
   "My custom default font choice.")
 
-(defvar ns/fixed-pitch-font "JetBrainsMono Nerd Font"
+(defvar ns/fixed-pitch-font "JetBrainsMono NF"
   "My custom fixed pitch font choice.")
 
-(defvar ns/variable-pitch-font "JetBrainsMono Nerd Font"
+(defvar ns/variable-pitch-font "JetBrainsMono NF"
   "My custom variable pitch font choice.")
 
 (custom-set-faces
- `(default ((t (:family ,ns/default-font
-                        :slant
-                        normal
-                        :weight
-                        regular
-                        :height
-                        110
-                        :width
-                        normal)))))
- ;; `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 110 :width normal :foundry "JB  "))))
- ;; `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 110))))
- ;; `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
+ `(default ((t (:family ,ns/default-font :slant normal :weight regular :height 110 :width normal :foundry "JB  "))))
+ `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 110))))
+ `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
 
 (use-package all-the-icons)
 
@@ -785,7 +776,6 @@ are equal return nil."
 (keymap-global-set "M-&" 'with-editor-async-shell-command)
 
 (use-package vterm
-  :straight nil
   :custom
   (vterm-shell "fish")
   (vterm-max-scrollback 10000))
@@ -1180,7 +1170,6 @@ are equal return nil."
 (use-package tablist)
 
 (use-package pdf-tools
-  :straight nil
   :config
   (pdf-loader-install))
 
