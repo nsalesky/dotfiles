@@ -560,7 +560,6 @@
 (add-to-list 'org-tags-exclude-from-inheritance "project")
 (add-to-list 'org-tags-exclude-from-inheritance "rez")
 
-;; (require 'cl)
 (defun cmp-date-property-stamp (prop)
   "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
 If a is before b, return -1. If a is after b, return 1. If they
@@ -1079,33 +1078,6 @@ are equal return nil."
   :hook (typescript-mode . eglot-ensure)
   :config
   (setq typescript-indent-level 4))
-
-;; (defun tide-completion-at-point ()
-;;   (let ((prefix (progn (looking-back "[a-zA-Z_$]\*" 50 t) (match-string 0))))
-;;     (tide-command:completions
-;;      prefix
-;;      `(lambda (response)
-;;         (completion-in-region (- (point) (length ',prefix)) (point)
-;;                               (loop for completion in response
-;;                                     if (string-prefix-p ',prefix completion)
-;;                                     collect completion))))))
-
-;; (defun ns/setup-tide-mode ()
-;;   (interactive)
-;;   (tide-setup)
-;;   (tide-hl-identifier-mode +1)
-;;   (add-hook 'before-save-hook #'tide-format-before-save nil t)
-;;   (add-hook 'completion-at-point-functions #'tide-completion-at-point nil t))
-;;   ;; (add-hook 'completion-at-point-functions (cape-company-to-capf #'company-tide) nil t))
-
-;; (use-package tide
-;;   :after web-mode
-;;   :init
-;;   :hook
-;;   (typescript-mode . ns/setup-tide-mode)
-;;   :custom
-;;   (tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil)))
-  ;; (tide-completion-setup-company-backend t))
 
 (use-package ruby-mode
   :elpaca nil)

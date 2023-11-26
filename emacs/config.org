@@ -1192,7 +1192,6 @@ Here's where I set up my agenda system. I like to keep an inbox file where I can
 ~TODO~: Need to find a better way to organize this into the ~org-agenda~ section even though it depends on ~org-roam~.
 
 #+BEGIN_SRC emacs-lisp
-;; (require 'cl)
 (defun cmp-date-property-stamp (prop)
   "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
 If a is before b, return -1. If a is after b, return 1. If they
@@ -1382,14 +1381,9 @@ Since the list of ~org-agenda-files~ is initialized statically when Emacs restar
 Give Org-mode documents some extra visual polish.
 
 #+BEGIN_SRC emacs-lisp :tangle no
-
-;; (use-package org-modern
-;;   :config
-;;   (global-org-modern-mode))
-;;     :config
-;;     (add-hook 'org-mode-hook #'org-modern-mode)
-;;     (add-hook 'org-agenda-finalize #'org-modern-agenda))
-
+(use-package org-modern
+  :config
+  (global-org-modern-mode))
 #+END_SRC
 
 * Note Taking
@@ -1905,34 +1899,6 @@ Recompile LaTeX documents automatically when saved.
   :hook (typescript-mode . eglot-ensure)
   :config
   (setq typescript-indent-level 4))
-
-;; (defun tide-completion-at-point ()
-;;   (let ((prefix (progn (looking-back "[a-zA-Z_$]\*" 50 t) (match-string 0))))
-;;     (tide-command:completions
-;;      prefix
-;;      `(lambda (response)
-;;         (completion-in-region (- (point) (length ',prefix)) (point)
-;;                               (loop for completion in response
-;;                                     if (string-prefix-p ',prefix completion)
-;;                                     collect completion))))))
-
-;; (defun ns/setup-tide-mode ()
-;;   (interactive)
-;;   (tide-setup)
-;;   (tide-hl-identifier-mode +1)
-;;   (add-hook 'before-save-hook #'tide-format-before-save nil t)
-;;   (add-hook 'completion-at-point-functions #'tide-completion-at-point nil t))
-;;   ;; (add-hook 'completion-at-point-functions (cape-company-to-capf #'company-tide) nil t))
-
-;; (use-package tide
-;;   :after web-mode
-;;   :init
-;;   :hook
-;;   (typescript-mode . ns/setup-tide-mode)
-;;   :custom
-;;   (tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil)))
-  ;; (tide-completion-setup-company-backend t))
-
 #+end_src
 
 *** Ruby
