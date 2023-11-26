@@ -76,34 +76,65 @@ Create a ~custom.el~ file to store customization info instead of init.el, since 
 #+END_SRC
 
 * Package System Setup
-I'm using =straight.el= with =use-package= to install and configure packages
+I'm using =elpaca= with =use-package= to install and configure packages
 
-Set up =straight.el=
+Set up =elpaca=
 #+BEGIN_SRC emacs-lisp
+(defvar elpaca-installer-version 0.6)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (call-process "git" nil buffer t "clone"
+                                       (plist-get order :repo) repo)))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+#+END_SRC
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+Disable =package.el=
+#+BEGIN_SRC emacs-lisp :tangle early-init.el
+(setq package-enable-at-startup nil)
+#+END_SRC
 
-(setq straight-host-usernames
-      '((github . "nsalesky")))
-
-#+END_SRC 
-
-Set up =use-package=
+Install =use-package= support
 #+BEGIN_SRC emacs-lisp
-;; (straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
-#+END_SRC 
+(elpaca elpaca-use-package
+        ;; Enable :elpaca use-package keyword
+        (elpaca-use-package-mode)
+        ;; Assume :elpaca t unless otherwise specified
+        (setq elpaca-use-package-by-default t))
+
+;; Block until current queue processed
+(elpaca-wait)
+#+END_SRC
+
 
 Set up environment variables
 #+BEGIN_SRC emacs-lisp
@@ -164,6 +195,7 @@ Here's where I configure some basic Emacs features with keybindings.
     :keymaps '(normal visual emacs)
     :prefix "SPC m"
     :global-prefix "C-SPC m"))
+(elpaca-wait)
 #+END_SRC
 
 ** +Meow: modal editing+
@@ -267,7 +299,7 @@ Here's where I configure some basic Emacs features with keybindings.
 ** Embrace: surround
 #+BEGIN_SRC emacs-lisp
 (use-package embrace
-  :straight (:type git :host github :repo "cute-jumper/embrace.el")
+  :elpaca (embrace :type git :host github :repo "cute-jumper/embrace.el")
   ;; :bind (("C-M-s-#" . embrace-commander))
   :config
   (defun embrace-markdown-mode-hook ()
@@ -396,6 +428,7 @@ Keybindings for operating windows.
 #+BEGIN_SRC emacs-lisp
 
 (use-package saveplace
+  :elpaca nil
   :unless noninteractive
   :config
   (setq save-place-limit 1000)
@@ -407,6 +440,7 @@ Keybindings for operating windows.
 #+BEGIN_SRC emacs-lisp
 
 (use-package savehist
+  :elpaca nil
   :unless noninteractive
   :defer 1
   :config
@@ -996,7 +1030,7 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 
 #+BEGIN_SRC emacs-lisp
 (use-package dired
-  :straight nil
+  :elpaca nil
   :custom
   (dired-kill-when-opening-new-dired-buffer t))
 #+END_SRC
@@ -1032,7 +1066,7 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 
 #+BEGIN_SRC emacs-lisp
 (use-package tab-bar
-  :straight nil
+  :elpaca nil
   :init
   (tab-bar-mode)
   :custom
@@ -1067,7 +1101,7 @@ The very basics for Org-mode, setting up fonts and basic visual features.
 
 ;; Org Mode
 (use-package org
-  :straight (:type built-in)
+  :elpaca nil
   :bind
   ("C-c l" . org-store-link)
   :hook (org-mode . ns/org-mode-setup)
@@ -1097,7 +1131,7 @@ The very basics for Org-mode, setting up fonts and basic visual features.
 
 #+BEGIN_SRC emacs-lisp
 (use-package org-appear
-  :straight (org-appear :type git :host github :repo "awth13/org-appear")
+  :elpaca (org-appear :type git :host github :repo "awth13/org-appear")
   :hook (org-mode . org-appear-mode))
 #+END_SRC 
 
@@ -1177,7 +1211,7 @@ are equal return nil."
 		  (if (eq cmp t) nil (signum cmp))
 		  ))))
 
-(with-eval-after-load "org-roam"
+(elpaca nil
   ;; Got this from https://d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5.html
   (defun ns/org-roam-files-by-tag (tag)
     "Finds the org roam files with the given TAG."
@@ -1404,7 +1438,6 @@ Give Org-mode documents some extra visual polish.
   :config
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-enable))
-(require 'org-roam) ;; Force org-roam to load
 #+END_SRC
 
 ** consult-org-roam
@@ -1435,7 +1468,7 @@ Give Org-mode documents some extra visual polish.
 ** Org-roam-ui
 #+BEGIN_SRC emacs-lisp
 (use-package org-roam-ui
-  :straight
+  :elpaca
     (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
     :after org-roam
 ;;  :hook (after-init . org-roam-ui-mode)
@@ -1544,7 +1577,7 @@ Give Org-mode documents some extra visual polish.
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package treesit-auto
-  :straight (:type git :host github :repo "renzmann/treesit-auto")
+  :elpaca (treesit-auto :type git :host github :repo "renzmann/treesit-auto")
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -1609,7 +1642,7 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
 
 #+BEGIN_SRC emacs-lisp
 (use-package corfu
-  :straight (corfu :files (:defaults "extensions/*")
+  :elpaca (corfu :files (:defaults "extensions/*")
                    :includes (corfu-info corfu-history))
   :bind
   (:map corfu-map
@@ -1692,7 +1725,7 @@ A simple code formatting system for a ton of languages.
 *** +Breadcrumb: header line for project structure+
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package breadcrumb
-  :straight (:type git :host github :repo "joaotavora/breadcrumb")
+  :elpaca (:type git :host github :repo "joaotavora/breadcrumb")
   :hook (prog-mode . breadcrumb-local-mode))
 #+END_SRC
 
@@ -1705,16 +1738,13 @@ A simple code formatting system for a ton of languages.
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
 #+END_SRC
 
-*** envrc: set variables and configure project environments
+*** +envrc: set variables and configure project environments+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package envrc
-  :straight (envrc :type git :host github :repo "purcell/envrc")
+  :elpaca (envrc :type git :host github :repo "purcell/envrc")
   :config
   (envrc-global-mode))
-
-; (use-package inheritenv
-;   :straight (inheritenv :type git :host github :repo "purcell/inheritenv"))
 #+END_SRC
 
 *** ws-butler
@@ -1736,6 +1766,7 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
 
 #+BEGIN_SRC emacs-lisp
 (use-package re-builder
+  :elpaca nil
   :custom
   (reb-re-syntax 'string))
 #+END_SRC 
@@ -1790,7 +1821,7 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
 
 #+BEGIN_SRC emacs-lisp
 (use-package rgbds-mode
-  :straight (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
+  :elpaca (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
   :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
 #+END_SRC
 
@@ -1820,6 +1851,7 @@ Recompile LaTeX documents automatically when saved.
   ;; (async-shell-command (concat "pdflatex " (buffer-file-name))))
 
 (use-package tex-mode
+  :elpaca nil
   :hook (latex-mode . (lambda () (add-hook 'after-save-hook #'ns/compile-tex-doc nil t))))
 #+END_SRC
 
@@ -1860,7 +1892,7 @@ Recompile LaTeX documents automatically when saved.
   web-mode "Svelte"
   "Major mode for Svelte.")
 
-(use-package svelte-mode :straight nil
+(use-package svelte-mode :elpaca nil
   :hook (svelte-mode . eglot-ensure)
   :mode "\\.svelte\\'")
 #+END_SRC
@@ -1906,7 +1938,8 @@ Recompile LaTeX documents automatically when saved.
 *** Ruby
 
 #+BEGIN_SRC emacs-lisp
-(use-package ruby-mode)
+(use-package ruby-mode
+  :elpaca nil)
 
 (use-package inf-ruby) ;; Interact with a Ruby REPL
 
@@ -2030,3 +2063,7 @@ Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
 (use-package saveplace-pdf-view)
 #+END_SRC
  
+* Process Elpaca Queue
+#+BEGIN_SRC emacs-lisp
+(elpaca-process-queues)
+#+END_SRC

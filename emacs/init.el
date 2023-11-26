@@ -16,24 +16,51 @@
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+(defvar elpaca-installer-version 0.6)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (call-process "git" nil buffer t "clone"
+                                       (plist-get order :repo) repo)))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
 
-(setq straight-host-usernames
-      '((github . "nsalesky")))
+(elpaca elpaca-use-package
+        ;; Enable :elpaca use-package keyword
+        (elpaca-use-package-mode)
+        ;; Assume :elpaca t unless otherwise specified
+        (setq elpaca-use-package-by-default t))
 
-;; (straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
+;; Block until current queue processed
+(elpaca-wait)
 
 (use-package exec-path-from-shell
   :config
@@ -45,7 +72,7 @@
 (setq disabled-command-function nil)
 
 (use-package embrace
-  :straight (:type git :host github :repo "cute-jumper/embrace.el")
+  :elpaca (embrace :type git :host github :repo "cute-jumper/embrace.el")
   ;; :bind (("C-M-s-#" . embrace-commander))
   :config
   (defun embrace-markdown-mode-hook ()
@@ -101,12 +128,14 @@
   (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
 
 (use-package saveplace
+  :elpaca nil
   :unless noninteractive
   :config
   (setq save-place-limit 1000)
   (save-place-mode))
 
 (use-package savehist
+  :elpaca nil
   :unless noninteractive
   :defer 1
   :config
@@ -431,7 +460,7 @@
   ("C-e" . mwim-end))
 
 (use-package dired
-  :straight nil
+  :elpaca nil
   :custom
   (dired-kill-when-opening-new-dired-buffer t))
 
@@ -440,7 +469,7 @@
   (bufler-mode))
 
 (use-package tab-bar
-  :straight nil
+  :elpaca nil
   :init
   (tab-bar-mode)
   :custom
@@ -460,7 +489,7 @@
 
 ;; Org Mode
 (use-package org
-  :straight (:type built-in)
+  :elpaca nil
   :bind
   ("C-c l" . org-store-link)
   :hook (org-mode . ns/org-mode-setup)
@@ -484,7 +513,7 @@
   ;;   "SPC m t" '(org-babel-tangle :which-key "Tangle current file")))
 
 (use-package org-appear
-  :straight (org-appear :type git :host github :repo "awth13/org-appear")
+  :elpaca (org-appear :type git :host github :repo "awth13/org-appear")
   :hook (org-mode . org-appear-mode))
 
 (org-babel-do-load-languages 'org-babel-load-languages
@@ -550,7 +579,7 @@ are equal return nil."
 		  (if (eq cmp t) nil (signum cmp))
 		  ))))
 
-(with-eval-after-load "org-roam"
+(elpaca nil
   ;; Got this from https://d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5.html
   (defun ns/org-roam-files-by-tag (tag)
     "Finds the org roam files with the given TAG."
@@ -738,7 +767,6 @@ are equal return nil."
   :config
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-enable))
-(require 'org-roam) ;; Force org-roam to load
 
 (use-package consult-org-roam
   :diminish
@@ -763,7 +791,7 @@ are equal return nil."
   ("C-c n s" . consult-org-roam-search))
 
 (use-package org-roam-ui
-  :straight
+  :elpaca
     (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
     :after org-roam
 ;;  :hook (after-init . org-roam-ui-mode)
@@ -891,7 +919,7 @@ are equal return nil."
                '(svelte-mode . ("svelteserver" "--stdio"))))
 
 (use-package corfu
-  :straight (corfu :files (:defaults "extensions/*")
+  :elpaca (corfu :files (:defaults "extensions/*")
                    :includes (corfu-info corfu-history))
   :bind
   (:map corfu-map
@@ -965,20 +993,13 @@ are equal return nil."
   :config
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
 
-(use-package envrc
-  :straight (envrc :type git :host github :repo "purcell/envrc")
-  :config
-  (envrc-global-mode))
-
-; (use-package inheritenv
-;   :straight (inheritenv :type git :host github :repo "purcell/inheritenv"))
-
 (use-package ws-butler
   :diminish ws-butler-mode
   :hook
   (prog-mode . ws-butler-mode))
 
 (use-package re-builder
+  :elpaca nil
   :custom
   (reb-re-syntax 'string))
 
@@ -1007,7 +1028,7 @@ are equal return nil."
   (clojurec-mode . ns/setup-cider-format-hook))
 
 (use-package rgbds-mode
-  :straight (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
+  :elpaca (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
   :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
 
 (use-package glsl-mode
@@ -1023,6 +1044,7 @@ are equal return nil."
   ;; (async-shell-command (concat "pdflatex " (buffer-file-name))))
 
 (use-package tex-mode
+  :elpaca nil
   :hook (latex-mode . (lambda () (add-hook 'after-save-hook #'ns/compile-tex-doc nil t))))
 
 (use-package markdown-mode
@@ -1048,7 +1070,7 @@ are equal return nil."
   web-mode "Svelte"
   "Major mode for Svelte.")
 
-(use-package svelte-mode :straight nil
+(use-package svelte-mode :elpaca nil
   :hook (svelte-mode . eglot-ensure)
   :mode "\\.svelte\\'")
 
@@ -1085,7 +1107,8 @@ are equal return nil."
 ;;   (tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil)))
   ;; (tide-completion-setup-company-backend t))
 
-(use-package ruby-mode)
+(use-package ruby-mode
+  :elpaca nil)
 
 (use-package inf-ruby) ;; Interact with a Ruby REPL
 
@@ -1174,3 +1197,5 @@ are equal return nil."
   (pdf-loader-install))
 
 (use-package saveplace-pdf-view)
+
+(elpaca-process-queues)
