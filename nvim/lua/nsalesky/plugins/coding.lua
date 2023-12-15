@@ -39,7 +39,7 @@ return {
         end,
         config = function(_, opts)
             require("formatter").setup(opts)
-            vim.cmd("autocmd BufWritePost * FormatWrite") -- auto format on save
+            -- vim.cmd("autocmd BufWritePost * FormatWrite") -- auto format on save
         end,
     },
     {

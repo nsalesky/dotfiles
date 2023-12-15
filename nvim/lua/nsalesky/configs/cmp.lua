@@ -36,8 +36,8 @@ end
 
 cmp.setup({
     mapping = cmp.mapping.preset.insert({
-        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-u>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-d>"] = cmp.mapping.scroll_docs(4),
         ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
         ["<C-e>"] = cmp.mapping({
             i = cmp.mapping.abort(),
@@ -100,10 +100,10 @@ cmp.setup({
     -- }
 })
 
--- cmp.setup.filetype("gitcommit", {
---     sources = cmp.config.sources({
---         { name = "git" },
---     }, {
---         { name = "buffer" },
---     }),
--- })
+cmp.setup.filetype("gitcommit", {
+    sources = cmp.config.sources({
+        { name = "git" },
+    }, {
+        { name = "buffer" },
+    }),
+})

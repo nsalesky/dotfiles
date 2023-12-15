@@ -24,12 +24,6 @@ return {
         "nvim-lualine/lualine.nvim",
         opts = require("nsalesky.configs.lualine"),
     },
-    -- {
-    --     "rcarriga/nvim-notify",
-    --     config = function()
-    --         vim.notify = require("notify")
-    --     end,
-    -- },
     {
         "nvim-tree/nvim-tree.lua",
         opts = function()
