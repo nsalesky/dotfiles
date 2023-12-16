@@ -1,18 +1,19 @@
 return {
-    -- {
-    --     "williamboman/mason.nvim",
-    --     opts = {},
-    -- },
-    -- {
-    --     "williamboman/mason-lspconfig.nvim",
-    --     opts = {
-    --         ensure_installed = {
-    --             "lua_ls",
-    --             "rust_analyzer",
-    --             "jedi_language_server",
-    --         },
-    --     },
-    -- },
+    {
+        "williamboman/mason.nvim",
+        opts = {},
+    },
+    {
+        "williamboman/mason-lspconfig.nvim",
+        opts = {
+            ensure_installed = {
+                "lua_ls",
+                -- "rust_analyzer",
+                -- "jedi_language_server",
+                "typst_lsp",
+            },
+        },
+    },
     -- {
     --     "jay-babu/mason-null-ls.nvim",
     --     opts = {

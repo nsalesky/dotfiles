@@ -50,6 +50,14 @@ return {
                 capabilities = capabilities,
             })
 
+            lspconfig.typst_lsp.setup({
+                on_attach = on_attach,
+                capabilities = capabilities,
+                settings = {
+                    exportPdf = "onSave",
+                },
+            })
+
             -- lspconfig.solargraph.setup({
             --     on_attach = on_attach,
             --     capabilities = capabilities,
