@@ -10,9 +10,6 @@ if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
 
--- local wayland_gnome = require("wayland_gnome")
--- wayland_gnome.apply_to_config(config)
-
 -- Font settings
 config.font = wezterm.font("JetBrainsMono NF")
 config.font_size = 10
@@ -25,6 +22,12 @@ config.scrollback_lines = 5000
 -- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 -- config.integrated_title_button_style = "Gnome"
 -- config.integrated_title_buttons = { "Hide", "Maximize", "Close" }
+
+-- Screen DPI
+config.dpi_by_screen = {
+    ['Build-in Retina Display'] = 144,
+    ['DELL S2722DZ'] = 81.75,
+}
 
 -- Tab bar
 config.hide_tab_bar_if_only_one_tab = true
