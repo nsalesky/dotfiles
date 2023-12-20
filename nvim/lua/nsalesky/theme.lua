@@ -1,21 +1,21 @@
 local M = {}
 
 function M.get_lualine_colors()
-    local c = require("catppuccin.palettes").get_palette()
+  local c = require("catppuccin.palettes").get_palette()
 
-    return {
-        outer_pill_text = c.black,
-        inner_pill_text = c.text,
-        inner_pill_bg = c.surface1,
-        inner_pill_icon = c.mauve,
-        inner_bg = c.black,
-        inner_fg = c.text,
-    }
+  return {
+    outer_pill_text = c.black,
+    inner_pill_text = c.text,
+    inner_pill_bg = c.surface1,
+    inner_pill_icon = c.mauve,
+    inner_bg = c.black,
+    inner_fg = c.text,
+  }
 end
 
 -- Set up the overall Neovim colorscheme
 function M.set_initial_colorscheme()
-    vim.cmd.colorscheme("catppuccin-macchiato")
+  vim.cmd.colorscheme("catppuccin-macchiato")
 end
 
 -- Set up some custom Telescope theming

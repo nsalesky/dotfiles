@@ -35,10 +35,10 @@ vim.keymap.set("n", "]t", "<cmd>tabnext<CR>", { desc = "Next tab" })
 
 -- Jumping between diagnostics
 vim.keymap.set("n", "[d", function()
-    vim.diagnostic.goto_prev()
+  vim.diagnostic.goto_prev()
 end, { desc = "Previous diagnostic" })
 vim.keymap.set("n", "]d", function()
-    vim.diagnostic.goto_next()
+  vim.diagnostic.goto_next()
 end, { desc = "Next diagnostic" })
 
 -- Terminal mode bindings
