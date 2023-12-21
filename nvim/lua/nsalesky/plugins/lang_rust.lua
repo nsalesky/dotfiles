@@ -17,6 +17,18 @@ return {
         server = {
           on_attach = on_attach,
           capabilities = capabilities,
+          settings = {
+            ["rust-analyzer"] = {
+              procMacro = {
+                ignored = {
+                  leptos_macro = {
+                    -- "component",
+                    "server",
+                  }
+                }
+              }
+            }
+          }
         },
 
         --debugging
