@@ -17,6 +17,7 @@ config.line_height = 1.0
 config.color_scheme = "Catppuccin Macchiato"
 
 config.scrollback_lines = 5000
+config.window_close_confirmation = "NeverPrompt"
 
 -- Window appearance
 -- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
