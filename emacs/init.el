@@ -188,6 +188,11 @@
         ))
 (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
+(setq visible-bell t)
+(use-package mode-line-bell
+  :config
+  (mode-line-bell-mode))
+
 (use-package diminish
   :init
   (diminish 'buffer-face-mode)

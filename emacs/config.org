@@ -524,13 +524,11 @@ Set the window title to display the current file and major mode.
 
 
 Enable global visual line mode to wrap lines properly.
-
 #+BEGIN_SRC emacs-lisp
 (global-visual-line-mode 1)
 #+END_SRC 
 
 Enable line numbers globally for most modes, except the ones explicitly disabled.
-
 #+BEGIN_SRC emacs-lisp
 
 ;; Enable line numbers
@@ -544,7 +542,15 @@ Enable line numbers globally for most modes, except the ones explicitly disabled
         ))
 (add-hook mode (lambda () (display-line-numbers-mode 1))))
 
-#+END_SRC 
+#+END_SRC
+
+Flash the modeline for alerts.
+#+BEGIN_SRC emacs-lisp
+(setq visible-bell t)
+(use-package mode-line-bell
+  :config
+  (mode-line-bell-mode))
+#+END_SRC
 
 ** Diminish: keeping the modeline uncluttered
 #+BEGIN_SRC emacs-lisp
