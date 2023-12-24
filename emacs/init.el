@@ -871,6 +871,7 @@ are equal return nil."
      (toml "https://github.com/tree-sitter/tree-sitter-toml")
      (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
      (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (typst "https://github.com/uben0/tree-sitter-typst")
      (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
 (customize-set-variable 'treesit-font-lock-level 4)
@@ -1080,6 +1081,14 @@ are equal return nil."
   :hook (typescript-mode . eglot-ensure)
   :config
   (setq typescript-indent-level 4))
+
+(use-package typst-ts-mode
+  :elpaca (:type git :host sourcehut :repo "meow_king/typst-ts-mode")
+  :config
+  (add-to-list 'consult-imenu-config
+               '((typst-ts-mode :toplevel "Headings" :types
+                                ((?h "Headings" typst-ts-markup-header-face)
+                                 (?f "Functions" font-lock-function-name-face))))))
 
 (use-package ruby-mode
   :elpaca nil)
