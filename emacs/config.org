@@ -868,9 +868,9 @@ Sets up minibuffer completion with Vertico.
 #+END_SRC 
 
 * Editor
-** Ace-isearch: unify disparate searches
+** +Ace-isearch: unify disparate searches+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package ace-isearch
   :custom
   (ace-isearch-function #'avy-goto-word-1)
@@ -1870,6 +1870,9 @@ Recompile LaTeX documents automatically when saved.
 *** Protobuf
 #+BEGIN_SRC emacs-lisp
 (use-package protobuf-mode
+  :elpaca (:repo "protocolbuffers/protobuf"
+           :files ("editors/protobuf-mode.el")
+           :main "editors/protobuf-mode.el")
   :mode "\\.proto\\'")
 #+END_SRC
 
