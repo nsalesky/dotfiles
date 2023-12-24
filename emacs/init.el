@@ -59,6 +59,9 @@
         ;; Assume :elpaca t unless otherwise specified
         (setq elpaca-use-package-by-default t))
 
+;; Upgrade built-in packages
+(elpaca transient)
+
 ;; Block until current queue processed
 (elpaca-wait)
 
