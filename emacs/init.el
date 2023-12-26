@@ -861,6 +861,7 @@ are equal return nil."
      (css "https://github.com/tree-sitter/tree-sitter-css")
      (elisp "https://github.com/Wilfred/tree-sitter-elisp")
      (go "https://github.com/tree-sitter/tree-sitter-go")
+     (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
      (html "https://github.com/tree-sitter/tree-sitter-html")
      (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
      (json "https://github.com/tree-sitter/tree-sitter-json")
@@ -1033,9 +1034,12 @@ are equal return nil."
 (use-package glsl-mode
   :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
 
-(use-package go-mode
+(use-package go-ts-mode
+  :elpaca nil
   :mode "\\.go\\'"
-  :hook (go-mode . eglot-ensure))
+  :hook (go-ts-mode . eglot-ensure)
+  :custom
+  (go-ts-mode-indent-offset 4))
 
 (defun ns/compile-tex-doc ()
   "Asynchronously compile the current tex buffer to a pdf."
@@ -1083,6 +1087,7 @@ are equal return nil."
   (setq typescript-indent-level 4))
 
 (use-package typst-ts-mode
+  :after consult
   :elpaca (:type git :host sourcehut :repo "meow_king/typst-ts-mode")
   :config
   (add-to-list 'consult-imenu-config
