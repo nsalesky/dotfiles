@@ -67,6 +67,12 @@ return {
       lspconfig.tailwindcss.setup({
         on_attach = on_attach,
         capabilities = capabilities,
+        filetypes = { "html", "css", "svelte", "rust" },
+        init_options = {
+          userLanguages = {
+            rust = "html"
+          }
+        }
       })
     end,
   },
