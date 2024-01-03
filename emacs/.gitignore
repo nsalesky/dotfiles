@@ -44,3 +44,4 @@
 ./transient/
 /emacs/eln-cache/
 /elpaca/
+tree-sitter/

@@ -480,26 +480,28 @@
 ;;   :after magit)
 ;; TODO set up personal access token personal to work with pull requests from Emacs  :after magit)
 
-(defun ns/org-mode-setup ()
-  (org-indent-mode)
-  (diminish 'org-indent-mode)
-  (variable-pitch-mode 1)
-  (visual-line-mode 1))
-
-;; Org Mode
 (use-package org
   :elpaca nil
   :bind
   ("C-c l" . org-store-link)
-  :hook (org-mode . ns/org-mode-setup)
+  :hook (org-mode . org-indent-mode)
+  :hook (org-mode . variable-pitch-mode)
+  :hook (org-mode . visual-line-mode)
   :config
+  ;; (add-to-list 'org-tags-exclude-from-inheritance "project")
+  ;; (add-to-list 'org-tags-exclude-from-inheritance "rez")
   :custom
   (org-ellipsis "…")
   (org-pretty-entities t)
   (org-pretty-entities-include-sub-superscripts nil)
   (org-hide-emphasis-markers t)
+  (org-hide-leading-stars nil)
 
+  (org-todo-keywords '((sequence "TODO(t)" "WIP(w!)" "HOLD(h!)" "|" "DONE(d!)" "KILL(k!)")))
   (org-use-property-inheritance t)
+  (org-log-done 'time)    ; log the time when a task is *DONE*
+  (org-log-reschedule 'time)
+  (org-log-redeadline 'time)
 
   (org-directory "~/Documents/notes")
   (org-default-notes-file "~/Documents/notes/notes.org")
@@ -530,58 +532,36 @@
 
 (setq org-confirm-babel-evaluate nil)
 
-(setq
- org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$")
-
- org-agenda-todo-ignore-scheduled 'all
- org-agenda-todo-ignore-deadlines 'all
- org-agenda-todo-ignore-with-date 'all
- org-agenda-tags-todo-honor-ignore-options t
-
- org-todo-keywords '((sequence "TODO(t)" "WIP(w!)" "HOLD(h!)" "|" "DONE(d!)" "KILL(k!)"))
-
- org-log-done 'time    ; log the time when a task is *DONE*
- org-log-reschedule 'time
- org-log-redeadline 'time
-
- org-agenda-deadline-leaders '("DUE:       " "In %3d d.: " "%2d d. ago: ")
- org-agenda-scheduled-leaders '("DO:       " "Sched. %2dx: ")
-
- org-agenda-sticky t
- org-agenda-dim-blocked-tasks nil
- org-agenda-time-grid (quote
-                       ((daily today remove-match)
-                        (800 1200 1600 2000)
-                        "......" "----------------")))
-      
-      ;org-agenda-hide-tags-regexp "."     ; hide all tags in the agenda
-
-(add-to-list 'org-tags-exclude-from-inheritance "project")
-(add-to-list 'org-tags-exclude-from-inheritance "rez")
-
-(use-package org-super-agenda
-  :after org-agenda
-  :init
-  ;; (setq org-agenda-skip-scheduled-if-done t
-  ;;       org-agenda-skip-deadline-if-done t
-  ;;       org-agenda-include-deadlines t
-  ;;       org-agenda-block-separator nil
-  ;;       org-agenda-compact-blocks t
-  ;;       org-agenda-start-day nil
-  ;;       org-agenda-span 1
-  ;;       org-agenda-start-on-weekday nil)
-  :config
-  (org-super-agenda-mode))
-
-(keymap-global-set "C-c c" 'org-capture)
-(keymap-global-set "C-c a" 'org-agenda)
-
 (defun ns/org-agenda-reload-files ()
   (interactive)
   (message "Reloading agenda files")
   (setq org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$")))
 
-(keymap-global-set "C-c r" 'ns/org-agenda-reload-files)
+(use-package org-agenda
+  :elpaca nil
+  :custom
+  (org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$"))
+
+  (org-agenda-todo-ignore-scheduled 'all)
+  (org-agenda-todo-ignore-deadlines 'all)
+  (org-agenda-todo-ignore-with-date 'all)
+  (org-agenda-tags-todo-honor-ignore-options) 
+
+  (org-agenda-deadline-leaders '("DUE:       " "In %3d d.: " "%2d d. ago: "))
+  (org-agenda-scheduled-leaders '("DO:       " "Sched. %2dx: "))
+
+  (org-agenda-sticky t)
+  (org-agenda-dim-blocked-tasks nil)
+  (org-agenda-time-grid (quote
+                         ((daily today remove-match)
+                          (800 1200 1600 2000)
+                          "......" "----------------")))
+  ;; (org-agenda-hide-tags-regexp ".")     ; hide all tags in the agenda
+
+  :bind
+  ;; ("C-c c" . org-capture)
+  ("C-c a" . org-agenda)
+  ("C-c r" . ns/org-agenda-reload-files))
 
 (defun ns/org-present-begin ()
   (setq-local ns/olivetti-mode-enabled (bound-and-true-p olivetti-mode)) ;; remember if olivetti was already enabled or not
@@ -621,6 +601,7 @@
 (use-package org-superstar
   :custom
   (org-superstar-headline-bullets-list '("⟶"))
+  (org-superstar-leading-bullet ?\s)
   :hook
   (org-mode . org-superstar-mode))
 
