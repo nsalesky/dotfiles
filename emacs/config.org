@@ -1168,7 +1168,7 @@ Here's where I set up my agenda system. I like to keep an inbox file where I can
 *** Basic agenda settings
 #+BEGIN_SRC emacs-lisp
 (setq
- org-agenda-files (directory-files-recursively "~/Documents/notes/" "\\.org$")
+ org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$")
 
  org-agenda-todo-ignore-scheduled 'all
  org-agenda-todo-ignore-deadlines 'all
@@ -1197,10 +1197,10 @@ Here's where I set up my agenda system. I like to keep an inbox file where I can
 (add-to-list 'org-tags-exclude-from-inheritance "rez")
 #+END_SRC 
 
-*** Agenda Views
+*** +Agenda Views+
 ~TODO~: Need to find a better way to organize this into the ~org-agenda~ section even though it depends on ~org-roam~.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (defun cmp-date-property-stamp (prop)
   "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
 If a is before b, return -1. If a is after b, return 1. If they
@@ -1340,7 +1340,7 @@ Since the list of ~org-agenda-files~ is initialized statically when Emacs restar
 (defun ns/org-agenda-reload-files ()
   (interactive)
   (message "Reloading agenda files")
-  (setq org-agenda-files (directory-files-recursively "~/Documents/notes/" "\\.org$")))
+  (setq org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$")))
 
 (keymap-global-set "C-c r" 'ns/org-agenda-reload-files)
 #+END_SRC
@@ -1385,6 +1385,16 @@ Since the list of ~org-agenda-files~ is initialized statically when Emacs restar
   (add-hook 'org-present-mode-quit-hook 'ns/org-present-end))
 
 #+END_SRC 
+
+** org-superstar: change the headline symbols
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-superstar
+  :custom
+  (org-superstar-headline-bullets-list '("⟶"))
+  :hook
+  (org-mode . org-superstar-mode))
+#+END_SRC
 
 ** +Org-modern+
 Give Org-mode documents some extra visual polish.
@@ -1922,7 +1932,7 @@ Recompile LaTeX documents automatically when saved.
 
 #+BEGIN_SRC emacs-lisp
 (use-package typst-ts-mode
-  :after consult
+  :after consult-imenu
   :elpaca (:type git :host sourcehut :repo "meow_king/typst-ts-mode")
   :config
   (add-to-list 'consult-imenu-config

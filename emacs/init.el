@@ -531,7 +531,7 @@
 (setq org-confirm-babel-evaluate nil)
 
 (setq
- org-agenda-files (directory-files-recursively "~/Documents/notes/" "\\.org$")
+ org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$")
 
  org-agenda-todo-ignore-scheduled 'all
  org-agenda-todo-ignore-deadlines 'all
@@ -559,111 +559,6 @@
 (add-to-list 'org-tags-exclude-from-inheritance "project")
 (add-to-list 'org-tags-exclude-from-inheritance "rez")
 
-(defun cmp-date-property-stamp (prop)
-  "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
-If a is before b, return -1. If a is after b, return 1. If they
-are equal return nil."
-  (lexical-let ((prop prop))
-	#'(lambda (a b)
-
-		(let* ((a-pos (get-text-property 0 'org-marker a))
-			   (b-pos (get-text-property 0 'org-marker b))
-			   (a-date (or (org-entry-get a-pos prop)
-						   (format "<%s>" (org-read-date t nil "now"))))
-			   (b-date (or (org-entry-get b-pos prop)
-						   (format "<%s>" (org-read-date t nil "now"))))
-			   (cmp (compare-strings a-date nil nil b-date nil nil))
-			   )
-		  (if (eq cmp t) nil (signum cmp))
-		  ))))
-
-(elpaca nil
-  ;; Got this from https://d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5.html
-  (defun ns/org-roam-files-by-tag (tag)
-    "Finds the org roam files with the given TAG."
-    (seq-uniq
-     (seq-map
-      #'car
-      (org-roam-db-query
-       [:select [nodes:file]
-                :from tags
-                :left-join nodes
-                :on (= tags:node_id nodes:id)
-                :where (= tag $s1)]
-       tag))))
-
-  (setq org-agenda-custom-commands
-        '(
-          ("r" "Resonance Cal" tags "Type={.}"
-	       ((org-agenda-files (ns/org-roam-files-by-tag "rez"))
-	        (org-overriding-columns-format
-		     "%35Item %Type %Start %Fin %Rating")
-	        (org-agenda-cmp-user-defined
-		     (cmp-date-property-stamp "Start"))
-	        (org-agenda-sorting-strategy
-		     '(user-defined-down))
-            (org-agenda-overriding-header "C-u r to re-run Type={.}")
-            (org-agenda-mode-hook
-	         (lambda ()
-	           (visual-line-mode -1)
-	           (setq truncate-lines 1)
-	           (setq display-line-numbers-offset -1)
-	           (display-line-numbers-mode 1)))
-	        (org-agenda-view-columns-initially t)))
-          ("u" "Super view"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-overriding-header "Time-Sensitive")
-                        (org-super-agenda-groups
-                         '(
-                           (:discard (:todo ("DONE")))
-                           (:name "Today"
-                                  :tag ("bday" "ann" "hols" "cal" "today")
-                                  :scheduled today
-                                  :time-grid t
-                                  ;; :todo ("WIP" "TODO")
-                                  :order 0)
-                           ;; (:name "Due Today"
-                           ;;        :deadline today
-                           ;;        :order 2)
-                           ;; (:name "Overdue"
-                           ;;        :deadline past)
-                           ;; (:name "Reschedule"
-                           ;;        :scheduled past)
-                           (:name "Personal"
-                                  :tag "perso")
-                           (:name "School"
-                                  :tag "school")
-                           (:name "Work"
-                                  :tag "work")))))
-                           ;; (:name "Due Soon"
-                           ;;        :deadline future
-                           ;;        :scheduled future)
-                           ;; ))))
-            (tags
-             (concat "w" (format-time-string "%V"))
-             ((org-agenda-overriding-header
-               (concat "Todos Week " (format-time-string "%V")))
-              (org-super-agenda-groups
-               '(
-                 (:discard (:deadline t))
-                 (:discard (:scheduled t))
-                 (:discard (:todo ("DONE")))
-                 (:name "Someday" :tag "someday")
-                 (:name "Personal"
-                        :and (:tag "perso" :not (:tag "someday")))
-                 (:name "School"
-                        :and (:tag "school" :not (:tag "someday")))
-                 (:name "Work"
-                        :and (:tag "work" :not (:tag "someday")))
-                 ))))))
-          ("t" "Todo View"
-           (
-            (todo "" ((org-agenda-overriding-header "")
-                      (org-super-agenda-groups
-                       '(
-                         (:auto-category t :order 9)
-                         )))))))))
-
 (use-package org-super-agenda
   :after org-agenda
   :init
@@ -684,7 +579,7 @@ are equal return nil."
 (defun ns/org-agenda-reload-files ()
   (interactive)
   (message "Reloading agenda files")
-  (setq org-agenda-files (directory-files-recursively "~/Documents/notes/" "\\.org$")))
+  (setq org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$")))
 
 (keymap-global-set "C-c r" 'ns/org-agenda-reload-files)
 
@@ -722,6 +617,12 @@ are equal return nil."
   :config
   (add-hook 'org-present-mode-hook 'ns/org-present-begin)
   (add-hook 'org-present-mode-quit-hook 'ns/org-present-end))
+
+(use-package org-superstar
+  :custom
+  (org-superstar-headline-bullets-list '("⟶"))
+  :hook
+  (org-mode . org-superstar-mode))
 
 (use-package emacsql-sqlite-builtin)
 
@@ -1087,7 +988,7 @@ are equal return nil."
   (setq typescript-indent-level 4))
 
 (use-package typst-ts-mode
-  :after consult
+  :after consult-imenu
   :elpaca (:type git :host sourcehut :repo "meow_king/typst-ts-mode")
   :config
   (add-to-list 'consult-imenu-config
