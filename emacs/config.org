@@ -361,10 +361,15 @@ Keybindings for working with files.
 #+BEGIN_SRC emacs-lisp
 
 ;; Keep track of recently-opened files
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
-(global-set-key (kbd "C-x C-r") 'consult-recent-file)
+(use-package recentf
+  :elpaca nil
+  :config
+  (recentf-mode 1)
+  :custom
+  (recentf-max-menu-items 5000)
+  (recentf-max-saved-items 10000)
+  :bind
+  ("C-x C-r" . consult-recent-file))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1044,9 +1049,9 @@ Tools to distinguish projects and quickly navigate inside projects and between t
   (dired-kill-when-opening-new-dired-buffer t))
 #+END_SRC
 
-** Bufler.el: a butler for your buffers
+** +Bufler.el: a butler for your buffers+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package bufler
   :init
   (bufler-mode))

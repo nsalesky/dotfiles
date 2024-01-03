@@ -107,10 +107,15 @@
 (setq backward-delete-char-untabify-method 'hungry)
 
 ;; Keep track of recently-opened files
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
-(global-set-key (kbd "C-x C-r") 'consult-recent-file)
+(use-package recentf
+  :elpaca nil
+  :config
+  (recentf-mode 1)
+  :custom
+  (recentf-max-menu-items 5000)
+  (recentf-max-saved-items 10000)
+  :bind
+  ("C-x C-r" . consult-recent-file))
 
 (use-package ace-window
   :bind ("M-o" . ace-window))
@@ -462,10 +467,6 @@
   :elpaca nil
   :custom
   (dired-kill-when-opening-new-dired-buffer t))
-
-(use-package bufler
-  :init
-  (bufler-mode))
 
 (use-package tab-bar
   :elpaca nil
