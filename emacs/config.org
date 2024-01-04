@@ -42,17 +42,17 @@ Increase the garbage collection threshold and process data chunking for performa
       read-process-output-max (* 1024 1024))
 #+END_SRC 
 
-** early-init.el
-Disable the Toolbar and Menubar in the early-init.el file via ~default-frame-alist~. This is slightly faster than loading them first before turning them off.
-#+BEGIN_SRC emacs-lisp :tangle early-init.el
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(menu-bar-lines . 0) default-frame-alist)
+** Set some basic UI settings earl
+
+Disable UI elements
+#+BEGIN_SRC emacs-lisp
+(tool-bar-mode -1)
+(menu-bar-mode -1)
 (scroll-bar-mode -1)
 (tooltip-mode -1)
 (set-fringe-mode 10)
 #+END_SRC
 
-** Set some basic UI settings early  
 Disable the startup message
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
@@ -526,7 +526,6 @@ Set up all the fancy user-interface elements to make Emacs look nice.
 Set the window title to display the current file and major mode.
 
 #+BEGIN_SRC emacs-lisp
-;; (setq-default frame-title-format '("%b [%m]"))
 (setq-default frame-title-format '("GNU Emacs"))
 #+END_SRC 
 

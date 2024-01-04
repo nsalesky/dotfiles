@@ -1,7 +1,1 @@
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(menu-bar-lines . 0) default-frame-alist)
-(scroll-bar-mode -1)
-(tooltip-mode -1)
-(set-fringe-mode 10)
-
 (setq package-enable-at-startup nil)

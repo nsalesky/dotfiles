@@ -8,6 +8,12 @@
 (setq gc-cons-threshold 100000000
       read-process-output-max (* 1024 1024))
 
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tooltip-mode -1)
+(set-fringe-mode 10)
+
 (setq inhibit-startup-message t)
 
 (setq use-short-answers t)
@@ -180,7 +186,6 @@
 
 (winner-mode 1)
 
-;; (setq-default frame-title-format '("%b [%m]"))
 (setq-default frame-title-format '("GNU Emacs"))
 
 (global-visual-line-mode 1)
