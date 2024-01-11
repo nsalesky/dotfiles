@@ -78,6 +78,12 @@
 (setq user-full-name "Nick Salesky"
       user-mail-address "nicksalesky@gmail.com")
 
+(when (eq system-type 'darwin)
+  (setq mac-option-key-is-meta nil
+        mac-command-key-is-meta t
+        mac-command-modifier 'meta
+        mac-option-modifier 'none))
+
 (setq disabled-command-function nil)
 
 (use-package embrace
@@ -230,7 +236,7 @@
 
 (use-package doom-themes
   :config
-  (load-theme 'doom-moonlight t))
+  (load-theme 'doom-flatwhite t))
 
 (use-package ef-themes
   :config
@@ -496,6 +502,20 @@
   :config
   ;; (add-to-list 'org-tags-exclude-from-inheritance "project")
   ;; (add-to-list 'org-tags-exclude-from-inheritance "rez")
+  (org-babel-do-load-languages 'org-babel-load-languages
+    '((emacs-lisp . t)
+      (python . t)
+      (clojure . t)
+      (C . t)
+      ;; (cpp . t)
+      (shell . t)
+      (eshell . t)
+      (java . t)
+      (js . t)
+      (plantuml . t)
+      (ruby . t)
+      (sql . t)))
+
   :custom
   (org-ellipsis "…")
   (org-pretty-entities t)
@@ -512,6 +532,13 @@
   (org-directory "~/Documents/notes")
   (org-default-notes-file "~/Documents/notes/notes.org")
 
+  ;; Org-babel
+  (org-confirm-babel-evaluate nil)
+  (org-plantuml-exec-mode 'jar)
+  (org-plantuml-jar-path "~/.local/bin/plantuml.jar")
+
+  (org-latex-pdf-process '("pdflatex -interaction nonstopmode -output-directory %o %f" "bibtex %b" "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
   (org-src-tab-acts-natively t)
   (org-src-preserve-indentation t))
 
@@ -523,20 +550,7 @@
   :elpaca (org-appear :type git :host github :repo "awth13/org-appear")
   :hook (org-mode . org-appear-mode))
 
-(org-babel-do-load-languages 'org-babel-load-languages
-    '((emacs-lisp . t)
-      (python . t)
-      (clojure . t)
-      (C . t)
-      ;; (cpp . t)
-      (shell . t)
-      (eshell . t)
-      (java . t)
-      (js . t)
-      (ruby . t)
-      (sql . t)))
 
-(setq org-confirm-babel-evaluate nil)
 
 (defun ns/org-agenda-reload-files ()
   (interactive)
@@ -943,6 +957,16 @@
 
 (use-package nix-mode
   :mode "\\.nix\\'")
+
+(use-package plantuml-mode
+  :mode "\\.plantuml\\'"
+  :custom
+  (plantuml-jar-path "~/.local/bin/plantuml.jar")
+  (plantuml-default-exec-mode 'jar)
+  :config
+  (add-to-list
+   'org-src-lang-modes
+   '("plantuml" . plantuml)))
 
 (use-package protobuf-mode
   :elpaca (:repo "protocolbuffers/protobuf"

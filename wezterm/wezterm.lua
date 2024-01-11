@@ -28,6 +28,7 @@ config.window_close_confirmation = "NeverPrompt"
 config.dpi_by_screen = {
     ['Build-in Retina Display'] = 144,
     ['DELL S2722DZ'] = 81.75,
+    ['DELL P2421DC'] = 100,
 }
 
 -- Tab bar
