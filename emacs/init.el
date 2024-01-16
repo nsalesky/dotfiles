@@ -79,10 +79,10 @@
       user-mail-address "nicksalesky@gmail.com")
 
 (when (eq system-type 'darwin)
-  (setq mac-option-key-is-meta nil
+  (setq mac-option-key-is-meta t
         mac-command-key-is-meta t
         mac-command-modifier 'meta
-        mac-option-modifier 'none))
+        mac-option-modifier 'meta))
 
 (setq disabled-command-function nil)
 
@@ -236,7 +236,7 @@
 
 (use-package doom-themes
   :config
-  (load-theme 'doom-flatwhite t))
+  (load-theme 'doom-one t))
 
 (use-package ef-themes
   :config

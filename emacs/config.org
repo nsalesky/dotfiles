@@ -160,10 +160,10 @@ Here's where I configure some basic Emacs features with keybindings.
 ** Set up modifiers for Mac OS X
 #+BEGIN_SRC emacs-lisp
 (when (eq system-type 'darwin)
-  (setq mac-option-key-is-meta nil
+  (setq mac-option-key-is-meta t
         mac-command-key-is-meta t
         mac-command-modifier 'meta
-        mac-option-modifier 'none))
+        mac-option-modifier 'meta))
 #+END_SRC
 
 ** Enable all disabled keybindings
@@ -614,7 +614,7 @@ Give Emacs a nice color scheme! Other themes that I like include:
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes
   :config
-  (load-theme 'doom-flatwhite t))
+  (load-theme 'doom-one t))
 
 (use-package ef-themes
   :config
