@@ -335,6 +335,7 @@
    ; M-g bindings
    ("M-g g" . consult-goto-line)
    ("M-g M-g" . consult-goto-line)
+   ("M-g i" . consult-imenu)
 
    ; Buffers
    ("C-x b" . consult-buffer)
