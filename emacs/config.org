@@ -614,7 +614,7 @@ Give Emacs a nice color scheme! Other themes that I like include:
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes
   :config
-  (load-theme 'doom-one t))
+  (load-theme 'doom-moonlight t))
 
 (use-package ef-themes
   :config

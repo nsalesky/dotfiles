@@ -236,7 +236,7 @@
 
 (use-package doom-themes
   :config
-  (load-theme 'doom-one t))
+  (load-theme 'doom-moonlight t))
 
 (use-package ef-themes
   :config
