@@ -171,11 +171,11 @@ Here's where I configure some basic Emacs features with keybindings.
 (setq disabled-command-function nil)
 #+END_SRC
 
-** +Evil 😈+
+** Evil 😈
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package evil
-  :ensure t
+  ;; :ensure t
   :init
   (setq evil-want-keybinding nil
         evil-want-integration t
@@ -190,11 +190,13 @@ Here's where I configure some basic Emacs features with keybindings.
   :after evil
   :config
   (evil-collection-init))
+
+(elpaca-wait)
 #+END_SRC
 
-** +General+
+** General
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package general
   :ensure t
   :config
@@ -643,8 +645,8 @@ Give Emacs a nice color scheme! Other themes that I like include:
 #+END_SRC
 
 ** Modeline
-*** +doom-modeline+
-#+BEGIN_SRC emacs-lisp :tangle no
+*** doom-modeline
+#+BEGIN_SRC emacs-lisp
 (use-package doom-modeline
   :init
   (setq doom-modeline-height 35

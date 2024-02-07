@@ -86,6 +86,39 @@
 
 (setq disabled-command-function nil)
 
+(use-package evil
+  ;; :ensure t
+  :init
+  (setq evil-want-keybinding nil
+        evil-want-integration t
+        evil-want-C-u-scroll t
+        evil-want-C-d-scroll t)
+
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+  (evil-collection-init))
+
+(elpaca-wait)
+
+(use-package general
+  :ensure t
+  :config
+  (general-evil-setup t)
+  (general-create-definer ns/leader-def
+    :keymaps '(normal visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+  (general-create-definer ns/local-leader-def
+    :keymaps '(normal visual emacs)
+    :prefix "SPC m"
+    :global-prefix "C-SPC m"))
+(elpaca-wait)
+
 (use-package embrace
   :elpaca (embrace :type git :host github :repo "cute-jumper/embrace.el")
   ;; :bind (("C-M-s-#" . embrace-commander))
@@ -261,6 +294,20 @@
   ;; (setq modus-themes-mode-line '(moody)))
   ;; :config
   ;; (load-theme 'modus-vivendi t))
+
+(use-package doom-modeline
+  :init
+  (setq doom-modeline-height 35
+        doom-modeline-support-imenu t)
+  (doom-modeline-mode 1))
+
+;; (use-package moody
+;;   :custom
+;;   (x-underline-at-descent-line t)
+;;   :config
+;;   (moody-replace-mode-line-buffer-identification)
+;;   (moody-replace-vc-mode)
+;;   (moody-replace-eldoc-minibuffer-message-function))
 
 
 
