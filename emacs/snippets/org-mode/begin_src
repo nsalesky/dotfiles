@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: begin_src
-# key: >src
+# key: >sc
 # --
 #+BEGIN_SRC $1
 $0

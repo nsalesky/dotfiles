@@ -236,7 +236,7 @@
 
 (use-package doom-themes
   :config
-  (load-theme 'doom-moonlight t))
+  (load-theme 'doom-one t))
 
 (use-package ef-themes
   :config
@@ -262,19 +262,7 @@
   ;; :config
   ;; (load-theme 'modus-vivendi t))
 
-(use-package doom-modeline
-  :init
-  (setq doom-modeline-height 35
-        doom-modeline-support-imenu t)
-  (doom-modeline-mode 1))
 
-;; (use-package moody
-;;   :custom
-;;   (x-underline-at-descent-line t)
-;;   :config
-;;   (moody-replace-mode-line-buffer-identification)
-;;   (moody-replace-vc-mode)
-;;   (moody-replace-eldoc-minibuffer-message-function))
 
 ;; Necessary for dashboard in order to get nice seperators between sections
 (use-package page-break-lines)
@@ -444,6 +432,8 @@
 
 (use-package yasnippet
   :diminish yas-minor-mode
+  :custom
+  (yas-verbosity 1)
   :config
   (yas-global-mode))
 
@@ -930,6 +920,10 @@
   (clojurescript-mode . ns/setup-cider-format-hook)
   (clojurec-mode . ns/setup-cider-format-hook))
 
+(use-package sly
+  :custom
+  (inferior-lisp-program "sbcl"))
+
 (use-package rgbds-mode
   :elpaca (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
   :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
@@ -984,6 +978,15 @@
   (python-shell-interpreter "python3")
   :config
   (setq python-ts-mode-hook python-mode-hook))
+
+(defun ns/setup-racket-mode ()
+  (add-to-list 'completion-at-point-functions
+               #'racket-complete-at-point))
+
+(use-package racket-mode
+  :mode "\\.rkt\\'"
+  :hook
+  (racket-mode . ns/setup-racket-mode))
 
 (define-derived-mode svelte-mode
   web-mode "Svelte"

@@ -614,7 +614,7 @@ Give Emacs a nice color scheme! Other themes that I like include:
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes
   :config
-  (load-theme 'doom-moonlight t))
+  (load-theme 'doom-one t))
 
 (use-package ef-themes
   :config
@@ -643,9 +643,8 @@ Give Emacs a nice color scheme! Other themes that I like include:
 #+END_SRC
 
 ** Modeline
-I use ~doom-modeline~ to manage my modeline.
-
-#+BEGIN_SRC emacs-lisp
+*** +doom-modeline+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package doom-modeline
   :init
   (setq doom-modeline-height 35
@@ -659,7 +658,12 @@ I use ~doom-modeline~ to manage my modeline.
 ;;   (moody-replace-mode-line-buffer-identification)
 ;;   (moody-replace-vc-mode)
 ;;   (moody-replace-eldoc-minibuffer-message-function))
-#+END_SRC 
+#+END_SRC
+
+*** Custom modeline
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
 
 ** Dashboard
 I like having a nice dashboard when Emacs loads in order to remember what I was last working on and (eventually!) view my ~org-agenda~ for the day. Maybe one day I'll revert to just a scratch buffer like others, but I'm sticking with this for now!
@@ -922,6 +926,8 @@ Add various templates to Emacs.
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :diminish yas-minor-mode
+  :custom
+  (yas-verbosity 1)
   :config
   (yas-global-mode))
 #+END_SRC
@@ -1840,6 +1846,14 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
   (clojurec-mode . ns/setup-cider-format-hook))
 #+END_SRC 
 
+*** Common Lisp
+
+#+BEGIN_SRC emacs-lisp
+(use-package sly
+  :custom
+  (inferior-lisp-program "sbcl"))
+#+END_SRC
+
 *** Gameboy
 
 #+BEGIN_SRC emacs-lisp
@@ -1927,6 +1941,21 @@ Recompile LaTeX documents automatically when saved.
   :config
   (setq python-ts-mode-hook python-mode-hook))
 #+END_SRC
+
+*** Racket
+#+BEGIN_SRC emacs-lisp
+(defun ns/setup-racket-mode ()
+  (add-to-list 'completion-at-point-functions
+               #'racket-complete-at-point))
+
+(use-package racket-mode
+  :mode "\\.rkt\\'"
+  :hook
+  (racket-mode . ns/setup-racket-mode))
+            
+#+END_SRC
+
+#+RESULTS:
 
 *** Svelte
 #+BEGIN_SRC emacs-lisp

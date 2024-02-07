@@ -45,3 +45,7 @@
 /emacs/eln-cache/
 /elpaca/
 tree-sitter/
+/nil
+/racket-mode
+/tramp
+/url
