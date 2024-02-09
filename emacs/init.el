@@ -86,46 +86,9 @@
 
 (setq disabled-command-function nil)
 
-(use-package evil
-  ;; :ensure t
-  :init
-  (setq evil-want-keybinding nil
-        evil-want-integration t
-        evil-want-C-u-scroll t
-        evil-want-C-d-scroll t)
-
-  :config
-  (evil-mode 1))
-
-(use-package evil-collection
-  :ensure t
-  :after evil
-  :config
-  (evil-collection-init))
-
-(use-package evil-surround
-  :config
-  (global-evil-surround-mode 1))
-
-(elpaca-wait)
-
-(use-package general
-  :ensure t
-  :config
-  (general-evil-setup t)
-  (general-create-definer ns/leader-def
-    :keymaps '(normal visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-  (general-create-definer ns/local-leader-def
-    :keymaps '(normal visual emacs)
-    :prefix "SPC m"
-    :global-prefix "C-SPC m"))
-(elpaca-wait)
-
 (use-package embrace
   :elpaca (embrace :type git :host github :repo "cute-jumper/embrace.el")
-  ;; :bind (("C-M-s-#" . embrace-commander))
+  :bind ("C-," . embrace-commander)
   :config
   (defun embrace-markdown-mode-hook ()
     (dolist (lst '((?* "*" . "*")
@@ -166,28 +129,8 @@
   :bind
   ("C-x C-r" . consult-recent-file))
 
-(ns/leader-def
-  "." '(find-file :which-key "find file")
-  "f" '(:ignore t :which-key "files")
-  "fs" '(find-file :which-key "find file")
-  "fr" '(consult-recent-file :which-key "find recent file"))
-
-(ns/leader-def
-  "," '(consult-buffer :which-key "select buffer")
-  "b" '(:ignore t :which-key "buffers")
-  "bb" '(consult-buffer :which-key "select buffer"))
-
 (use-package ace-window
   :bind ("M-o" . ace-window))
-
-(ns/leader-def
-  "/" '(comment-line :which-key "Toggle comment"))
-
-(ns/leader-def
-  "e" '(:ignore t :which-key "eval")
-  "el" '(eval-last-sexp :which-key "eval last sexpr")
-  "ed" '(eval-defun :which-key "eval defun")
-  "e:" '(eval-expression :which-key "eval expression"))
 
 (use-package hydra)
 
@@ -362,14 +305,14 @@
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key))
+   ("C-h k" . helpful-key)))
 
-  :general
-  (ns/leader-def
-    "h" '(:ignore t :which-key "help")
-    "hv" '(helpful-variable :which-key "describe variable")
-    "hf" '(helpful-callable :which-key "describe function")
-    "hk" '(helpful-key :which-key "describe key")))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "h" '(:ignore t :which-key "help")
+  ;;   "hv" '(helpful-variable :which-key "describe variable")
+  ;;   "hf" '(helpful-callable :which-key "describe function")
+  ;;   "hk" '(helpful-key :which-key "describe key")))
 
 (use-package hl-todo
   :config
@@ -437,12 +380,12 @@
    ("M-s" . consult-history)
    ("M-r" . consult-history))
 
-  :general
-  (ns/leader-def
-    "s" '(:ignore t :which-key "search")
-    "sr" '(consult-ripgrep :which-key "ripgrep")
-    "sl" '(consult-line :which-key "line search")
-    "si" '(consult-imenu :which-key "imenu"))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "s" '(:ignore t :which-key "search")
+  ;;   "sr" '(consult-ripgrep :which-key "ripgrep")
+  ;;   "sl" '(consult-line :which-key "line search")
+  ;;   "si" '(consult-imenu :which-key "imenu"))
 
   :init
   (setq consult-narrow-key (kbd "<"))
@@ -789,14 +732,14 @@
                ("n" . multi-vterm-next)
                ("t" . multi-vterm-dedicated-toggle)
                ("p" . multi-vterm-project)
-               ("r" . multi-vterm-rename-buffer))
-  :general
-  (ns/leader-def
-    "v" '(:ignore t :which-key "terminal")
-    "vv" '(multi-vterm :which-key "open new term")
-    "vp" '(multi-vterm-prev :which-key "prev term")
-    "vn" '(multi-vterm-next :which-key "next term")
-    "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
+               ("r" . multi-vterm-rename-buffer)))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "v" '(:ignore t :which-key "terminal")
+  ;;   "vv" '(multi-vterm :which-key "open new term")
+  ;;   "vp" '(multi-vterm-prev :which-key "prev term")
+  ;;   "vn" '(multi-vterm-next :which-key "next term")
+  ;;   "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 
 ;; (use-package lsp-mode
 ;;     :commands (lsp lsp-deferred)
@@ -878,7 +821,7 @@
   (eglot-managed-mode . eglot-inlay-hints-mode)
   :config
   (add-to-list 'eglot-server-programs
-               '(python-ts-mode . ("pylsp")))
+               '(python-ts-mode . ("pyright")))
   (add-to-list 'eglot-server-programs
                `(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"
                                 :initializationOptions

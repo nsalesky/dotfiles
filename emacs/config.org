@@ -171,9 +171,9 @@ Here's where I configure some basic Emacs features with keybindings.
 (setq disabled-command-function nil)
 #+END_SRC
 
-** Evil 😈
+** +Evil 😈+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package evil
   ;; :ensure t
   :init
@@ -198,9 +198,9 @@ Here's where I configure some basic Emacs features with keybindings.
 (elpaca-wait)
 #+END_SRC
 
-** General
+** +General+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package general
   :ensure t
   :config
@@ -318,7 +318,7 @@ Here's where I configure some basic Emacs features with keybindings.
 #+BEGIN_SRC emacs-lisp
 (use-package embrace
   :elpaca (embrace :type git :host github :repo "cute-jumper/embrace.el")
-  ;; :bind (("C-M-s-#" . embrace-commander))
+  :bind ("C-," . embrace-commander)
   :config
   (defun embrace-markdown-mode-hook ()
     (dolist (lst '((?* "*" . "*")
@@ -387,7 +387,7 @@ Keybindings for working with files.
   ("C-x C-r" . consult-recent-file))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "." '(find-file :which-key "find file")
   "f" '(:ignore t :which-key "files")
@@ -396,7 +396,7 @@ Keybindings for working with files.
 #+END_SRC
 
 ** Buffers
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "," '(consult-buffer :which-key "select buffer")
   "b" '(:ignore t :which-key "buffers")
@@ -413,13 +413,13 @@ Keybindings for operating windows.
 
 ** Text manipulation
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "/" '(comment-line :which-key "Toggle comment"))
 #+END_SRC
 
 ** Eval
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "e" '(:ignore t :which-key "eval")
   "el" '(eval-last-sexp :which-key "eval last sexpr")
@@ -716,14 +716,14 @@ Make the Emacs help pages more "helpful".
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key))
+   ("C-h k" . helpful-key)))
 
-  :general
-  (ns/leader-def
-    "h" '(:ignore t :which-key "help")
-    "hv" '(helpful-variable :which-key "describe variable")
-    "hf" '(helpful-callable :which-key "describe function")
-    "hk" '(helpful-key :which-key "describe key")))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "h" '(:ignore t :which-key "help")
+  ;;   "hv" '(helpful-variable :which-key "describe variable")
+  ;;   "hf" '(helpful-callable :which-key "describe function")
+  ;;   "hk" '(helpful-key :which-key "describe key")))
 #+end_src
 
 ** Hl-todo: Highlight and navigate TODO keywords
@@ -814,12 +814,12 @@ Sets up minibuffer completion with Vertico.
    ("M-s" . consult-history)
    ("M-r" . consult-history))
 
-  :general
-  (ns/leader-def
-    "s" '(:ignore t :which-key "search")
-    "sr" '(consult-ripgrep :which-key "ripgrep")
-    "sl" '(consult-line :which-key "line search")
-    "si" '(consult-imenu :which-key "imenu"))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "s" '(:ignore t :which-key "search")
+  ;;   "sr" '(consult-ripgrep :which-key "ripgrep")
+  ;;   "sl" '(consult-line :which-key "line search")
+  ;;   "si" '(consult-imenu :which-key "imenu"))
 
   :init
   (setq consult-narrow-key (kbd "<"))
@@ -1544,14 +1544,14 @@ Give Org-mode documents some extra visual polish.
                ("n" . multi-vterm-next)
                ("t" . multi-vterm-dedicated-toggle)
                ("p" . multi-vterm-project)
-               ("r" . multi-vterm-rename-buffer))
-  :general
-  (ns/leader-def
-    "v" '(:ignore t :which-key "terminal")
-    "vv" '(multi-vterm :which-key "open new term")
-    "vp" '(multi-vterm-prev :which-key "prev term")
-    "vn" '(multi-vterm-next :which-key "next term")
-    "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
+               ("r" . multi-vterm-rename-buffer)))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "v" '(:ignore t :which-key "terminal")
+  ;;   "vv" '(multi-vterm :which-key "open new term")
+  ;;   "vp" '(multi-vterm-prev :which-key "prev term")
+  ;;   "vn" '(multi-vterm-next :which-key "next term")
+  ;;   "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 #+END_SRC 
 
 * Programming
@@ -1666,7 +1666,7 @@ A good code-completion package. I might consider switching to Corfu at some poin
   (eglot-managed-mode . eglot-inlay-hints-mode)
   :config
   (add-to-list 'eglot-server-programs
-               '(python-ts-mode . ("pylsp")))
+               '(python-ts-mode . ("pyright")))
   (add-to-list 'eglot-server-programs
                `(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"
                                 :initializationOptions

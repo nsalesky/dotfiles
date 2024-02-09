@@ -49,3 +49,5 @@ tree-sitter/
 /racket-mode
 /tramp
 /url
+/bookmarks
+/multisession
