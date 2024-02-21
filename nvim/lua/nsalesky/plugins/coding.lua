@@ -19,14 +19,34 @@ return {
   {
     "mhartington/formatter.nvim",
     opts = function()
+      local util = require("formatter.util")
+
       return {
-        logging = false,
+        logging = true,
+        log_level = vim.log.levels.WARN,
         filetype = {
           lua = {
             require("formatter.filetypes.lua").stylua,
           },
           python = {
             require("formatter.filetypes.python").black,
+          },
+          ruby = {
+            function()
+              return {
+                exe = "rubocop",
+                args = {
+                  "--fix-layout",
+                  "--autocorrect-all",
+                  "--stdin",
+                  util.escape_path(util.get_current_buffer_file_name()),
+                  "--format",
+                  "files",
+                  "--stderr"
+                },
+                stdin = true,
+              }
+            end
           },
           go = {
             require("formatter.filetypes.go").gofmt,

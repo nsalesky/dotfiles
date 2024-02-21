@@ -58,11 +58,11 @@ return {
         },
       })
 
-      -- lspconfig.solargraph.setup({
-      --     on_attach = on_attach,
-      --     capabilities = capabilities,
-      --     cmd = { "bundle", "exec", "solargraph", "stdio" },
-      -- })
+      lspconfig.solargraph.setup({
+          on_attach = on_attach,
+          capabilities = capabilities,
+          cmd = { "bundle", "exec", "solargraph", "stdio" },
+      })
 
       lspconfig.tailwindcss.setup({
         on_attach = on_attach,
