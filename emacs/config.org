@@ -216,7 +216,7 @@ Here's where I configure some basic Emacs features with keybindings.
 (elpaca-wait)
 #+END_SRC
 
-** +Meow: modal editing+
+** Meow: modal editing
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (defun meow-setup ()
@@ -683,6 +683,7 @@ I like having a nice dashboard when Emacs loads in order to remember what I was 
     :custom
     (dashboard-image-banner-max-width 256)
     (dashboard-startup-banner (expand-file-name "emacs.png" user-emacs-directory))
+    ;; (dashboard-startup-banner "/Users/nsalesky/Pictures/wallpapers/forest-small.jpg")
     (dashboard-center-content t)
     (dashboard-set-heading-icons t)
     (dashboard-set-file-icons t)
@@ -1667,14 +1668,14 @@ A good code-completion package. I might consider switching to Corfu at some poin
   :config
   (add-to-list 'eglot-server-programs
                '(python-ts-mode . ("pyright")))
-  (add-to-list 'eglot-server-programs
-               `(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"
-                                :initializationOptions
-                                (:procMacro (:attributes (:enable t)
-                                                         :enable t)
-                                 :cargo (:buildScripts (:enable t))
-                                 :diagnostics (:disabled ["unresolved-proc-macro"
-                                                          "unresolved-macro-call"])))))
+  ;; (add-to-list 'eglot-server-programs
+               ;; `(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"
+                                ;; :initializationOptions
+                                ;; (:procMacro (:attributes (:enable t)
+                                ;;                          :enable t)
+                                ;;  :cargo (:buildScripts (:enable t))
+                                ;;  :diagnostics (:disabled ["unresolved-proc-macro"
+                                ;;                           "unresolved-macro-call"])))))
   (add-to-list 'eglot-server-programs
                '(svelte-mode . ("svelteserver" "--stdio"))))
 #+END_SRC 

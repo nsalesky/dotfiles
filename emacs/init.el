@@ -285,6 +285,7 @@
     :custom
     (dashboard-image-banner-max-width 256)
     (dashboard-startup-banner (expand-file-name "emacs.png" user-emacs-directory))
+    ;; (dashboard-startup-banner "/Users/nsalesky/Pictures/wallpapers/forest-small.jpg")
     (dashboard-center-content t)
     (dashboard-set-heading-icons t)
     (dashboard-set-file-icons t)
@@ -822,14 +823,14 @@
   :config
   (add-to-list 'eglot-server-programs
                '(python-ts-mode . ("pyright")))
-  (add-to-list 'eglot-server-programs
-               `(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"
-                                :initializationOptions
-                                (:procMacro (:attributes (:enable t)
-                                                         :enable t)
-                                 :cargo (:buildScripts (:enable t))
-                                 :diagnostics (:disabled ["unresolved-proc-macro"
-                                                          "unresolved-macro-call"])))))
+  ;; (add-to-list 'eglot-server-programs
+               ;; `(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"
+                                ;; :initializationOptions
+                                ;; (:procMacro (:attributes (:enable t)
+                                ;;                          :enable t)
+                                ;;  :cargo (:buildScripts (:enable t))
+                                ;;  :diagnostics (:disabled ["unresolved-proc-macro"
+                                ;;                           "unresolved-macro-call"])))))
   (add-to-list 'eglot-server-programs
                '(svelte-mode . ("svelteserver" "--stdio"))))
 
