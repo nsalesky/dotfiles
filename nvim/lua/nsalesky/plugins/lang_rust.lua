@@ -24,11 +24,11 @@ return {
                   leptos_macro = {
                     -- "component",
                     "server",
-                  }
-                }
-              }
-            }
-          }
+                  },
+                },
+              },
+            },
+          },
         },
 
         --debugging

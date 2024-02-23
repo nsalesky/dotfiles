@@ -59,9 +59,9 @@ return {
       })
 
       lspconfig.solargraph.setup({
-          on_attach = on_attach,
-          capabilities = capabilities,
-          cmd = { "bundle", "exec", "solargraph", "stdio" },
+        on_attach = on_attach,
+        capabilities = capabilities,
+        cmd = { "bundle", "exec", "solargraph", "stdio" },
       })
 
       lspconfig.tailwindcss.setup({
@@ -70,9 +70,9 @@ return {
         filetypes = { "html", "css", "svelte", "eruby" },
         init_options = {
           userLanguages = {
-            rust = "html"
-          }
-        }
+            rust = "html",
+          },
+        },
       })
     end,
   },
