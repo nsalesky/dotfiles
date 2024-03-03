@@ -76,9 +76,9 @@ return {
   },
   {
     "windwp/nvim-autopairs",
-    opts = {
-      map_cr = false,
-    },
+    event = "InsertEnter",
+    config = true,
+    opts = {},
   },
   {
     "folke/trouble.nvim",
