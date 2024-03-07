@@ -16,12 +16,12 @@ return {
       })
     end
 
-    vim.keymap.set("n", "<leader>ff", find_file, { desc = "Find File" })
+    vim.keymap.set("n", "<leader>ff", find_file, { desc = "File" })
     vim.keymap.set("n", "<C-p>", find_file, { desc = "Find File" })
 
-    vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find Buffer" })
-    -- vim.keymap.set("n", "<leader>fs", builtin.live_grep, { desc = "Search For Text" })
-    vim.keymap.set("n", "<leader>sc", builtin.colorscheme, { desc = "Color scheme" })
+    vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
+    vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
+    vim.keymap.set("n", "<leader>sc", builtin.colorscheme, { desc = "Color Scheme" })
 
     vim.keymap.set("n", "<leader>fs", function()
       require("telescope").extensions.live_grep_args.live_grep_args()
