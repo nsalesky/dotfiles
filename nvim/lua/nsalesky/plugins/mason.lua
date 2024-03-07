@@ -10,7 +10,6 @@ return {
         "lua_ls",
         -- "rust_analyzer",
         -- "jedi_language_server",
-        "typst_lsp",
       },
     },
   },
