@@ -17,7 +17,7 @@ return {
       vim.cmd.colorscheme("catppuccin-macchiato")
     end,
   },
-  "rebelot/kanagawa.nvim",
-  "sainnhe/everforest",
-  "folke/tokyonight.nvim",
+  -- "rebelot/kanagawa.nvim",
+  -- "sainnhe/everforest",
+  -- "folke/tokyonight.nvim",
 }
