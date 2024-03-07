@@ -1,7 +1,5 @@
 -- Main body of the config inspired/taken from https://github.com/AlexvZyl/.dotfiles/blob/main/.config/nvim/lua/alex/ui/lualine.lua
 
-local c = require("nsalesky.theme").get_lualine_colors()
-
 -- Show Git diff status
 local function diff_source()
   local gitsigns = vim.b.gitsigns_status_dict
@@ -42,9 +40,7 @@ local telescope = {
   sections = {
     lualine_a = {
       {
-        function()
-          return "Telescope"
-        end,
+        "Telescope",
       },
     },
     lualine_b = {},
@@ -91,70 +87,49 @@ return {
           unnamed = "No Name", -- Text to show for unnamed buffers.
           newfile = "", -- Text to show for newly created file before first write
         },
-        color = { fg = c.outer_pill_text },
       },
     },
     lualine_b = {
       {
         "branch",
-        color = { fg = c.inner_pill_icon, bg = c.inner_pill_bg },
-        icon = { "", color = { fg = c.inner_pill_icon } },
+        icon = { "", },
       },
       {
         "diff",
         source = diff_source,
-        color = { fg = c.inner_pill_icon, bg = c.inner_pill_bg },
         symbols = { added = "+", modified = "~", removed = "-" },
-        diff_color = {
-          added = { fg = "#67f771" },
-          modified = { fg = "#2fc0ed" },
-          removed = { fg = "#f93b58" },
-        },
       },
     },
     lualine_c = {
       {
         "diagnostics",
         sources = { "nvim_diagnostic" },
-        color = { fg = c.inner_fg, bg = c.inner_bg },
-        -- symbols = { error = " ", warn = " ", info = " ", hint = "󱤅 ", other = "󰠠 " },
-        -- diagnostics_color = {
-        --     error = { fg = c.error },
-        --     warn = { fg = c.warn },
-        --     info = { fg = c.info },
-        --     hint = { fg = c.hint },
-        -- },
         colored = true,
       },
     },
     lualine_x = {
       {
         "encoding",
-        color = { fg = c.inner_fg, bg = c.inner_bg },
         padding = 0,
       },
       {
         get_current_filetype,
-        color = { fg = c.inner_fg, bg = c.inner_bg },
         padding = 0,
       },
     },
     lualine_y = {
       {
         get_native_lsp,
-        color = { fg = c.inner_pill_text, bg = c.inner_pill_bg },
-        icon = { " ", color = { fg = c.inner_pill_icon } },
+        icon = { " ", },
       },
     },
     lualine_z = {
       {
         "location",
-        color = { fg = c.outer_pill_text },
         padding = 1,
       },
       {
         "progress",
-        color = { fg = c.outer_pill_text },
         padding = 1,
       },
     },

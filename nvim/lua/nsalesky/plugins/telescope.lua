@@ -5,6 +5,7 @@ return {
     "nvim-lua/plenary.nvim",
     "nvim-telescope/telescope-live-grep-args.nvim",
     "nvim-telescope/telescope-ui-select.nvim",
+    { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
   },
   config = function()
     local builtin = require("telescope.builtin")
@@ -25,9 +26,6 @@ return {
     vim.keymap.set("n", "<leader>fs", function()
       require("telescope").extensions.live_grep_args.live_grep_args()
     end, { desc = "Search For Text" })
-
-    -- Set up some custom theming
-    -- require("nsalesky.theme").set_telescope_colors()
 
     -- Open Telescope results in trouble
     local telescope = require("telescope")
@@ -61,9 +59,16 @@ return {
 
           }),
         },
+        fzf = {
+          fuzzy = true,
+          override_generic_sorter = true,
+          override_file_sorter = true,
+          case_mode = "smart_case",
+        },
       },
     })
 
     require("telescope").load_extension("ui-select")
+    require("telescope").load_extension("fzf")
   end,
 }
