@@ -50,6 +50,11 @@ return {
         capabilities = capabilities,
       })
 
+      lspconfig.ocamllsp.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+      })
+
       -- lspconfig.typst_lsp.setup({
       --   on_attach = on_attach,
       --   capabilities = capabilities,

@@ -39,3 +39,6 @@ if not string match -q -- $PNPM_HOME $PATH
   set -gx PATH "$PNPM_HOME" $PATH
 end
 # pnpm end
+
+# opam configuration
+source /Users/nsalesky/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true

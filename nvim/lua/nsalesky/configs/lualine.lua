@@ -53,7 +53,7 @@ local telescope = {
       },
     },
   },
-  filetypes = { "TelescopePrompt" },
+  filetypes = { "TelescopePrompt", },
 }
 
 return {
@@ -146,5 +146,6 @@ return {
   inactive_winbar = {},
   extensions = {
     telescope,
+    "nvim-tree",
   },
 }
