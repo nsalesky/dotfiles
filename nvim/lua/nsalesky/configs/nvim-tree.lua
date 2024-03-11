@@ -62,6 +62,6 @@ return {
   filters = {
     dotfiles = false,
     git_ignored = true,
-    custom = { "^\\.git" },
+    custom = { "^\\.git", ".DS_Store" },
   },
 }
