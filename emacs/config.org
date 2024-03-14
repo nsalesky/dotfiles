@@ -171,9 +171,9 @@ Here's where I configure some basic Emacs features with keybindings.
 (setq disabled-command-function nil)
 #+END_SRC
 
-** +Evil 😈+
+** Evil 😈
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package evil
   ;; :ensure t
   :init
@@ -198,9 +198,9 @@ Here's where I configure some basic Emacs features with keybindings.
 (elpaca-wait)
 #+END_SRC
 
-** +General+
+** General
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package general
   :ensure t
   :config
@@ -216,7 +216,7 @@ Here's where I configure some basic Emacs features with keybindings.
 (elpaca-wait)
 #+END_SRC
 
-** Meow: modal editing
+** +Meow: modal editing+
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (defun meow-setup ()
@@ -717,14 +717,14 @@ Make the Emacs help pages more "helpful".
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key)))
+   ("C-h k" . helpful-key))
 
-  ;; :general
-  ;; (ns/leader-def
-  ;;   "h" '(:ignore t :which-key "help")
-  ;;   "hv" '(helpful-variable :which-key "describe variable")
-  ;;   "hf" '(helpful-callable :which-key "describe function")
-  ;;   "hk" '(helpful-key :which-key "describe key")))
+  :general
+  (ns/leader-def
+    "h" '(:ignore t :which-key "help")
+    "hv" '(helpful-variable :which-key "describe variable")
+    "hf" '(helpful-callable :which-key "describe function")
+    "hk" '(helpful-key :which-key "describe key")))
 #+end_src
 
 ** Hl-todo: Highlight and navigate TODO keywords
@@ -815,12 +815,12 @@ Sets up minibuffer completion with Vertico.
    ("M-s" . consult-history)
    ("M-r" . consult-history))
 
-  ;; :general
-  ;; (ns/leader-def
-  ;;   "s" '(:ignore t :which-key "search")
-  ;;   "sr" '(consult-ripgrep :which-key "ripgrep")
-  ;;   "sl" '(consult-line :which-key "line search")
-  ;;   "si" '(consult-imenu :which-key "imenu"))
+  :general
+  (ns/leader-def
+    "s" '(:ignore t :which-key "search")
+    "sr" '(consult-ripgrep :which-key "ripgrep")
+    "sl" '(consult-line :which-key "line search")
+    "si" '(consult-imenu :which-key "imenu"))
 
   :init
   (setq consult-narrow-key (kbd "<"))
@@ -1545,14 +1545,14 @@ Give Org-mode documents some extra visual polish.
                ("n" . multi-vterm-next)
                ("t" . multi-vterm-dedicated-toggle)
                ("p" . multi-vterm-project)
-               ("r" . multi-vterm-rename-buffer)))
-  ;; :general
-  ;; (ns/leader-def
-  ;;   "v" '(:ignore t :which-key "terminal")
-  ;;   "vv" '(multi-vterm :which-key "open new term")
-  ;;   "vp" '(multi-vterm-prev :which-key "prev term")
-  ;;   "vn" '(multi-vterm-next :which-key "next term")
-  ;;   "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
+               ("r" . multi-vterm-rename-buffer))
+  :general
+  (ns/leader-def
+    "v" '(:ignore t :which-key "terminal")
+    "vv" '(multi-vterm :which-key "open new term")
+    "vp" '(multi-vterm-prev :which-key "prev term")
+    "vn" '(multi-vterm-next :which-key "next term")
+    "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 #+END_SRC 
 
 * Programming
@@ -1922,6 +1922,33 @@ Recompile LaTeX documents automatically when saved.
 #+BEGIN_SRC emacs-lisp
 (use-package nix-mode
   :mode "\\.nix\\'")
+#+END_SRC
+
+*** OCaml
+
+#+BEGIN_SRC emacs-lisp
+(defun opam-env ()
+  (interactive nil)
+  (dolist (var (car (read-from-string (shell-command-to-string "opam config env --sexp"))))
+    (setenv (car var) (cadr var))))
+
+(use-package tuareg
+  :mode (("\\.ocamlinit\\'" . tuareg-mode)))
+
+(use-package dune)
+
+(use-package merlin
+  :hook
+  (tuareg-mode . merlin-mode)
+  :custom
+  (merlin-error-after-save nil))
+
+(use-package merlin-eldoc
+  :hook (tuareg-mode . merlin-eldoc-setup))
+
+(use-package utop
+  :hook
+  (tuareg-mode . utop-minor-mode))
 #+END_SRC
 
 *** PlantUML

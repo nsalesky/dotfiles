@@ -86,6 +86,43 @@
 
 (setq disabled-command-function nil)
 
+(use-package evil
+  ;; :ensure t
+  :init
+  (setq evil-want-keybinding nil
+        evil-want-integration t
+        evil-want-C-u-scroll t
+        evil-want-C-d-scroll t)
+
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+  (evil-collection-init))
+
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1))
+
+(elpaca-wait)
+
+(use-package general
+  :ensure t
+  :config
+  (general-evil-setup t)
+  (general-create-definer ns/leader-def
+    :keymaps '(normal visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+  (general-create-definer ns/local-leader-def
+    :keymaps '(normal visual emacs)
+    :prefix "SPC m"
+    :global-prefix "C-SPC m"))
+(elpaca-wait)
+
 (use-package embrace
   :elpaca (embrace :type git :host github :repo "cute-jumper/embrace.el")
   :bind ("C-," . embrace-commander)
@@ -306,14 +343,14 @@
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key)))
+   ("C-h k" . helpful-key))
 
-  ;; :general
-  ;; (ns/leader-def
-  ;;   "h" '(:ignore t :which-key "help")
-  ;;   "hv" '(helpful-variable :which-key "describe variable")
-  ;;   "hf" '(helpful-callable :which-key "describe function")
-  ;;   "hk" '(helpful-key :which-key "describe key")))
+  :general
+  (ns/leader-def
+    "h" '(:ignore t :which-key "help")
+    "hv" '(helpful-variable :which-key "describe variable")
+    "hf" '(helpful-callable :which-key "describe function")
+    "hk" '(helpful-key :which-key "describe key")))
 
 (use-package hl-todo
   :config
@@ -381,12 +418,12 @@
    ("M-s" . consult-history)
    ("M-r" . consult-history))
 
-  ;; :general
-  ;; (ns/leader-def
-  ;;   "s" '(:ignore t :which-key "search")
-  ;;   "sr" '(consult-ripgrep :which-key "ripgrep")
-  ;;   "sl" '(consult-line :which-key "line search")
-  ;;   "si" '(consult-imenu :which-key "imenu"))
+  :general
+  (ns/leader-def
+    "s" '(:ignore t :which-key "search")
+    "sr" '(consult-ripgrep :which-key "ripgrep")
+    "sl" '(consult-line :which-key "line search")
+    "si" '(consult-imenu :which-key "imenu"))
 
   :init
   (setq consult-narrow-key (kbd "<"))
@@ -733,14 +770,14 @@
                ("n" . multi-vterm-next)
                ("t" . multi-vterm-dedicated-toggle)
                ("p" . multi-vterm-project)
-               ("r" . multi-vterm-rename-buffer)))
-  ;; :general
-  ;; (ns/leader-def
-  ;;   "v" '(:ignore t :which-key "terminal")
-  ;;   "vv" '(multi-vterm :which-key "open new term")
-  ;;   "vp" '(multi-vterm-prev :which-key "prev term")
-  ;;   "vn" '(multi-vterm-next :which-key "next term")
-  ;;   "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
+               ("r" . multi-vterm-rename-buffer))
+  :general
+  (ns/leader-def
+    "v" '(:ignore t :which-key "terminal")
+    "vv" '(multi-vterm :which-key "open new term")
+    "vp" '(multi-vterm-prev :which-key "prev term")
+    "vn" '(multi-vterm-next :which-key "next term")
+    "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 
 ;; (use-package lsp-mode
 ;;     :commands (lsp lsp-deferred)
@@ -977,6 +1014,29 @@
 
 (use-package nix-mode
   :mode "\\.nix\\'")
+
+(defun opam-env ()
+  (interactive nil)
+  (dolist (var (car (read-from-string (shell-command-to-string "opam config env --sexp"))))
+    (setenv (car var) (cadr var))))
+
+(use-package tuareg
+  :mode (("\\.ocamlinit\\'" . tuareg-mode)))
+
+(use-package dune)
+
+(use-package merlin
+  :hook
+  (tuareg-mode . merlin-mode)
+  :custom
+  (merlin-error-after-save nil))
+
+(use-package merlin-eldoc
+  :hook (tuareg-mode . merlin-eldoc-setup))
+
+(use-package utop
+  :hook
+  (tuareg-mode . utop-minor-mode))
 
 (use-package plantuml-mode
   :mode "\\.plantuml\\'"
