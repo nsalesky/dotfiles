@@ -53,7 +53,7 @@ local telescope = {
       },
     },
   },
-  filetypes = { "TelescopePrompt", },
+  filetypes = { "TelescopePrompt" },
 }
 
 return {
@@ -92,7 +92,7 @@ return {
     lualine_b = {
       {
         "branch",
-        icon = { "", },
+        icon = { "" },
       },
       {
         "diff",
@@ -120,7 +120,7 @@ return {
     lualine_y = {
       {
         get_native_lsp,
-        icon = { " ", },
+        icon = { " " },
       },
     },
     lualine_z = {

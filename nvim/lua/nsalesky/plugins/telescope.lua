@@ -55,9 +55,7 @@ return {
           },
         },
         ["ui-select"] = {
-          require("telescope.themes").get_dropdown({
-
-          }),
+          require("telescope.themes").get_dropdown({}),
         },
         fzf = {
           fuzzy = true,

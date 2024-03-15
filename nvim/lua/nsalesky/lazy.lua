@@ -15,4 +15,9 @@ require("lazy").setup("nsalesky.plugins", {
   change_detection = {
     notify = false,
   },
+  dev = {
+    path = "~/Projects/neovim",
+    patterns = { "nsalesky" },
+    fallback = false,
+  }
 })

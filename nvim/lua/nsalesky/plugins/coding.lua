@@ -28,6 +28,9 @@ return {
           lua = {
             require("formatter.filetypes.lua").stylua,
           },
+          ocaml = {
+            require("formatter.filetypes.ocaml").ocamlformat,
+          },
           python = {
             require("formatter.filetypes.python").black,
           },
@@ -91,10 +94,37 @@ return {
       { "<leader>gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
     },
   },
-  -- {
-  --     "michaelb/sniprun",
-  --     event = "VeryLazy",
-  --     build = "sh ./install.sh",
-  --     opts = {}
-  -- }
+  {
+    "olical/nfnl",
+    ft = "fennel",
+  },
+  {
+    "olical/conjure",
+    ft = { "clojure", "lua", "fennel", "ocaml" },
+    dependencies = {
+      "PaterJason/cmp-conjure",
+      { "nsalesky/conjure-ocaml", dev = true },
+      -- config = function()
+      --   local cmp = require("cmp")
+      --   local config = cmp.get_config()
+      --   table.insert(config.sources, {
+      --     name = "buffer",
+      --     option = {
+      --       sources = {
+      --         { name = "conjure" },
+      --       },
+      --     },
+      --   })
+      --   cmp.setup(config)
+      -- end,
+    },
+    config = function(_, opts)
+      require("conjure.main").main()
+      require("conjure.mapping")["on-filetype"]()
+    end,
+    init = function()
+      vim.g["conjure#filetypes"] = {"clojure", "fennel", "janet", "hy", "julia", "racket", "scheme", "lua", "lisp", "python", "rust", "sql", "ocaml"}
+      vim.g["conjure#ocaml"] = "nsalesky.configs.conjure_ocaml"
+    end
+  }
 }
