@@ -84,17 +84,6 @@ return {
     opts = {},
   },
   {
-    "folke/trouble.nvim",
-    opts = {},
-    keys = {
-      { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Trouble Toggle" },
-      { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Trouble Workspace" },
-      { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Trouble Document" },
-      { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Trouble Quickfix" },
-      { "<leader>gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
-    },
-  },
-  {
     "olical/nfnl",
     ft = "fennel",
   },

@@ -8,8 +8,6 @@ return {
           cmp = true,
           gitsigns = true,
           telescope = true,
-          notify = true,
-          lsp_trouble = true,
           nvimtree = true,
         },
       })

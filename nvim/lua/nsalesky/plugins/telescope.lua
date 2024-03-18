@@ -27,23 +27,10 @@ return {
       require("telescope").extensions.live_grep_args.live_grep_args()
     end, { desc = "Search For Text" })
 
-    -- Open Telescope results in trouble
     local telescope = require("telescope")
-    -- local actions = require("telescope.actions")
-    local trouble = require("trouble.providers.telescope")
     local lga_actions = require("telescope-live-grep-args.actions")
 
     telescope.setup({
-      defaults = {
-        mappings = {
-          i = {
-            ["<c-t>"] = trouble.open_with_trouble,
-          },
-          n = {
-            ["<c-t>"] = trouble.open_with_trouble,
-          },
-        },
-      },
       extensions = {
         live_grep_args = {
           auto_quoting = true,
