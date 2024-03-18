@@ -31,6 +31,10 @@ vim.keymap.set("n", "]b", "<cmd>bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "[t", "<cmd>tabprev<CR>", { desc = "Previous tab" })
 vim.keymap.set("n", "]t", "<cmd>tabnext<CR>", { desc = "Next tab" })
 
+-- Moving between quickfix entries
+vim.keymap.set("n", "[q", "<cmd>cprev<CR>", { desc = "Previous quickfix" })
+vim.keymap.set("n", "]q", "<cmd>cnext<CR>", { desc = "Next quickfix" })
+
 -- Jumping between diagnostics
 vim.keymap.set("n", "[d", function()
   vim.diagnostic.goto_prev()
