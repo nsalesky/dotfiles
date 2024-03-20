@@ -35,6 +35,9 @@ vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldenable = false
 
+-- Settings used by Neovide
+vim.opt.guifont = "JetBrainsMono Nerd Font:h12"
+
 -- Disable netrw
 -- vim.g.loaded_netrw = 1
 -- vim.g.loaded_netrwPlugin = 1

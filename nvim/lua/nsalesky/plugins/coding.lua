@@ -84,6 +84,10 @@ return {
     opts = {},
   },
   {
+    "luckasRanarison/tailwind-tools.nvim",
+    opts = {}
+  },
+  {
     "olical/nfnl",
     ft = "fennel",
   },

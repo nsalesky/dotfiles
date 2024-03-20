@@ -1,6 +1,7 @@
 local cmp = require("cmp")
 local luasnip = require("luasnip")
 local utils = require("nsalesky.utils")
+local tailwind_utils = require("tailwind-tools.utils")
 
 local function format(entry, item)
   local MAX_LABEL_WIDTH = 55
@@ -8,8 +9,12 @@ local function format(entry, item)
     return (" "):rep(max - len)
   end
 
+  local doc = entry.completion_item.documenttion
   if entry.source.name == "vim-dadbod-completion" then
     item.kind = "Field"
+  elseif entry.kind == "Color" and type(doc) == "string" then
+    local _, _, r, g, b = doc:find("rgba?%((%d+), (%d+), (%d+)")
+    if r then item.kind_hl_group = tailwind_utils.set_hl_from(r, g, b, "foreground") end
   end
 
   -- Limit content width.
