@@ -9,7 +9,7 @@ return {
       "hrsh7th/cmp-cmdline",
       "saadparwaiz1/cmp_luasnip",
       "petertriho/cmp-git",
-      "luckasRanarison/tailwind-tools.nvim",
+      -- "luckasRanarison/tailwind-tools.nvim",
     },
     config = function()
       require("nsalesky.configs.cmp")

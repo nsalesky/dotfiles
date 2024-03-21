@@ -83,10 +83,10 @@ return {
     config = true,
     opts = {},
   },
-  {
-    "luckasRanarison/tailwind-tools.nvim",
-    opts = {}
-  },
+  -- {
+  --   "luckasRanarison/tailwind-tools.nvim",
+  --   opts = {}
+  -- },
   {
     "olical/nfnl",
     ft = "fennel",

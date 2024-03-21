@@ -37,6 +37,9 @@ vim.opt.foldenable = false
 
 -- Settings used by Neovide
 vim.opt.guifont = "JetBrainsMono Nerd Font:h12"
+if vim.g.neovide then
+  vim.g.neovide_hide_mouse_when_typing = true
+end
 
 -- Disable netrw
 -- vim.g.loaded_netrw = 1
