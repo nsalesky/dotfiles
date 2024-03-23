@@ -180,7 +180,9 @@ Here's where I configure some basic Emacs features with keybindings.
   (setq evil-want-keybinding nil
         evil-want-integration t
         evil-want-C-u-scroll t
-        evil-want-C-d-scroll t)
+        evil-want-C-d-scroll t
+        evil-undo-system 'undo-redo
+  )
 
   :config
   (evil-mode 1))
@@ -387,7 +389,7 @@ Keybindings for working with files.
   ("C-x C-r" . consult-recent-file))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (ns/leader-def
   "." '(find-file :which-key "find file")
   "f" '(:ignore t :which-key "files")
@@ -396,7 +398,7 @@ Keybindings for working with files.
 #+END_SRC
 
 ** Buffers
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (ns/leader-def
   "," '(consult-buffer :which-key "select buffer")
   "b" '(:ignore t :which-key "buffers")
@@ -413,13 +415,13 @@ Keybindings for operating windows.
 
 ** Text manipulation
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (ns/leader-def
   "/" '(comment-line :which-key "Toggle comment"))
 #+END_SRC
 
 ** Eval
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (ns/leader-def
   "e" '(:ignore t :which-key "eval")
   "el" '(eval-last-sexp :which-key "eval last sexpr")

@@ -92,7 +92,9 @@
   (setq evil-want-keybinding nil
         evil-want-integration t
         evil-want-C-u-scroll t
-        evil-want-C-d-scroll t)
+        evil-want-C-d-scroll t
+        evil-undo-system 'undo-redo
+  )
 
   :config
   (evil-mode 1))
@@ -166,8 +168,28 @@
   :bind
   ("C-x C-r" . consult-recent-file))
 
+(ns/leader-def
+  "." '(find-file :which-key "find file")
+  "f" '(:ignore t :which-key "files")
+  "fs" '(find-file :which-key "find file")
+  "fr" '(consult-recent-file :which-key "find recent file"))
+
+(ns/leader-def
+  "," '(consult-buffer :which-key "select buffer")
+  "b" '(:ignore t :which-key "buffers")
+  "bb" '(consult-buffer :which-key "select buffer"))
+
 (use-package ace-window
   :bind ("M-o" . ace-window))
+
+(ns/leader-def
+  "/" '(comment-line :which-key "Toggle comment"))
+
+(ns/leader-def
+  "e" '(:ignore t :which-key "eval")
+  "el" '(eval-last-sexp :which-key "eval last sexpr")
+  "ed" '(eval-defun :which-key "eval defun")
+  "e:" '(eval-expression :which-key "eval expression"))
 
 (use-package hydra)
 
