@@ -125,19 +125,6 @@
     :global-prefix "C-SPC m"))
 (elpaca-wait)
 
-(use-package embrace
-  :elpaca (embrace :type git :host github :repo "cute-jumper/embrace.el")
-  :bind ("C-," . embrace-commander)
-  :config
-  (defun embrace-markdown-mode-hook ()
-    (dolist (lst '((?* "*" . "*")
-                   (?\ "\\" . "\\")
-                   (?$ "$" . "$")
-                   (?/ "/" . "/")))
-      (embrace-add-pair (car lst) (cadr lst) (cddr lst))))
-  (add-hook 'markdown-mode-hook 'embrace-markdown-mode-hook)
-  (add-hook 'org-mode-hook 'embrace-org-mode-hook))
-
 (electric-pair-mode 1)
 (setq electric-pair-inhibit-predicate
       (lambda (char)
@@ -205,6 +192,24 @@
     ("l" dumb-jump-quick-look "Quick look")
     ("b" dumb-jump-back "Back"))
   (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
+
+(use-package evil-textobj-tree-sitter
+  :config
+  ; functions
+  (define-key evil-outer-text-objects-map "f"
+              (evil-textobj-tree-sitter-get-textobj "function.outer"))
+  (define-key evil-inner-text-objects-map "f"
+              (evil-textobj-tree-sitter-get-textobj "function.inner"))
+  (define-key evil-normal-state-map
+              (kbd "]f")
+              (lambda ()
+                (interactive)
+                (evil-textobj-tree-sitter-goto-textobj "function.outer")))
+  (define-key evil-normal-state-map
+              (kbd "[f")
+              (lambda ()
+                (interactive)
+                (evil-textobj-tree-sitter-goto-textobj "function.outer" t))))
 
 (use-package saveplace
   :elpaca nil
