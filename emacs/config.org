@@ -272,15 +272,16 @@ Keybindings for working with files.
   (recentf-max-menu-items 5000)
   (recentf-max-saved-items 10000)
   :bind
-  ("C-x C-r" . consult-recent-file))
+  ("C-x C-r" . consult-recent-file)
+  :general
+  (ns/leader-def "fr" 'consult-recent-file))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
 (ns/leader-def
-  "." '(find-file :which-key "find file")
+  "." 'find-file
   "f" '(:ignore t :which-key "files")
-  "fs" '(find-file :which-key "find file")
-  "fr" '(consult-recent-file :which-key "find recent file"))
+  "fs" 'find-file)
 #+END_SRC
 
 ** Buffers
@@ -335,7 +336,6 @@ Keybindings for operating windows.
 #+END_SRC
 
 ** evil-textobj-tree-sitter
-
 #+BEGIN_SRC emacs-lisp
 (use-package evil-textobj-tree-sitter
   :config
@@ -354,9 +354,21 @@ Keybindings for operating windows.
               (lambda ()
                 (interactive)
                 (evil-textobj-tree-sitter-goto-textobj "function.outer" t))))
-
 #+END_SRC
+
 * Configure builtin/core Emacs packages
+** Misc
+#+BEGIN_SRC emacs-lisp
+(use-package emacs
+  :elpaca nil
+  :custom
+  (scroll-margin 5)
+  (ring-bell-function 'ignore)
+  :config
+  (pixel-scroll-mode 1)
+  (global-visual-line-mode 1))
+#+END_SRC
+
 ** Saveplace: Remember your location in a file
 #+BEGIN_SRC emacs-lisp
 
@@ -382,25 +394,10 @@ Keybindings for operating windows.
 
 #+END_SRC 
 
-#+RESULTS:
-
-** Time
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package time
-;;   :defer t
-;;   :config
-;;   (setq display-time-24hr-format nil))
-
-;; TODO look into displaying the current time in the modeline
-
-
-#+END_SRC 
-
-** Global-auto-revert-mode
+** +Global-auto-revert-mode+
 Auto-revert all buffers by default
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (global-auto-revert-mode 1)
 #+END_SRC
 
@@ -429,11 +426,6 @@ I got the basic code for this from [[https://emacs.stackexchange.com/questions/3
       `(("." . ,(concat user-emacs-directory "backups/"))))
 #+END_SRC
 
-** +Emacs-async: Run asynchronous processes+
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package async)
-#+END_SRC
-
 ** Winner-mode: undo/redo window configuration changes
 | Command     | Keybinding | Description                               |
 |-------------+------------+-------------------------------------------|
@@ -442,6 +434,19 @@ I got the basic code for this from [[https://emacs.stackexchange.com/questions/3
 
 #+BEGIN_SRC emacs-lisp
 (winner-mode 1)
+#+END_SRC
+
+** display-line-numbers-mode: Displaying line numbers
+#+BEGIN_SRC emacs-lisp
+(use-package display-line-numbers-mode
+  :elpaca nil
+  :init
+  (setq-default display-line-numbers 'relative)
+  :config
+  ;; Enable line numbers for some modes
+  :hook
+  (prog-mode . display-line-numbers-mode)
+  (markdown-mode . display-line-numbers-mode))
 #+END_SRC
 
 * UI
@@ -453,36 +458,6 @@ Set the window title to display the current file and major mode.
 #+BEGIN_SRC emacs-lisp
 (setq-default frame-title-format '("GNU Emacs"))
 #+END_SRC 
-
-
-Enable global visual line mode to wrap lines properly.
-#+BEGIN_SRC emacs-lisp
-(global-visual-line-mode 1)
-#+END_SRC 
-
-Enable line numbers globally for most modes, except the ones explicitly disabled.
-#+BEGIN_SRC emacs-lisp
-
-;; Enable line numbers
-(column-number-mode)
-;; (global-display-line-numbers-mode t)
-
-;; Disable line numbers for some modes
-(dolist (mode
-         '(prog-mode-hook
-           markdown-mode-hook
-        ))
-(add-hook mode (lambda () (display-line-numbers-mode 1))))
-
-#+END_SRC
-
-Flash the modeline for alerts.
-#+BEGIN_SRC emacs-lisp
-(setq visible-bell t)
-(use-package mode-line-bell
-  :config
-  (mode-line-bell-mode))
-#+END_SRC
 
 ** Diminish: keeping the modeline uncluttered
 #+BEGIN_SRC emacs-lisp
@@ -566,19 +541,6 @@ Give Emacs a nice color scheme! Other themes that I like include:
   (setq doom-modeline-height 35
         doom-modeline-support-imenu t)
   (doom-modeline-mode 1))
-
-;; (use-package moody
-;;   :custom
-;;   (x-underline-at-descent-line t)
-;;   :config
-;;   (moody-replace-mode-line-buffer-identification)
-;;   (moody-replace-vc-mode)
-;;   (moody-replace-eldoc-minibuffer-message-function))
-#+END_SRC
-
-*** Custom modeline
-#+BEGIN_SRC emacs-lisp
-
 #+END_SRC
 
 ** Dashboard
@@ -608,16 +570,6 @@ I like having a nice dashboard when Emacs loads in order to remember what I was 
     (dashboard-setup-startup-hook))
 
 #+END_SRC
-
-** Smooth Scrolling
-Make Emacs scroll more consistently with a small margin at the bottom.
-
-#+BEGIN_SRC emacs-lisp
-
-(pixel-scroll-mode)
-(setq scroll-margin 5)
-
-#+END_SRC 
 
 ** Helpful
 Make the Emacs help pages more "helpful".
@@ -814,19 +766,6 @@ Sets up minibuffer completion with Vertico.
 #+END_SRC 
 
 * Editor
-** +Ace-isearch: unify disparate searches+
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package ace-isearch
-  :custom
-  (ace-isearch-function #'avy-goto-word-1)
-  (ace-isearch-2-function #'avy-goto-char-2)
-  (ace-isearch-function-from-isearch #'ace-isearch-consult-line-from-isearch)
-  (ace-isearch-jump-based-on-one-char nil)
-  :config
-  (global-ace-isearch-mode))
-#+END_SRC
-
 ** Aggressive-indent: Always keep code properly indented
 #+BEGIN_SRC emacs-lisp
 
@@ -837,7 +776,6 @@ Sets up minibuffer completion with Vertico.
 #+END_SRC 
 
 ** Rainbow-delimiters: Different color for each parenthesis level
-
 Give parenthases rainbow coloring depending on their nested level in all programming modes.
 
 #+BEGIN_SRC emacs-lisp
@@ -867,7 +805,6 @@ Add various templates to Emacs.
 #+end_src
 
 ** Olivetti: Centered document editing
-
 #+BEGIN_SRC emacs-lisp
 (use-package olivetti
   :custom
@@ -981,20 +918,11 @@ Make Emacs read credentials through ~pass~
 Tools to distinguish projects and quickly navigate inside projects and between them.
 
 ** Dired
-
 #+BEGIN_SRC emacs-lisp
 (use-package dired
   :elpaca nil
   :custom
   (dired-kill-when-opening-new-dired-buffer t))
-#+END_SRC
-
-** +Bufler.el: a butler for your buffers+
-
-#+BEGIN_SRC emacs-lisp :tangle nil
-(use-package bufler
-  :init
-  (bufler-mode))
 #+END_SRC
 
 ** +Projectile+
@@ -1017,7 +945,6 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 #+end_src
 
 ** Tab-bar-mode
-
 #+BEGIN_SRC emacs-lisp
 (use-package tab-bar
   :elpaca nil
@@ -1111,11 +1038,6 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   :elpaca (org-appear :type git :host github :repo "awth13/org-appear")
   :hook (org-mode . org-appear-mode))
 #+END_SRC 
-
-** Org-babel
-#+begin_src emacs-lisp
-
-#+end_src
 
 ** Org-agenda and org-capture
 
@@ -1508,6 +1430,7 @@ Give Org-mode documents some extra visual polish.
    '((bash "https://github.com/tree-sitter/tree-sitter-bash")
      (cmake "https://github.com/uyha/tree-sitter-cmake")
      (css "https://github.com/tree-sitter/tree-sitter-css")
+     (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
      (elisp "https://github.com/Wilfred/tree-sitter-elisp")
      (go "https://github.com/tree-sitter/tree-sitter-go")
      (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
@@ -1527,40 +1450,7 @@ Give Org-mode documents some extra visual polish.
 (customize-set-variable 'treesit-font-lock-level 4)
 #+END_SRC
 
-**** treesit-auto: install Treesitter grammars automatically
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package treesit-auto
-  :elpaca (treesit-auto :type git :host github :repo "renzmann/treesit-auto")
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (global-treesit-auto-mode))
-#+END_SRC
-
-*** Company: Auto completion
-A good code-completion package. I might consider switching to Corfu at some point.
-
-#+begin_src emacs-lisp
-
-;; (use-package company
-;;     :hook (prog-mode . company-mode)
-;;     :bind (:map company-active-map
-;;         ("<tab>" . company-complete-selection))
-;;         ;; (:map lsp-mode-map
-;;         ;; ("<tab>" . company-indent-or-complete-common))
-;;     :custom
-;;     (company-minimum-prefix-length 1)
-;;     (company-idle-delay 0.0))
-
-;; ;; Adds colors and icons to company-mode
-;; (use-package company-box
-;;     :hook (company-mode . company-box-mode))
-
-#+end_src
-
 *** Eglot: Language-server protocols
-
 #+BEGIN_SRC emacs-lisp
 (use-package eglot
   :bind
@@ -1591,7 +1481,6 @@ A good code-completion package. I might consider switching to Corfu at some poin
 #+END_SRC 
 
 *** Corfu: Completion at point
-
 Configure the ~corfu~ completion-at-point package. This configuration was inspired by the official documentation and [[https://kristofferbalintona.me/posts/202202270056/][here]].
 
 #+BEGIN_SRC emacs-lisp
@@ -1686,21 +1575,11 @@ A simple code formatting system for a ton of languages.
 #+END_SRC
 
 *** Verb
-
 #+BEGIN_SRC emacs-lisp
 (use-package verb
   :after (org)
   :config
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
-#+END_SRC
-
-*** +envrc: set variables and configure project environments+
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package envrc
-  :elpaca (envrc :type git :host github :repo "purcell/envrc")
-  :config
-  (envrc-global-mode))
 #+END_SRC
 
 *** ws-butler
@@ -1712,7 +1591,6 @@ A simple code formatting system for a ton of languages.
 #+END_SRC
 
 *** imenu-list
-
 #+BEGIN_SRC emacs-lisp
 (use-package imenu-list)
 #+END_SRCp
@@ -1745,16 +1623,6 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
 #+end_src
-
-*** Docker
-Adds syntax highlighting and other small features for ~Dockerfile~ files.
-
-#+BEGIN_SRC emacs-lisp
-
-;; (use-package dockerfile-mode
-;;   :mode "Dockerfile\\'")
-
-#+END_SRC 
 
 *** Clojure
 
@@ -1789,13 +1657,10 @@ Adds syntax highlighting and other small features for ~Dockerfile~ files.
   :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
 #+END_SRC
 
-*** GLSL: OpenGL shaders
-
-#+BEGIN_SRC emacs-lisp
-
+*** +GLSL: OpenGL shaders+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package glsl-mode
   :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
-
 #+END_SRC
 
 *** Go

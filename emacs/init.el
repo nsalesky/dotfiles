@@ -153,13 +153,14 @@
   (recentf-max-menu-items 5000)
   (recentf-max-saved-items 10000)
   :bind
-  ("C-x C-r" . consult-recent-file))
+  ("C-x C-r" . consult-recent-file)
+  :general
+  (ns/leader-def "fr" 'consult-recent-file))
 
 (ns/leader-def
-  "." '(find-file :which-key "find file")
+  "." 'find-file
   "f" '(:ignore t :which-key "files")
-  "fs" '(find-file :which-key "find file")
-  "fr" '(consult-recent-file :which-key "find recent file"))
+  "fs" 'find-file)
 
 (ns/leader-def
   "," '(consult-buffer :which-key "select buffer")
@@ -211,6 +212,15 @@
                 (interactive)
                 (evil-textobj-tree-sitter-goto-textobj "function.outer" t))))
 
+(use-package emacs
+  :elpaca nil
+  :custom
+  (scroll-margin 5)
+  (ring-bell-function 'ignore)
+  :config
+  (pixel-scroll-mode 1)
+  (global-visual-line-mode 1))
+
 (use-package saveplace
   :elpaca nil
   :unless noninteractive
@@ -225,15 +235,6 @@
   :config
   (setq savehist-additional-variables '(compile-command kill-ring regexp-search-ring))
   (savehist-mode 1))
-
-;; (use-package time
-;;   :defer t
-;;   :config
-;;   (setq display-time-24hr-format nil))
-
-;; TODO look into displaying the current time in the modeline
-
-(global-auto-revert-mode 1)
 
 (let ((backup-dir (concat user-emacs-directory "backups"))
       (auto-saves-dir (concat user-emacs-directory "auto-saves")))
@@ -256,25 +257,17 @@
 
 (winner-mode 1)
 
-(setq-default frame-title-format '("GNU Emacs"))
-
-(global-visual-line-mode 1)
-
-;; Enable line numbers
-(column-number-mode)
-;; (global-display-line-numbers-mode t)
-
-;; Disable line numbers for some modes
-(dolist (mode
-         '(prog-mode-hook
-           markdown-mode-hook
-        ))
-(add-hook mode (lambda () (display-line-numbers-mode 1))))
-
-(setq visible-bell t)
-(use-package mode-line-bell
+(use-package display-line-numbers-mode
+  :elpaca nil
+  :init
+  (setq-default display-line-numbers 'relative)
   :config
-  (mode-line-bell-mode))
+  ;; Enable line numbers for some modes
+  :hook
+  (prog-mode . display-line-numbers-mode)
+  (markdown-mode . display-line-numbers-mode))
+
+(setq-default frame-title-format '("GNU Emacs"))
 
 (use-package diminish
   :init
@@ -332,16 +325,6 @@
         doom-modeline-support-imenu t)
   (doom-modeline-mode 1))
 
-;; (use-package moody
-;;   :custom
-;;   (x-underline-at-descent-line t)
-;;   :config
-;;   (moody-replace-mode-line-buffer-identification)
-;;   (moody-replace-vc-mode)
-;;   (moody-replace-eldoc-minibuffer-message-function))
-
-
-
 ;; Necessary for dashboard in order to get nice seperators between sections
 (use-package page-break-lines)
 
@@ -362,9 +345,6 @@
     ;; :hook (after-init-hook . dashboard-refresh-buffer)
     :config
     (dashboard-setup-startup-hook))
-
-(pixel-scroll-mode)
-(setq scroll-margin 5)
 
 (use-package helpful
   :bind
@@ -628,8 +608,6 @@
   :elpaca (org-appear :type git :host github :repo "awth13/org-appear")
   :hook (org-mode . org-appear-mode))
 
-
-
 (defun ns/org-agenda-reload-files ()
   (interactive)
   (message "Reloading agenda files")
@@ -839,6 +817,7 @@
    '((bash "https://github.com/tree-sitter/tree-sitter-bash")
      (cmake "https://github.com/uyha/tree-sitter-cmake")
      (css "https://github.com/tree-sitter/tree-sitter-css")
+     (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
      (elisp "https://github.com/Wilfred/tree-sitter-elisp")
      (go "https://github.com/tree-sitter/tree-sitter-go")
      (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
@@ -856,20 +835,6 @@
      (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
 (customize-set-variable 'treesit-font-lock-level 4)
-
-;; (use-package company
-;;     :hook (prog-mode . company-mode)
-;;     :bind (:map company-active-map
-;;         ("<tab>" . company-complete-selection))
-;;         ;; (:map lsp-mode-map
-;;         ;; ("<tab>" . company-indent-or-complete-common))
-;;     :custom
-;;     (company-minimum-prefix-length 1)
-;;     (company-idle-delay 0.0))
-
-;; ;; Adds colors and icons to company-mode
-;; (use-package company-box
-;;     :hook (company-mode . company-box-mode))
 
 (use-package eglot
   :bind
@@ -993,9 +958,6 @@
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
-;; (use-package dockerfile-mode
-;;   :mode "Dockerfile\\'")
-
 (defun ns/setup-cider-format-hook
     ()
   (add-hook 'before-save-hook 'cider-format-buffer nil t))
@@ -1016,9 +978,6 @@
 (use-package rgbds-mode
   :elpaca (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
   :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
-
-(use-package glsl-mode
-  :mode ("\\.glsl\\'" "\\.vert\\'" "\\.frag\\'" "\\.geom\\'"))
 
 (use-package go-ts-mode
   :elpaca nil
