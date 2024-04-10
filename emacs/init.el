@@ -259,13 +259,13 @@
 
 (use-package display-line-numbers-mode
   :elpaca nil
-  :init
-  (setq-default display-line-numbers 'relative)
-  :config
-  ;; Enable line numbers for some modes
+  :custom
+  (display-line-numbers-type 'relative)
   :hook
   (prog-mode . display-line-numbers-mode)
   (markdown-mode . display-line-numbers-mode))
+
+(elpaca-wait)
 
 (setq-default frame-title-format '("GNU Emacs"))
 
@@ -289,7 +289,7 @@
  `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 110))))
  `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
 
-(use-package all-the-icons)
+;(use-package all-the-icons)
 
 (use-package doom-themes
   :config

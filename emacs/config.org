@@ -440,15 +440,18 @@ I got the basic code for this from [[https://emacs.stackexchange.com/questions/3
 #+BEGIN_SRC emacs-lisp
 (use-package display-line-numbers-mode
   :elpaca nil
-  :init
-  (setq-default display-line-numbers 'relative)
-  :config
-  ;; Enable line numbers for some modes
+  :custom
+  (display-line-numbers-type 'relative)
   :hook
   (prog-mode . display-line-numbers-mode)
   (markdown-mode . display-line-numbers-mode))
 #+END_SRC
 
+** Apply changes
+Process the elpaca queue in case later packages depend on these settings
+#+BEGIN_SRC emacs-lisp
+(elpaca-wait)
+#+END_SRC
 * UI
 Set up all the fancy user-interface elements to make Emacs look nice.
 
@@ -491,7 +494,7 @@ Here are my current font settings
 Also install helpful icons useful for a ton of packages to add more visual detail. *NOTE* you'll have to run ~M-x all-the-icons-install-fonts~ in order to, well, install the fonts!
 
 #+BEGIN_SRC emacs-lisp
-(use-package all-the-icons)
+;(use-package all-the-icons)
 #+END_SRC 
 
 ** Theme
