@@ -494,7 +494,8 @@ Here are my current font settings
 Also install helpful icons useful for a ton of packages to add more visual detail. *NOTE* you'll have to run ~M-x all-the-icons-install-fonts~ in order to, well, install the fonts!
 
 #+BEGIN_SRC emacs-lisp
-;(use-package all-the-icons)
+(use-package all-the-icons)
+;; (use-package nerd-icons)
 #+END_SRC 
 
 ** Theme
@@ -1392,40 +1393,6 @@ Give Org-mode documents some extra visual polish.
 
 * Programming
 ** General Tools
-*** LSP: Language-server protocols
-
-#+begin_src emacs-lisp
-;; (use-package lsp-mode
-;;     :commands (lsp lsp-deferred)
-;;     :custom
-;;     (lsp-keymap-prefix "C-c l")
-;;     (lsp-enable-which-key-integration t)
-;;     (lsp-lens-enable t)
-;;     (lsp-signature-auto-activate nil)
-;;     (lsp-ui-doc-mode t))
-;;     :custom
-
-;;     ;; Enable/disable type hints as you type for Rust
-;;     (lsp-rust-analyzer-server-display-inlay-hints t)
-;;     (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-;;     (lsp-rust-analyzer-display-chaining-hints nil)
-;;     (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-;;     (lsp-rust-analyzer-display-closure-return-type-hints t)
-;;     (lsp-rust-analyzer-display-parameter-hints t)
-;;     (lsp-rust-analyzer-display-reborrow-hints nil))
-
-;; ;; (use-package lsp-ivy)
-
-;; (use-package lsp-ui
-;;     :hook (lsp-mode . lsp-ui-mode)
-;;     :custom
-;;     (lsp-ui-peek-always-show t)
-;;     (lsp-ui-sideline-show-hover t)
-;;     (lsp-ui-doc-position 'bottom)
-;;     (lsp-ui-doc-enable nil))
-
-#+end_src
- 
 *** Treesitter
 
 #+BEGIN_SRC emacs-lisp
@@ -1455,6 +1422,8 @@ Give Org-mode documents some extra visual polish.
 
 *** Eglot: Language-server protocols
 #+BEGIN_SRC emacs-lisp
+(use-package jsonrpc :elpaca t)
+
 (use-package eglot
   :bind
   (:prefix-map ns/eglot-actions-map
@@ -1464,8 +1433,6 @@ Give Org-mode documents some extra visual polish.
   :custom
   (eglot-events-buffer-size 0) ; Disable the events buffer for performance
   (eglot-send-changes-idle-time 0.5)
-
-  ;; TODO: (hopefully) temporary hack for Treesitter support
   :hook
   (eglot-managed-mode . eglot-inlay-hints-mode)
   :config

@@ -289,7 +289,8 @@
  `(fixed-pitch ((t (:family ,ns/fixed-pitch-font :height 110))))
  `(variable-pitch ((t (:family ,ns/variable-pitch-font)))))
 
-;(use-package all-the-icons)
+(use-package all-the-icons)
+;; (use-package nerd-icons)
 
 (use-package doom-themes
   :config
@@ -784,35 +785,6 @@
     "vn" '(multi-vterm-next :which-key "next term")
     "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 
-;; (use-package lsp-mode
-;;     :commands (lsp lsp-deferred)
-;;     :custom
-;;     (lsp-keymap-prefix "C-c l")
-;;     (lsp-enable-which-key-integration t)
-;;     (lsp-lens-enable t)
-;;     (lsp-signature-auto-activate nil)
-;;     (lsp-ui-doc-mode t))
-;;     :custom
-
-;;     ;; Enable/disable type hints as you type for Rust
-;;     (lsp-rust-analyzer-server-display-inlay-hints t)
-;;     (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-;;     (lsp-rust-analyzer-display-chaining-hints nil)
-;;     (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-;;     (lsp-rust-analyzer-display-closure-return-type-hints t)
-;;     (lsp-rust-analyzer-display-parameter-hints t)
-;;     (lsp-rust-analyzer-display-reborrow-hints nil))
-
-;; ;; (use-package lsp-ivy)
-
-;; (use-package lsp-ui
-;;     :hook (lsp-mode . lsp-ui-mode)
-;;     :custom
-;;     (lsp-ui-peek-always-show t)
-;;     (lsp-ui-sideline-show-hover t)
-;;     (lsp-ui-doc-position 'bottom)
-;;     (lsp-ui-doc-enable nil))
-
 (setq treesit-language-source-alist
    '((bash "https://github.com/tree-sitter/tree-sitter-bash")
      (cmake "https://github.com/uyha/tree-sitter-cmake")
@@ -836,6 +808,8 @@
 
 (customize-set-variable 'treesit-font-lock-level 4)
 
+(use-package jsonrpc :elpaca t)
+
 (use-package eglot
   :bind
   (:prefix-map ns/eglot-actions-map
@@ -845,8 +819,6 @@
   :custom
   (eglot-events-buffer-size 0) ; Disable the events buffer for performance
   (eglot-send-changes-idle-time 0.5)
-
-  ;; TODO: (hopefully) temporary hack for Treesitter support
   :hook
   (eglot-managed-mode . eglot-inlay-hints-mode)
   :config
