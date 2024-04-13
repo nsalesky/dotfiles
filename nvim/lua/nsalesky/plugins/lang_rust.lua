@@ -1,46 +1,25 @@
 return {
+  -- {
+  --   "rust-lang/rust.vim",
+  --   init = function()
+  --     vim.g.rustfmt_autosave = 1
+  --   end,
+  -- },
   {
-    "rust-lang/rust.vim",
+    "mrcjkb/rustaceanvim",
+    version = "^4",
+    ft = { "rust" },
     init = function()
-      vim.g.rustfmt_autosave = 1
-    end,
-  },
-  {
-    "simrat39/rust-tools.nvim",
-    ft = "rust",
-    dependencies = "neovim/nvim-lspconfig",
-    config = function()
       local on_attach = require("nsalesky.configs.lspconfig").on_attach
-      local capabilities = require("nsalesky.configs.lspconfig").capabilities
 
-      require("rust-tools").setup({
+      -- TODO: neotest integration is not working for me
+      vim.g.rustaceanvim = {
         server = {
           on_attach = on_attach,
-          capabilities = capabilities,
-          settings = {
-            ["rust-analyzer"] = {
-              procMacro = {
-                ignored = {
-                  leptos_macro = {
-                    -- "component",
-                    "server",
-                  },
-                },
-              },
-            },
-          },
-        },
+        }
+      }
 
-        --debugging
-        -- dap = {
-        --     adapter = {
-        --         type = "executable",
-        --         command = "lldb",
-        --         name = "rt_lldb",
-        --     },
-        -- },
-      })
-    end,
+    end
   },
   {
     "saecki/crates.nvim",

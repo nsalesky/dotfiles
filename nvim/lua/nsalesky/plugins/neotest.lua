@@ -8,7 +8,6 @@ return {
     -- Adapters
     "nvim-neotest/neotest-python",
     "nvim-neotest/neotest-plenary",
-    "rouge8/neotest-rust",
     "olimorris/neotest-rspec",
   },
   config = function()
@@ -18,10 +17,8 @@ return {
           dap = { justMyCode = false },
         }),
         require("neotest-plenary"),
-        require("neotest-rust")({
-          dap_adapter = "lldb",
-        }),
         require("neotest-rspec"),
+        require("rustaceanvim.neotest"),
       },
     })
   end,
