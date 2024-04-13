@@ -1517,6 +1517,30 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 #+END_SRC 
 
+*** DAPE: Debug Adapter Protocol
+I've been eagerly awaiting a package just like this for a long time now, so I'm very excited to try it out.
+It'll be nice having a good debug experience with the simplicity of eglot.
+
+#+BEGIN_SRC emacs-lisp
+(use-package dape
+  :hook
+  ;; Save breakpoints on quit
+  (kill-emacs . dape-breakpoint-save)
+  ;; Load breakpoints on startup
+  (after-init . dape-breakpoint-load)
+
+  :config
+  ;; Save buffers on startup, useful for interpreted languages
+  (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t))))
+
+  ;; custom debug adapter configs
+  ;; (add-to-list 'dape-configs
+  ;;              (lldb-vscode modes
+  ;;             (c-mode c-ts-mode c++-mode c++-ts-mode rust-mode rust-ts-mode)
+  ;;             ensure dape-ensure-command command-cwd dape-command-cwd command "lldb-vscode" :type "lldb-vscode" :cwd "." :program "a.out")
+  
+#+END_SRC
+
 *** Format All The Code: Simple code formatting
 A simple code formatting system for a ton of languages.
 

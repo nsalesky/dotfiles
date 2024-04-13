@@ -897,6 +897,23 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
+(use-package dape
+  :hook
+  ;; Save breakpoints on quit
+  (kill-emacs . dape-breakpoint-save)
+  ;; Load breakpoints on startup
+  (after-init . dape-breakpoint-load)
+
+  :config
+  ;; Save buffers on startup, useful for interpreted languages
+  (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t))))
+
+  ;; custom debug adapter configs
+  ;; (add-to-list 'dape-configs
+  ;;              (lldb-vscode modes
+  ;;             (c-mode c-ts-mode c++-mode c++-ts-mode rust-mode rust-ts-mode)
+  ;;             ensure dape-ensure-command command-cwd dape-command-cwd command "lldb-vscode" :type "lldb-vscode" :cwd "." :program "a.out")
+
 (use-package format-all)
   ;:hook
   ;(prog-mode . format-all-mode)
