@@ -45,7 +45,7 @@ return {
       desc = "Debug nearest test",
     },
     {
-      "<leader>ts",
+      "<leader>tS",
       function()
         require("neotest").run.stop()
       end,
@@ -58,5 +58,13 @@ return {
       end,
       desc = "Attach to nearest test",
     },
+    {
+      "<leader>ts",
+      function()
+        require("neotest").summary.toggle()
+      end,
+      desc = "Toggle summary",
+    },
+    { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Show Output" }
   },
 }
