@@ -35,6 +35,9 @@ vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldenable = false
 
+-- set up remote plugins
+vim.g.python3_host_prog=vim.fn.expand("~/.config/nvim/.venv/bin/python3")
+
 -- Settings used by Neovide
 vim.opt.guifont = "JetBrainsMono Nerd Font:h12"
 if vim.g.neovide then
