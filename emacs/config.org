@@ -1651,6 +1651,13 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
   :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
 #+END_SRC
 
+*** Guile
+
+#+BEGIN_SRC emacs-lisp
+(use-package geiser)
+(use-package geiser-guile)
+#+END_SRC
+
 *** +GLSL: OpenGL shaders+
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package glsl-mode

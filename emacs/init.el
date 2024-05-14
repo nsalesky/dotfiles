@@ -968,6 +968,9 @@
   :elpaca (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
   :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
 
+(use-package geiser)
+(use-package geiser-guile)
+
 (use-package go-ts-mode
   :elpaca nil
   :mode "\\.go\\'"
