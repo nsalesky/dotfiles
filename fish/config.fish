@@ -31,14 +31,7 @@ end
 
 direnv hook fish | source
 zoxide init fish | source
-starship init fish | source
-
-# pnpm
-set -gx PNPM_HOME "/Users/nsalesky/Library/pnpm"
-if not string match -q -- $PNPM_HOME $PATH
-  set -gx PATH "$PNPM_HOME" $PATH
-end
-# pnpm end
+# starship init fish | source
 
 # opam configuration
-source /Users/nsalesky/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
+# source /Users/nsalesky/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
