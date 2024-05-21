@@ -35,3 +35,5 @@ zoxide init fish | source
 
 # opam configuration
 # source /Users/nsalesky/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
+
+set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME ; set -gx PATH $HOME/.cabal/bin $PATH /Users/nsalesky/.ghcup/bin # ghcup-env

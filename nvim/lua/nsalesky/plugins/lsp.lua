@@ -63,6 +63,11 @@ return {
       --   },
       -- })
 
+      lspconfig.hls.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+      })
+
       lspconfig.solargraph.setup({
         on_attach = on_attach,
         capabilities = capabilities,
