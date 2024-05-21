@@ -41,6 +41,9 @@ local has_words_before = function()
 end
 
 cmp.setup({
+  completion = {
+    autocomplete = false,
+  },
   mapping = cmp.mapping.preset.insert({
     ["<C-u>"] = cmp.mapping.scroll_docs(-4),
     ["<C-d>"] = cmp.mapping.scroll_docs(4),
@@ -60,7 +63,7 @@ cmp.setup({
       else
         fallback()
       end
-    end, { "s" }),
+    end, { "i", "s" }),
     ["<S-Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
@@ -69,7 +72,7 @@ cmp.setup({
       else
         fallback()
       end
-    end, { "s" }),
+    end, { "i", "s" }),
   }),
   sources = cmp.config.sources({
     { name = "nvim_lsp" },
