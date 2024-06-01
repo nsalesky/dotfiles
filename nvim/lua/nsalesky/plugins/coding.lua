@@ -77,12 +77,12 @@ return {
     event = "VeryLazy",
     opts = {},
   },
-  {
-    "windwp/nvim-autopairs",
-    event = "InsertEnter",
-    config = true,
-    opts = {},
-  },
+  -- {
+  --   "windwp/nvim-autopairs",
+  --   event = "InsertEnter",
+  --   config = true,
+  --   opts = {},
+  -- },
   -- {
   --   "luckasRanarison/tailwind-tools.nvim",
   --   opts = {}

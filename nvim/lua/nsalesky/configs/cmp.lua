@@ -41,9 +41,9 @@ local has_words_before = function()
 end
 
 cmp.setup({
-  completion = {
-    autocomplete = false,
-  },
+  -- completion = {
+  --   autocomplete = false,
+  -- },
   mapping = cmp.mapping.preset.insert({
     ["<C-u>"] = cmp.mapping.scroll_docs(-4),
     ["<C-d>"] = cmp.mapping.scroll_docs(4),
