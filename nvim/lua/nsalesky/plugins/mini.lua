@@ -2,6 +2,7 @@ return {
   {
     "echasnovski/mini.nvim",
     version = false,
+    event = "VeryLazy",
     dependencies = {
       { "nvim-treesitter/nvim-treesitter-textobjects" },
     },
@@ -18,6 +19,7 @@ return {
       require("mini.pairs").setup()
 
       require("mini.files").setup()
+      vim.keymap.set("n", "<leader>e", function() require("mini.files").open() end, { desc = "Open MiniFiles" })
 
       require("mini.hipatterns").setup({
         highlighters = {
@@ -31,5 +33,5 @@ return {
 
       require("mini.surround").setup({})
     end,
-  }
+  },
 }
