@@ -5,17 +5,6 @@ return {
   {
     "folke/neoconf.nvim",
   },
-  {
-    "numtostr/comment.nvim",
-    opts = {
-      toggler = {
-        line = "<leader>/",
-      },
-      opleader = {
-        line = "<leader>/",
-      },
-    },
-  },
   -- {
   --   "kylechui/nvim-surround",
   --   version = "*",
