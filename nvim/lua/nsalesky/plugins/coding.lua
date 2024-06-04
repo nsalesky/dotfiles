@@ -17,55 +17,6 @@ return {
     },
   },
   {
-    "mhartington/formatter.nvim",
-    opts = function()
-      local util = require("formatter.util")
-
-      return {
-        logging = true,
-        log_level = vim.log.levels.WARN,
-        filetype = {
-          lua = {
-            require("formatter.filetypes.lua").stylua,
-          },
-          ocaml = {
-            require("formatter.filetypes.ocaml").ocamlformat,
-          },
-          python = {
-            require("formatter.filetypes.python").black,
-          },
-          ruby = {
-            function()
-              return {
-                exe = "rubocop",
-                args = {
-                  "--fix-layout",
-                  "--autocorrect-all",
-                  "--stdin",
-                  util.escape_path(util.get_current_buffer_file_name()),
-                  "--format",
-                  "files",
-                  "--stderr",
-                },
-                stdin = true,
-              }
-            end,
-          },
-          go = {
-            require("formatter.filetypes.go").gofmt,
-          },
-          ["*"] = {
-            require("formatter.filetypes.any").remove_trailing_whitespace,
-          },
-        },
-      }
-    end,
-    config = function(_, opts)
-      require("formatter").setup(opts)
-      -- vim.cmd("autocmd BufWritePost * FormatWrite") -- auto format on save
-    end,
-  },
-  {
     "kylechui/nvim-surround",
     version = "*",
     event = "VeryLazy",
