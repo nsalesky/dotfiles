@@ -16,12 +16,12 @@ return {
       },
     },
   },
-  {
-    "kylechui/nvim-surround",
-    version = "*",
-    event = "VeryLazy",
-    opts = {},
-  },
+  -- {
+  --   "kylechui/nvim-surround",
+  --   version = "*",
+  --   event = "VeryLazy",
+  --   opts = {},
+  -- },
   -- {
   --   "folke/todo-comments.nvim",
   --   dependencies = "nvim-lua/plenary.nvim",
