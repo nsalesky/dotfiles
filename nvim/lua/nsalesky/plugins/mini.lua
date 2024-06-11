@@ -2,7 +2,6 @@ return {
   {
     "echasnovski/mini.nvim",
     version = false,
-    event = "VeryLazy",
     dependencies = {
       { "nvim-treesitter/nvim-treesitter-textobjects" },
     },
@@ -34,6 +33,14 @@ return {
       require("mini.diff").setup({})
 
       require("mini.surround").setup({})
+
+      require("mini.completion").setup({
+        lsp_completion = {
+          source_func = "omnifunc",
+          auto_setup = false
+        }
+      })
+
     end,
   },
 }
