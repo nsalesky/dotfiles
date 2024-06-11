@@ -1,24 +1,4 @@
 return {
-  {
-    "folke/which-key.nvim",
-    config = function()
-      vim.o.timeout = true
-      vim.o.timeoutlen = 300
-
-      local wk = require("which-key")
-      wk.setup({})
-      wk.register({
-        c = { name = "code" },
-        d = { name = "debugging" },
-        f = { name = "file" },
-        g = { name = "git" },
-        t = { name = "test" },
-        s = { name = "settings" },
-        b = { name = "buffer", s = { name = "sort" } },
-        m = { name = "database" },
-      }, { prefix = "<leader>" })
-    end,
-  },
   "nvim-tree/nvim-web-devicons",
   {
     "nvim-lualine/lualine.nvim",

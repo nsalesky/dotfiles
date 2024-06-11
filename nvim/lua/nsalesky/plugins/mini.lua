@@ -12,22 +12,24 @@ return {
         custom_textobjects = {
           -- Function definition
           F = gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }),
-        }
+        },
       })
 
       require("mini.pairs").setup()
 
       require("mini.files").setup()
-      vim.keymap.set("n", "<leader>e", function() require("mini.files").open() end, { desc = "Open MiniFiles" })
+      vim.keymap.set("n", "<leader>e", function()
+        require("mini.files").open()
+      end, { desc = "Open MiniFiles" })
 
       require("mini.hipatterns").setup({
         highlighters = {
           -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
           fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
-          hack  = { pattern = "%f[%w]()HACK()%f[%W]",  group = "MiniHipatternsHack"  },
-          todo  = { pattern = "%f[%w]()TODO()%f[%W]",  group = "MiniHipatternsTodo"  },
-          note  = { pattern = "%f[%w]()NOTE()%f[%W]",  group = "MiniHipatternsNote"  },
-        }
+          hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
+          todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
+          note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
+        },
       })
 
       require("mini.diff").setup({})
@@ -37,10 +39,60 @@ return {
       require("mini.completion").setup({
         lsp_completion = {
           source_func = "omnifunc",
-          auto_setup = false
-        }
+          auto_setup = false,
+        },
       })
 
+      local miniclue = require("mini.clue")
+      miniclue.setup({
+        triggers = {
+          -- Leader triggers
+          { mode = "n", keys = "<leader>" },
+          { mode = "x", keys = "<leader>" },
+
+          -- Built-in completion
+          { mode = "i", keys = "<C-x>" },
+
+          -- `g` key
+          { mode = "n", keys = "g" },
+          { mode = "x", keys = "g" },
+
+          -- Marks
+          { mode = "n", keys = "'" },
+          { mode = "n", keys = "`" },
+          { mode = "x", keys = "'" },
+          { mode = "x", keys = "`" },
+
+          -- Registers
+          { mode = "n", keys = "\"" },
+          { mode = "x", keys = "\"" },
+          { mode = "i", keys = "<C-r>" },
+          { mode = "c", keys = "<C-r>" },
+
+          -- Window commands
+          { mode = "n", keys = "<C-w>" },
+
+          -- `z` key
+          { mode = "n", keys = "z" },
+          { mode = "x", keys = "z" },
+        },
+        clues = {
+          { mode = "n", keys = "<leader>c", desc = "+Code" },
+          { mode = "n", keys = "<leader>d", desc = "+Debugging" },
+          { mode = "n ", keys = "<leader>f", desc = "+File" },
+          { mode = "n ", keys = "<leader>g", desc = "+Git" },
+          { mode = "n ", keys = "<leader>t", desc = "+Test" },
+          { mode = "n ", keys = "<leader>s", desc = "+Settings" },
+          { mode = "n ", keys = "<leader>b", desc = "+Buffer" },
+          { mode = "n ", keys = "<leader>m", desc = "+Database" },
+          miniclue.gen_clues.builtin_completion(),
+          miniclue.gen_clues.g(),
+          miniclue.gen_clues.marks(),
+          miniclue.gen_clues.registers(),
+          miniclue.gen_clues.windows(),
+          miniclue.gen_clues.z(),
+        }
+      })
     end,
   },
 }
