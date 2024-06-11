@@ -12,7 +12,7 @@ end
 
 -- Font settings
 config.font = wezterm.font("JetBrainsMono NF")
-config.font_size = 10
+config.font_size = 12
 config.line_height = 1.0
 config.color_scheme = "Catppuccin Macchiato"
 
@@ -37,8 +37,8 @@ config.show_tabs_in_tab_bar = true
 
 config.window_padding = {
 	left = 2,
-	right = 0,
-	top = 6,
+	right = 2,
+	top = 2,
 	bottom = 0,
 }
 
