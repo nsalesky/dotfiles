@@ -17,29 +17,26 @@ return {
       },
     },
   },
-  {
-    "aserowy/tmux.nvim",
-    lazy = false,
-    opts = {
-      copy_sync = {
-        enable = false,
-      },
-      navigation = {
-        cycle_navigation = true,
-        enable_default_keybindings = true,
-        persist_zoom = true,
-      },
-      resize = {
-        enable_default_keybindings = true,
-        resize_step_x = 1,
-        resize_step_y = 1,
-      },
-    },
-    config = function(_, opts)
-      require("tmux").setup(opts)
-    end,
-  },
-  {
-    "tpope/vim-obsession",
-  },
+  -- {
+  --   "aserowy/tmux.nvim",
+  --   lazy = false,
+  --   opts = {
+  --     copy_sync = {
+  --       enable = false,
+  --     },
+  --     navigation = {
+  --       cycle_navigation = true,
+  --       enable_default_keybindings = true,
+  --       persist_zoom = true,
+  --     },
+  --     resize = {
+  --       enable_default_keybindings = true,
+  --       resize_step_x = 1,
+  --       resize_step_y = 1,
+  --     },
+  --   },
+  --   config = function(_, opts)
+  --     require("tmux").setup(opts)
+  --   end,
+  -- },
 }

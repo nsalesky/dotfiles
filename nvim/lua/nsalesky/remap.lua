@@ -20,9 +20,6 @@ vim.keymap.set("n", "<leader>y", "\"+y")
 vim.keymap.set("v", "<leader>y", "\"+y")
 vim.keymap.set("n", "<leader>Y", "\"+Y")
 
--- switch to previous tmux session
--- vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
-
 -- Swapping between buffers
 vim.keymap.set("n", "[b", "<cmd>bprev<CR>", { desc = "Previous buffer" })
 vim.keymap.set("n", "]b", "<cmd>bnext<CR>", { desc = "Next buffer" })
