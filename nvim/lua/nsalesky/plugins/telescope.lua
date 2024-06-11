@@ -16,16 +16,16 @@ return {
       })
     end
 
-    vim.keymap.set("n", "<leader>ff", find_file, { desc = "File" })
-    vim.keymap.set("n", "<C-p>", find_file, { desc = "Find File" })
+    -- vim.keymap.set("n", "<leader>ff", find_file, { desc = "File" })
+    -- vim.keymap.set("n", "<C-p>", find_file, { desc = "Find File" })
 
-    vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
-    vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
-    vim.keymap.set("n", "<leader>sc", builtin.colorscheme, { desc = "Color Scheme" })
+    -- vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
+    -- vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
+    -- vim.keymap.set("n", "<leader>sc", builtin.colorscheme, { desc = "Color Scheme" })
 
-    vim.keymap.set("n", "<leader>fs", function()
-      require("telescope").extensions.live_grep_args.live_grep_args()
-    end, { desc = "Search For Text" })
+    -- vim.keymap.set("n", "<leader>fs", function()
+    --   require("telescope").extensions.live_grep_args.live_grep_args()
+    -- end, { desc = "Search For Text" })
 
     local telescope = require("telescope")
     local lga_actions = require("telescope-live-grep-args.actions")

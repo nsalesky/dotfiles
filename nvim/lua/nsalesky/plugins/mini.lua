@@ -43,6 +43,14 @@ return {
         },
       })
 
+      local mini_pick = require("mini.pick")
+      mini_pick.setup({})
+      vim.keymap.set("n", "<C-p>", function() mini_pick.builtin.files({ tool = "git" }) end)
+      vim.keymap.set("n", "<leader>fs", function() mini_pick.builtin.grep_live() end, { desc = "Search" })
+      vim.keymap.set("n", "<leader>fb", function() mini_pick.builtin.buffers() end, { desc = "Buffers" })
+
+      -- require("mini.statusline").setup({})
+
       local miniclue = require("mini.clue")
       miniclue.setup({
         triggers = {
