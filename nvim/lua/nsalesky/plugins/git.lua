@@ -1,26 +1,5 @@
 return {
   {
-    "lewis6991/gitsigns.nvim",
-    lazy = false,
-    opts = {
-      current_line_blame = false,
-      current_line_blame_opts = {
-        virt_text = true,
-        virt_text_pos = "eol",
-        delay = 1000,
-        ignore_whitespace = false,
-      },
-      current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
-    },
-    keys = {
-      {
-        "<leader>gb",
-        ":Gitsigns toggle_current_line_blame<CR>",
-        desc = "Toggle line blame",
-      },
-    },
-  },
-  {
     "NeogitOrg/neogit",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {
@@ -65,13 +44,4 @@ return {
   {
     "sindrets/diffview.nvim",
   },
-  -- {
-  --     "kdheepak/lazygit.nvim",
-  --     keys = {
-  --         {
-  --             "<leader>gs",
-  --             ":LazyGit<CR>",
-  --         },
-  --     },
-  -- },
 }

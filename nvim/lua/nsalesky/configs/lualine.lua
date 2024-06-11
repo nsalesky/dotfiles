@@ -2,9 +2,9 @@
 
 -- Show Git diff status
 local function diff_source()
-  local gitsigns = vim.b.gitsigns_status_dict
-  if gitsigns then
-    return { added = gitsigns.added, modified = gitsigns.changed, removed = gitsigns.removed }
+  local diff = vim.b.minidiff_summary
+  if diff then
+    return { added = diff.add, modified = diff.change, removed = diff.delete }
   end
 end
 
