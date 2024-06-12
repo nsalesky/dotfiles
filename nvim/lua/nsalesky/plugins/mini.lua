@@ -36,12 +36,12 @@ return {
 
       require("mini.surround").setup({})
 
-      require("mini.completion").setup({
-        lsp_completion = {
-          source_func = "omnifunc",
-          auto_setup = false,
-        },
-      })
+      -- require("mini.completion").setup({
+      --   lsp_completion = {
+      --     source_func = "omnifunc",
+      --     auto_setup = false,
+      --   },
+      -- })
 
       local mini_pick = require("mini.pick")
       mini_pick.setup({})

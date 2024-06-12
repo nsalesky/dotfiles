@@ -29,6 +29,8 @@ return {
     -- vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help() end,
     -- vim.tbl_deep_extend("force", opts, { desc = "LSP Signature Help" }))
 
-    vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.MiniCompletion.completefunc_lsp")
+    -- Used with mini.completion
+    -- vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.MiniCompletion.completefunc_lsp")
   end,
+  capabilities = require("cmp_nvim_lsp").default_capabilities()
 }
