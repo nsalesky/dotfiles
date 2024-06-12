@@ -1,9 +1,9 @@
 return {
   "nvim-tree/nvim-web-devicons",
-  {
-    "nvim-lualine/lualine.nvim",
-    opts = require("nsalesky.configs.lualine"),
-  },
+  -- {
+  --   "nvim-lualine/lualine.nvim",
+  --   opts = require("nsalesky.configs.lualine"),
+  -- },
   -- {
   --   "nvim-tree/nvim-tree.lua",
   --   opts = function()

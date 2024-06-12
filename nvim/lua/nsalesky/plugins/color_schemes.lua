@@ -12,7 +12,7 @@ return {
         },
       })
 
-      vim.cmd.colorscheme("catppuccin-macchiato")
+      vim.cmd.colorscheme("mini_cat")
     end,
   },
   -- "rebelot/kanagawa.nvim",

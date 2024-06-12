@@ -49,7 +49,7 @@ return {
       vim.keymap.set("n", "<leader>fs", function() mini_pick.builtin.grep_live() end, { desc = "Search" })
       vim.keymap.set("n", "<leader>fb", function() mini_pick.builtin.buffers() end, { desc = "Buffers" })
 
-      -- require("mini.statusline").setup({})
+      require("mini.statusline").setup({})
 
       local miniclue = require("mini.clue")
       miniclue.setup({
