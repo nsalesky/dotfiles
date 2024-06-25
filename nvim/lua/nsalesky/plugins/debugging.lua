@@ -44,7 +44,7 @@ return {
       -- Set up debug configurations
       dap.configurations.c = {
         {
-          name = "Launch",
+          name = "Launch (gdb)",
           type = "gdb",
           request = "launch",
           program = function()

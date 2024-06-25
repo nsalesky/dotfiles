@@ -2,6 +2,7 @@ return {
   {
     "mfussenegger/nvim-dap-python",
     ft = "python",
+    enabled = false,
     dependencies = {
       "mfussenegger/nvim-dap",
       "rcarriga/nvim-dap-ui",
