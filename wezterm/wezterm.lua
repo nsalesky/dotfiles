@@ -191,7 +191,11 @@ config.keys = {
 		key = "e",
 		mods = "CMD|SHIFT",
 		action = act.PromptInputLine({
-			description = "Enter new name for tab",
+      description = wezterm.format {
+        { Attribute = { Intensity = "Bold" } },
+        { Foreground = { AnsiColor = "Fuchsia" } },
+        { Text = "Enter new name for tab" },
+      },
 			action = wezterm.action_callback(function(window, _, line)
 				if line then
 					window:active_tab():set_title(line)
@@ -199,7 +203,38 @@ config.keys = {
 			end),
 		}),
 	},
+  -- Workspaces
+  {
+    key = "w",
+    mods = "CMD|SHIFT",
+    action = act.ShowLauncherArgs { flags = "FUZZY|WORKSPACES" },
+  },
+  {
+    key = "n",
+    mods = "CMD|SHIFT",
+    action = act.PromptInputLine {
+      description = wezterm.format {
+        { Attribute = { Intensity = "Bold" } },
+        { Foreground = { AnsiColor = "Fuchsia" } },
+        { Text = "Enter name for new workspace" },
+      },
+      action = wezterm.action_callback(function(window, pane, line)
+        if line then
+          window:perform_action(
+            act.SwitchToWorkspace {
+              name = line,
+            },
+            pane
+          )
+        end
+      end)
+    }
+  }
 }
+
+wezterm.on("update-right-status", function(window, pane)
+  window:set_right_status(window:active_workspace())
+end)
 
 for i = 1, 8 do
   -- SUPER + number to activate that tab
