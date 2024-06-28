@@ -25,11 +25,11 @@ config.scrollback_lines = 5000
 -- config.integrated_title_buttons = { "Hide", "Maximize", "Close" }
 
 -- Screen DPI
-config.dpi_by_screen = {
-    ['Build-in Retina Display'] = 144,
-    ['DELL S2722DZ'] = 81.75,
-    ['DELL P2421DC'] = 80,
-}
+-- config.dpi_by_screen = {
+--     ['Build-in Retina Display'] = 144,
+--     ['DELL S2722DZ'] = 81.75,
+--     ['DELL P2421DC'] = 80,
+-- }
 
 -- Tab bar
 config.hide_tab_bar_if_only_one_tab = false
