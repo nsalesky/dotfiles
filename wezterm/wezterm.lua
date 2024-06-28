@@ -17,7 +17,7 @@ config.line_height = 1.0
 config.color_scheme = "Catppuccin Macchiato"
 
 config.scrollback_lines = 5000
-config.window_close_confirmation = "NeverPrompt"
+-- config.window_close_confirmation = "NeverPrompt"
 
 -- Window appearance
 -- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
@@ -32,7 +32,7 @@ config.dpi_by_screen = {
 }
 
 -- Tab bar
-config.hide_tab_bar_if_only_one_tab = true
+config.hide_tab_bar_if_only_one_tab = false
 config.show_tabs_in_tab_bar = true
 
 config.window_padding = {
@@ -43,12 +43,153 @@ config.window_padding = {
 }
 
 -- Keybindings
---config.disable_default_key_bindings = false
+config.disable_default_key_bindings = true
 
 config.keys = {
+  {
+    mods = "CMD|SHIFT",
+    key = "v",
+    action = act.SplitHorizontal { domain = "CurrentPaneDomain" },
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "s",
+    action = act.SplitVertical { domain = "CurrentPaneDomain" },
+  },
+  {
+    mods = "CMD",
+    key = "t",
+    action = act.SpawnTab("CurrentPaneDomain"),
+  },
+  {
+    mods = "CMD",
+    key = "w",
+    action = act.CloseCurrentPane { confirm = true },
+  },
+  {
+    mods = "CMD",
+    key = "+",
+    action = act.IncreaseFontSize,
+  },
+  {
+    mods = "CMD",
+    key = "=",
+    action = act.IncreaseFontSize,
+  },
+  {
+    mods = "CMD",
+    key = "-",
+    action = act.DecreaseFontSize,
+  },
+  {
+    mods = "CMD",
+    key = "0",
+    action = act.ResetFontSize,
+  },
+  {
+    mods = "CMD",
+    key = "k",
+    action = act.Multiple {
+      act.ClearScrollback "ScrollbackAndViewport",
+      act.SendKey { key = "L", mods = "CTRL" },
+    }
+  },
+  {
+    mods = "CMD",
+    key = "p",
+    action = act.ActivateCommandPalette,
+  },
+  {
+    mods = "CMD",
+    key = "f",
+    action = act.Multiple {
+      act.CopyMode "ClearPattern",
+      act.Search { CaseSensitiveString = "" }
+    },
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "x",
+    action = act.ActivateCopyMode
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "h",
+    action = act.ActivatePaneDirection "Left",
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "j",
+    action = act.ActivatePaneDirection "Down",
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "k",
+    action = act.ActivatePaneDirection "Up",
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "l",
+    action = act.ActivatePaneDirection "Right",
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "LeftArrow",
+    action = act.ActivatePaneDirection "Left",
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "DownArrow",
+    action = act.ActivatePaneDirection "Down",
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "UpArrow",
+    action = act.ActivatePaneDirection "Up",
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "RightArrow",
+    action = act.ActivatePaneDirection "Right",
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "y",
+    action = act.AdjustPaneSize { "Left", 5 },
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "u",
+    action = act.AdjustPaneSize { "Down", 5 },
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "i",
+    action = act.AdjustPaneSize { "Up", 5 },
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "o",
+    action = act.AdjustPaneSize { "Right", 5 },
+  },
+  {
+    mods = "CMD|SHIFT",
+    key = "z",
+    action = act.TogglePaneZoomState
+  },
+  {
+    mods = "CMD",
+    key = "c",
+    action = act.CopyTo "Clipboard"
+  },
+  {
+    mods = "CMD",
+    key = "v",
+    action = act.PasteFrom "Clipboard"
+  },
 	{
-		key = "E",
-		mods = "CTRL|SHIFT",
+		key = "e",
+		mods = "CMD|SHIFT",
 		action = act.PromptInputLine({
 			description = "Enter new name for tab",
 			action = wezterm.action_callback(function(window, _, line)
@@ -59,5 +200,20 @@ config.keys = {
 		}),
 	},
 }
+
+for i = 1, 8 do
+  -- SUPER + number to activate that tab
+  table.insert(config.keys, {
+    key = tostring(i),
+    mods = "CMD",
+    action = act.ActivateTab(i - 1),
+  })
+
+  -- F1 through F8 to activate that tab
+  table.insert(config.keys, {
+    key = "F" .. tostring(i),
+    action = act.ActivateTab(i - 1),
+  })
+end
 
 return config
