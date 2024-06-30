@@ -93,6 +93,14 @@ return {
       lspconfig.clangd.setup({
         on_attach = on_attach,
         capabilities = capabilities,
+        cmd = {
+          "clangd",
+          "--background-index",
+          "--clang-tidy",
+          "--completion-style=bundled",
+          "--cross-file-rename",
+          "--header-insertion=iwyu",
+        },
       })
     end,
   },
