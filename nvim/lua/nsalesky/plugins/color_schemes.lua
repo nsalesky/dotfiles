@@ -3,7 +3,7 @@ return {
     "catppuccin/nvim",
     config = function()
       require("catppuccin").setup({
-        flavour = "mocha",
+        flavour = "macchiato",
         integrations = {
           cmp = true,
           gitsigns = true,
@@ -12,7 +12,7 @@ return {
         },
       })
 
-      vim.cmd.colorscheme("mini_cat")
+      vim.cmd.colorscheme("catppuccin-macchiato")
     end,
   },
   -- "rebelot/kanagawa.nvim",
