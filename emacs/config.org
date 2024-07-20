@@ -173,7 +173,7 @@ Here's where I configure some basic Emacs features with keybindings.
 
 ** Evil 😈
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package evil
   ;; :ensure t
   :init
@@ -202,7 +202,7 @@ Here's where I configure some basic Emacs features with keybindings.
 
 ** General
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package general
   :ensure t
   :config
@@ -263,29 +263,29 @@ Keybindings for working with files.
 
 #+BEGIN_SRC emacs-lisp
 
-;; Keep track of recently-opened files
-(use-package recentf
-  :elpaca nil
-  :config
-  (recentf-mode 1)
-  :custom
-  (recentf-max-menu-items 5000)
-  (recentf-max-saved-items 10000)
-  :bind
-  ("C-x C-r" . consult-recent-file)
-  :general
-  (ns/leader-def "fr" 'consult-recent-file))
+  ;; Keep track of recently-opened files
+  (use-package recentf
+    :elpaca nil
+    :config
+    (recentf-mode 1)
+    :custom
+    (recentf-max-menu-items 5000)
+    (recentf-max-saved-items 10000)
+    :bind
+    ("C-x C-r" . consult-recent-file))
+    ;; :general
+    ;; (ns/leader-def "fr" 'consult-recent-file))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(ns/leader-def
-  "." 'find-file
-  "f" '(:ignore t :which-key "files")
-  "fs" 'find-file)
+#+BEGIN_SRC emacs-lisp :tangle nil
+  (ns/leader-def
+    "." 'find-file
+    "f" '(:ignore t :which-key "files")
+    "fs" 'find-file)
 #+END_SRC
 
 ** Buffers
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (ns/leader-def
   "," '(consult-buffer :which-key "select buffer")
   "b" '(:ignore t :which-key "buffers")
@@ -302,13 +302,13 @@ Keybindings for operating windows.
 
 ** Text manipulation
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (ns/leader-def
   "/" '(comment-line :which-key "Toggle comment"))
 #+END_SRC
 
 ** Eval
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (ns/leader-def
   "e" '(:ignore t :which-key "eval")
   "el" '(eval-last-sexp :which-key "eval last sexpr")
@@ -336,7 +336,7 @@ Keybindings for operating windows.
 #+END_SRC
 
 ** evil-textobj-tree-sitter
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package evil-textobj-tree-sitter
   :config
   ; functions
@@ -583,14 +583,14 @@ Make the Emacs help pages more "helpful".
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key))
+   ("C-h k" . helpful-key)))
 
-  :general
-  (ns/leader-def
-    "h" '(:ignore t :which-key "help")
-    "hv" '(helpful-variable :which-key "describe variable")
-    "hf" '(helpful-callable :which-key "describe function")
-    "hk" '(helpful-key :which-key "describe key")))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "h" '(:ignore t :which-key "help")
+  ;;   "hv" '(helpful-variable :which-key "describe variable")
+  ;;   "hf" '(helpful-callable :which-key "describe function")
+  ;;   "hk" '(helpful-key :which-key "describe key")))
 #+end_src
 
 ** Hl-todo: Highlight and navigate TODO keywords
@@ -681,12 +681,12 @@ Sets up minibuffer completion with Vertico.
    ("M-s" . consult-history)
    ("M-r" . consult-history))
 
-  :general
-  (ns/leader-def
-    "s" '(:ignore t :which-key "search")
-    "sr" '(consult-ripgrep :which-key "ripgrep")
-    "sl" '(consult-line :which-key "line search")
-    "si" '(consult-imenu :which-key "imenu"))
+  ;; :general
+  ;; (ns/leader-def
+  ;;   "s" '(:ignore t :which-key "search")
+  ;;   "sr" '(consult-ripgrep :which-key "ripgrep")
+  ;;   "sl" '(consult-line :which-key "line search")
+  ;;   "si" '(consult-imenu :which-key "imenu"))
 
   :init
   (setq consult-narrow-key (kbd "<"))
@@ -1365,30 +1365,30 @@ Give Org-mode documents some extra visual polish.
 
 ** Vterm
 #+BEGIN_SRC emacs-lisp
-(use-package vterm
-  :custom
-  (vterm-shell "fish")
-  (vterm-max-scrollback 10000))
+  (use-package vterm
+    :custom
+    (vterm-shell "fish")
+    (vterm-max-scrollback 10000))
 
-(use-package multi-vterm
-  :bind
-  (:prefix-map ns/multi-vterm-prefix-map
-               :prefix "C-c v"
-               ("v" . multi-vterm)
-               ("C-p" . multi-vterm-prev)
-               ("p" . multi-vterm-prev)
-               ("C-n" . multi-vterm-next)
-               ("n" . multi-vterm-next)
-               ("t" . multi-vterm-dedicated-toggle)
-               ("p" . multi-vterm-project)
-               ("r" . multi-vterm-rename-buffer))
-  :general
-  (ns/leader-def
-    "v" '(:ignore t :which-key "terminal")
-    "vv" '(multi-vterm :which-key "open new term")
-    "vp" '(multi-vterm-prev :which-key "prev term")
-    "vn" '(multi-vterm-next :which-key "next term")
-    "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
+  (use-package multi-vterm
+    :bind
+    (:prefix-map ns/multi-vterm-prefix-map
+                 :prefix "C-c v"
+                 ("v" . multi-vterm)
+                 ("C-p" . multi-vterm-prev)
+                 ("p" . multi-vterm-prev)
+                 ("C-n" . multi-vterm-next)
+                 ("n" . multi-vterm-next)
+                 ("t" . multi-vterm-dedicated-toggle)
+                 ("p" . multi-vterm-project)
+                 ("r" . multi-vterm-rename-buffer)))
+    ;; :general
+    ;; (ns/leader-def
+    ;;   "v" '(:ignore t :which-key "terminal")
+    ;;   "vv" '(multi-vterm :which-key "open new term")
+    ;;   "vp" '(multi-vterm-prev :which-key "prev term")
+    ;;   "vn" '(multi-vterm-next :which-key "next term")
+    ;;   "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 #+END_SRC 
 
 * Programming
