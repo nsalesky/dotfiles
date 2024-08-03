@@ -32,7 +32,7 @@ config.dpi_by_screen = {
 }
 
 -- Tab bar
-config.hide_tab_bar_if_only_one_tab = false
+config.hide_tab_bar_if_only_one_tab = true
 config.show_tabs_in_tab_bar = true
 
 config.window_padding = {
@@ -232,9 +232,9 @@ config.keys = {
 	},
 }
 
-wezterm.on("update-right-status", function(window, pane)
-	window:set_right_status(window:active_workspace())
-end)
+-- wezterm.on("update-right-status", function(window, pane)
+-- 	window:set_right_status(window:active_workspace())
+-- end)
 
 for i = 1, 8 do
 	-- SUPER + number to activate that tab
