@@ -15,6 +15,7 @@ return {
       vim.cmd.colorscheme("catppuccin-macchiato")
     end,
   },
+  { "rose-pine/neovim", name = "rose-pine" },
   -- "rebelot/kanagawa.nvim",
   -- "sainnhe/everforest",
   -- "folke/tokyonight.nvim",
