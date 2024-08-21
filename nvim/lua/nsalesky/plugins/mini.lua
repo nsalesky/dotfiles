@@ -43,13 +43,53 @@ return {
       --   },
       -- })
 
-      local mini_pick = require("mini.pick")
-      mini_pick.setup({})
-      vim.keymap.set("n", "<C-p>", function() mini_pick.builtin.files({ tool = "git" }) end)
-      vim.keymap.set("n", "<leader>fs", function() mini_pick.builtin.grep_live() end, { desc = "Search" })
-      vim.keymap.set("n", "<leader>fb", function() mini_pick.builtin.buffers() end, { desc = "Buffers" })
+      -- local mini_extra = require("mini.extra")
+      -- mini_extra.setup({})
 
-      require("mini.statusline").setup({})
+      -- local mini_pick = require("mini.pick")
+      -- mini_pick.setup({})
+      -- vim.keymap.set("n", "<C-p>", function()
+      --   mini_pick.builtin.files({ tool = "git" })
+      -- end)
+      -- vim.keymap.set("n", "<leader>fs", function()
+      --   mini_pick.builtin.grep_live()
+      -- end, { desc = "Search" })
+      -- vim.keymap.set("n", "<leader>fb", function()
+      --   mini_pick.builtin.buffers()
+      -- end, { desc = "Buffers" })
+      -- vim.keymap.set("n", "<leader>fh", function()
+      --   mini_extra.pickers.hl_groups()
+      -- end, { desc = "HL Groups" })
+
+      local mini_status = require("mini.statusline")
+      mini_status.setup({
+        content = {
+          active = function()
+            local statusline = require("nsalesky.configs.statusline")
+            statusline.setup()
+
+            local mode, mode_hl = mini_status.section_mode({ trunc_width = 120 })
+            local git = mini_status.section_git({ trunc_width = 40 })
+            local diff = statusline.section_diff({ trunc_width = 75 })
+            local diagnostics = mini_status.section_diagnostics({ trunc_width = 75 })
+            local lsp = statusline.section_lsp({ trunc_width = 75 })
+            local filename = mini_status.section_filename({ trunc_width = 140 })
+            local fileinfo = mini_status.section_fileinfo({ trunc_width = 120 })
+            local location = mini_status.section_location({ trunc_width = 75 })
+            local search = mini_status.section_searchcount({ trunc_width = 75 })
+
+            return mini_status.combine_groups({
+              { hl = mode_hl, strings = { mode } },
+              { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
+              "%<", -- Mark general truncate point
+              { hl = "MiniStatuslineFilename", strings = { filename } },
+              "%=", -- End left alignment
+              { hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
+              { hl = mode_hl, strings = { search, location } },
+            })
+          end,
+        },
+      })
 
       local miniclue = require("mini.clue")
       miniclue.setup({
@@ -99,7 +139,7 @@ return {
           miniclue.gen_clues.registers(),
           miniclue.gen_clues.windows(),
           miniclue.gen_clues.z(),
-        }
+        },
       })
     end,
   },

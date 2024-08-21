@@ -1,6 +1,5 @@
 return {
   "nvim-telescope/telescope.nvim",
-  enabled = false,
   branch = "0.1.x",
   dependencies = {
     "nvim-lua/plenary.nvim",
@@ -17,21 +16,31 @@ return {
       })
     end
 
-    -- vim.keymap.set("n", "<leader>ff", find_file, { desc = "File" })
-    -- vim.keymap.set("n", "<C-p>", find_file, { desc = "Find File" })
+    vim.keymap.set("n", "<leader>ff", find_file, { desc = "File" })
+    vim.keymap.set("n", "<C-p>", find_file, { desc = "Find File" })
 
-    -- vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
-    -- vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
-    -- vim.keymap.set("n", "<leader>sc", builtin.colorscheme, { desc = "Color Scheme" })
+    vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
+    vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
+    vim.keymap.set("n", "<leader>sc", builtin.colorscheme, { desc = "Color Scheme" })
 
-    -- vim.keymap.set("n", "<leader>fs", function()
-    --   require("telescope").extensions.live_grep_args.live_grep_args()
-    -- end, { desc = "Search For Text" })
+    vim.keymap.set("n", "<leader>fs", function()
+      require("telescope").extensions.live_grep_args.live_grep_args()
+    end, { desc = "Search For Text" })
 
     local telescope = require("telescope")
     local lga_actions = require("telescope-live-grep-args.actions")
+    local open_with_trouble = require("trouble.sources.telescope").open
+
+    -- Use this to add more results without clearing the trouble list
+    -- local add_to_trouble = require("trouble.sources.telescope").add
 
     telescope.setup({
+      defaults = {
+        mappings = {
+          i = { ["<c-t>"] = open_with_trouble },
+          n = { ["<c-t>"] = open_with_trouble },
+        },
+      },
       extensions = {
         live_grep_args = {
           auto_quoting = true,
