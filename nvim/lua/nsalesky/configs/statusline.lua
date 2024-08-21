@@ -2,10 +2,14 @@ local mini_status = require("mini.statusline")
 
 local M = {}
 
-function M.setup()
+local function create_hl_groups()
   vim.api.nvim_set_hl(0, "NickStatuslineDiffAdd", { fg = "#a6da95", bg = "#494d64" })
   vim.api.nvim_set_hl(0, "NickStatuslineDiffChange", { fg = "#eed49f", bg = "#494d64" })
   vim.api.nvim_set_hl(0, "NickStatuslineDiffDelete", { fg = "#ed8796", bg = "#494d64" })
+end
+
+function M.setup()
+  create_hl_groups()
 end
 
 ---@alias __statusline_args table Section arguments.
@@ -50,8 +54,8 @@ function M.section_lsp(args)
     return ""
   end
 
-  local buf_ft = vim.api.nvim_buf_get_option(0, "filetype")
-  local clients = vim.lsp.get_active_clients()
+  local buf_ft = vim.api.nvim_get_option_value("filetype", {})
+  local clients = vim.lsp.get_clients()
   if next(clients) == nil then
     return ""
   end
@@ -62,7 +66,7 @@ function M.section_lsp(args)
     local filetypes = client.config.filetypes
     if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
       if client_names == "" then
-        client_names = client.name
+        client_names = client_names .. client.name
       else
         client_names = client_names .. " " .. client.name
       end
