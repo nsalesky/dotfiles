@@ -48,7 +48,9 @@ return {
             i = {
               ["<c-k>"] = lga_actions.quote_prompt(),
               ["<c-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+              ["<c-t>"] = open_with_trouble,
             },
+            n = { ["<c-t>"] = open_with_trouble },
           },
         },
         ["ui-select"] = {

@@ -36,9 +36,34 @@ return {
         capabilities = capabilities,
       })
 
-      lspconfig.pyright.setup({
+      -- lspconfig.pyright.setup({
+      --   on_attach = on_attach,
+      --   capabilities = capabilities,
+      -- })
+
+      lspconfig.basedpyright.setup({
         on_attach = on_attach,
         capabilities = capabilities,
+        settings = {
+          basedpyright = {
+            disableOrganizeImports = true,
+            analysis = {
+              typeCheckingMode = "standard", -- off, basic, standard, strict, all
+              -- diagnosticsMode = "openFilesOnly", -- workspace, openFilesOnly
+              autoImportCompletions = true,
+              useLibraryCodeForTypes = true,
+              diagnosticSeverityOverrides = {
+                reportMissingTypeStubs = false,
+              },
+            },
+          },
+        },
+      })
+
+      lspconfig.ruff.setup({
+        on_attach = function(client, _)
+          client.server_capabilities.hoverProvider = false
+        end,
       })
 
       lspconfig.gopls.setup({
@@ -47,11 +72,6 @@ return {
       })
 
       lspconfig.svelte.setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-      })
-
-      lspconfig.tsserver.setup({
         on_attach = on_attach,
         capabilities = capabilities,
       })
@@ -101,6 +121,18 @@ return {
           "--completion-style=bundled",
           "--cross-file-rename",
           "--header-insertion=iwyu",
+        },
+      })
+
+      lspconfig.yamlls.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+        settings = {
+          yaml = {
+            schemes = {
+              ["https://raw.githubusercontent.com/docker/cli/master/cli/compose/schema/data/config_schema_v3.13.json"] = "./docker-compose.yml",
+            },
+          },
         },
       })
     end,

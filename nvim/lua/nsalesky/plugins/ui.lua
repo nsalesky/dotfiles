@@ -12,9 +12,9 @@ return {
     cmd = { "NvimTreeToggle", "NvimTreeFocus" },
     keys = {
       {
-        "<leader>n",
+        "<leader>ft",
         "<cmd>NvimTreeToggle<CR>",
-        desc = "Toggle nvimtree",
+        desc = "Toggle file tree",
       },
       -- {
       --   "<leader>e",

@@ -17,10 +17,10 @@ return {
 
       require("mini.pairs").setup()
 
-      require("mini.files").setup()
-      vim.keymap.set("n", "<leader>e", function()
-        require("mini.files").open()
-      end, { desc = "Open MiniFiles" })
+      -- require("mini.files").setup()
+      -- vim.keymap.set("n", "<leader>e", function()
+      --   require("mini.files").open()
+      -- end, { desc = "Open MiniFiles" })
 
       require("mini.hipatterns").setup({
         highlighters = {
@@ -33,6 +33,11 @@ return {
       })
 
       require("mini.diff").setup({})
+
+      local mini_git = require("mini.git")
+      mini_git.setup({})
+      vim.keymap.set("n", "<leader>gb", mini_git.show_range_history, { desc = "Show range history" })
+      vim.keymap.set("v", "<leader>gb", mini_git.show_range_history, { desc = "Show range history" })
 
       require("mini.surround").setup({})
 
@@ -61,35 +66,37 @@ return {
       --   mini_extra.pickers.hl_groups()
       -- end, { desc = "HL Groups" })
 
-      local mini_status = require("mini.statusline")
-      mini_status.setup({
-        content = {
-          active = function()
-            local statusline = require("nsalesky.configs.statusline")
-            statusline.setup()
+      require("mini.statusline").setup({})
 
-            local mode, mode_hl = mini_status.section_mode({ trunc_width = 120 })
-            local git = mini_status.section_git({ trunc_width = 40 })
-            local diff = statusline.section_diff({ trunc_width = 75 })
-            local diagnostics = mini_status.section_diagnostics({ trunc_width = 75 })
-            local lsp = statusline.section_lsp({ trunc_width = 75 })
-            local filename = mini_status.section_filename({ trunc_width = 140 })
-            local fileinfo = mini_status.section_fileinfo({ trunc_width = 120 })
-            local location = mini_status.section_location({ trunc_width = 75 })
-            local search = mini_status.section_searchcount({ trunc_width = 75 })
-
-            return mini_status.combine_groups({
-              { hl = mode_hl, strings = { mode } },
-              { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
-              "%<", -- Mark general truncate point
-              { hl = "MiniStatuslineFilename", strings = { filename } },
-              "%=", -- End left alignment
-              { hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
-              { hl = mode_hl, strings = { search, location } },
-            })
-          end,
-        },
-      })
+      -- local mini_status = require("mini.statusline")
+      -- mini_status.setup({
+      --   content = {
+      --     active = function()
+      --       local statusline = require("nsalesky.configs.statusline")
+      --       statusline.setup()
+      --
+      --       local mode, mode_hl = mini_status.section_mode({ trunc_width = 120 })
+      --       local git = mini_status.section_git({ trunc_width = 40 })
+      --       local diff = statusline.section_diff({ trunc_width = 75 })
+      --       local diagnostics = mini_status.section_diagnostics({ trunc_width = 75 })
+      --       local lsp = statusline.section_lsp({ trunc_width = 75 })
+      --       local filename = mini_status.section_filename({ trunc_width = 140 })
+      --       local fileinfo = mini_status.section_fileinfo({ trunc_width = 120 })
+      --       local location = mini_status.section_location({ trunc_width = 75 })
+      --       local search = mini_status.section_searchcount({ trunc_width = 75 })
+      --
+      --       return mini_status.combine_groups({
+      --         { hl = mode_hl, strings = { mode } },
+      --         { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics, lsp } },
+      --         "%<", -- Mark general truncate point
+      --         { hl = "MiniStatuslineFilename", strings = { filename } },
+      --         "%=", -- End left alignment
+      --         { hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
+      --         { hl = mode_hl, strings = { search, location } },
+      --       })
+      --     end,
+      --   },
+      -- })
 
       local miniclue = require("mini.clue")
       miniclue.setup({

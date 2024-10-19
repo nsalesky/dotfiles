@@ -1,9 +1,9 @@
 return {
   {
     "lervag/vimtex",
-    lazy = false,
+    ft = "tex",
     init = function()
-      vim.g.vimtex_view_method = 'sioyek'
-    end
-  }
+      vim.g.vimtex_view_method = "sioyek"
+    end,
+  },
 }

@@ -4,6 +4,12 @@ return {
     opts = {
       show_icons = true,
       leader_key = ";",
+      separate_by_branch = true,
+    },
+    keys = {
+      ";",
+      "<cmd>Arrow<cr>",
+      desc = "Open Arrow",
     },
   },
   {
@@ -14,6 +20,28 @@ return {
         "<leader>u",
         ":UndotreeToggle<CR>",
         desc = "Undotree Toggle",
+      },
+    },
+  },
+  {
+    "mikavilpas/yazi.nvim",
+    event = "VeryLazy",
+    opts = {
+      open_for_directories = true,
+      keymaps = {
+        show_help = "<f1>",
+      },
+    },
+    keys = {
+      {
+        "<leader>-",
+        "<cmd>Yazi<cr>",
+        desc = "Open Yazi at the current file",
+      },
+      {
+        "<leader>fy",
+        "<cmd>Yazi cwd<cr>",
+        desc = "Open Yazi in the current working directory",
       },
     },
   },

@@ -1,6 +1,6 @@
 -- Got this snippet system from TJ DeVries
 
-local ls = require "luasnip"
+local ls = require("luasnip")
 
 vim.snippet.expand = ls.lsp_expand
 
@@ -32,11 +32,11 @@ vim.snippet.stop = ls.unlink_current
 -- ================================================
 --      My Configuration
 -- ================================================
-ls.config.set_config {
+ls.config.set_config({
   history = true,
   updateevents = "TextChanged,TextChangedI",
   override_builtin = true,
-}
+})
 
 -- TODO: figure out error
 require("nsalesky.snippets.go")
@@ -45,10 +45,12 @@ require("nsalesky.snippets.c")
 --   loadfile(ft_path)()
 -- end
 
+require("luasnip.loaders.from_snipmate").load()
+
 vim.keymap.set({ "i", "s" }, "<c-k>", function()
-  return vim.snippet.active { direction = 1 } and vim.snippet.jump(1)
+  return vim.snippet.active({ direction = 1 }) and vim.snippet.jump(1)
 end, { silent = true })
 
 vim.keymap.set({ "i", "s" }, "<c-j>", function()
-  return vim.snippet.active { direction = -1 } and vim.snippet.jump(-1)
+  return vim.snippet.active({ direction = -1 }) and vim.snippet.jump(-1)
 end, { silent = true })
