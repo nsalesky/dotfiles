@@ -11,7 +11,11 @@ return {
     },
     config = function()
       local dap = require("dap")
-      vim.fn.sign_define("DapBreakpoint", { text = "" })
+      -- vim.fn.sign_define("DapBreakpoint", { text = "" })
+
+      if vim.fn.filereadable(".vscode/launch.json") then
+        require("dap.ext.vscode").load_launchjs()
+      end
 
       -- Set up debug adapters
       dap.adapters.gdb = {

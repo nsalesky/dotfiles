@@ -32,5 +32,4 @@ return {
     -- Used with mini.completion
     -- vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.MiniCompletion.completefunc_lsp")
   end,
-  capabilities = require("cmp_nvim_lsp").default_capabilities()
 }

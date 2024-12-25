@@ -41,7 +41,12 @@ vim.keymap.set("n", "]d", function()
 end, { desc = "Next diagnostic" })
 
 -- Load diagnostics into location list
-vim.keymap.set("n", "<leader>cq", function() vim.diagnostic.setloclist() end, { desc = "Load diagnostics to loclist"})
+vim.keymap.set("n", "<leader>cq", function()
+  vim.diagnostic.setloclist()
+end, { desc = "Load diagnostics to loclist" })
 
 -- Terminal mode bindings
 vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]]) -- exit terminal mode with Esc
+
+-- Jump between buffers
+vim.keymap.set("n", "gb", ":buffers<CR>:buffer<Space>", { desc = "Go to buffer" })

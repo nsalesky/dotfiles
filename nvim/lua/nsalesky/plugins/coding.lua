@@ -36,4 +36,10 @@ return {
       },
     },
   },
+  {
+    "nsalesky/runnables.nvim",
+    dir = "~/Projects/neovim/runnables.nvim",
+    lazy = false,
+    opts = {},
+  },
 }

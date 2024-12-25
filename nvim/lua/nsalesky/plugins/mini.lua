@@ -34,10 +34,7 @@ return {
 
       require("mini.diff").setup({})
 
-      local mini_git = require("mini.git")
-      mini_git.setup({})
-      vim.keymap.set("n", "<leader>gb", mini_git.show_range_history, { desc = "Show range history" })
-      vim.keymap.set("v", "<leader>gb", mini_git.show_range_history, { desc = "Show range history" })
+      require("mini.git").setup({})
 
       require("mini.surround").setup({})
 
@@ -66,7 +63,7 @@ return {
       --   mini_extra.pickers.hl_groups()
       -- end, { desc = "HL Groups" })
 
-      require("mini.statusline").setup({})
+      -- require("mini.statusline").setup({})
 
       -- local mini_status = require("mini.statusline")
       -- mini_status.setup({
