@@ -50,3 +50,8 @@ vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]]) -- exit terminal mode with Esc
 
 -- Jump between buffers
 vim.keymap.set("n", "gb", ":buffers<CR>:buffer<Space>", { desc = "Go to buffer" })
+
+-- Lua development
+vim.keymap.set("n", "<space><space>x", ":source %<CR>")
+vim.keymap.set("n", "<space>x", ":.lua<CR>")
+vim.keymap.set("v", "<space>x", ":lua<CR>")
