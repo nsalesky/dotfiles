@@ -10,14 +10,13 @@ return {
   config = function()
     local builtin = require("telescope.builtin")
 
-    local function find_file()
-      builtin.find_files({
-        hidden = true,
-      })
-    end
+    -- local function find_file()
+    --   builtin.find_files({
+    --     hidden = true,
+    --   })
+    -- end
 
-    vim.keymap.set("n", "<leader>ff", find_file, { desc = "File" })
-    vim.keymap.set("n", "<C-p>", find_file, { desc = "Find File" })
+    vim.keymap.set("n", "<C-p>", builtin.git_files, { desc = "Find File" })
 
     vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Buffers" })
     vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
