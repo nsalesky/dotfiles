@@ -5,26 +5,26 @@ return {
       "DiffviewOpen",
     },
   },
-  -- {
-  --   "NeogitOrg/neogit",
-  --   dependencies = { "nvim-lua/plenary.nvim" },
-  --   opts = {
-  --     integrations = {
-  --       diffview = true,
-  --       telescope = true,
-  --     },
-  --     use_telescope = true,
-  --   },
-  --   keys = {
-  --     {
-  --       "<leader>gs",
-  --       function()
-  --         require("neogit").open()
-  --       end,
-  --       desc = "Neogit status",
-  --     },
-  --   },
-  -- },
+  {
+    "NeogitOrg/neogit",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      integrations = {
+        diffview = true,
+        telescope = true,
+      },
+      use_telescope = true,
+    },
+    keys = {
+      {
+        "<leader>gn",
+        function()
+          require("neogit").open()
+        end,
+        desc = "Neogit status",
+      },
+    },
+  },
   -- {
   --   "ThePrimeagen/git-worktree.nvim",
   --   config = function()
