@@ -17,11 +17,7 @@ Some specific configs I looked at include:
 
 Installation should be fairly straightforward. The first time Emacs runs this config, it should hopefully install all the necessary packages automatically. If it doesn't prompt you, you'll need to run ~M-x all-the-icons-install-fonts~.
 
-* Emacs Initialization
-Add my custom ELisp files to the load-path.
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-#+END_SRC 
+* Emacs Initialization 
 
 Enable native compilation for all Elisp code
 #+BEGIN_SRC emacs-lisp
@@ -42,12 +38,12 @@ Increase the garbage collection threshold and process data chunking for performa
       read-process-output-max (* 1024 1024))
 #+END_SRC 
 
-** Set some basic UI settings earl
+** Set some basic UI settings early
 
 Disable UI elements
 #+BEGIN_SRC emacs-lisp
 (tool-bar-mode -1)
-(menu-bar-mode -1)
+(menu-bar-mode 1)
 (scroll-bar-mode -1)
 (tooltip-mode -1)
 (set-fringe-mode 10)
@@ -75,67 +71,27 @@ Create a ~custom.el~ file to store customization info instead of init.el, since 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 #+END_SRC
 
+** set up the load path
+Add custom lisp files to the =load-path=
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+#+END_SRC
+
 * Package System Setup
-I'm using =elpaca= with =use-package= to install and configure packages
+I'm using =package.el= with =use-package= to install and configure packages
 
-Set up =elpaca=
 #+BEGIN_SRC emacs-lisp
-(defvar elpaca-installer-version 0.6)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                 ((zerop (call-process "git" nil buffer t "clone"
-                                       (plist-get order :repo) repo)))
-                 ((zerop (call-process "git" nil buffer t "checkout"
-                                       (or (plist-get order :ref) "--"))))
-                 (emacs (concat invocation-directory invocation-name))
-                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                 ((require 'elpaca))
-                 ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
 #+END_SRC
 
-Disable =package.el=
-#+BEGIN_SRC emacs-lisp :tangle early-init.el
-(setq package-enable-at-startup nil)
-#+END_SRC
-
-Install =use-package= support
+Set up =use-package=
 #+BEGIN_SRC emacs-lisp
-(elpaca elpaca-use-package
-        ;; Enable :elpaca use-package keyword
-        (elpaca-use-package-mode)
-        ;; Assume :elpaca t unless otherwise specified
-        (setq elpaca-use-package-by-default t))
-
-;; Upgrade built-in packages
-(elpaca transient)
-
-;; Block until current queue processed
-(elpaca-wait)
+(require 'use-package-ensure)
+(setq use-package-always-pin  "melpa"
+      use-package-always-ensure t
+      use-package-compute-statistics t)
 #+END_SRC
 
 
@@ -169,53 +125,6 @@ Here's where I configure some basic Emacs features with keybindings.
 ** Enable all disabled keybindings
 #+BEGIN_SRC emacs-lisp
 (setq disabled-command-function nil)
-#+END_SRC
-
-** Evil 😈
-
-#+BEGIN_SRC emacs-lisp :tangle nil
-(use-package evil
-  ;; :ensure t
-  :init
-  (setq evil-want-keybinding nil
-        evil-want-integration t
-        evil-want-C-u-scroll t
-        evil-want-C-d-scroll t
-        evil-undo-system 'undo-redo
-  )
-
-  :config
-  (evil-mode 1))
-
-(use-package evil-collection
-  :ensure t
-  :after evil
-  :config
-  (evil-collection-init))
-
-(use-package evil-surround
-  :config
-  (global-evil-surround-mode 1))
-
-(elpaca-wait)
-#+END_SRC
-
-** General
-
-#+BEGIN_SRC emacs-lisp :tangle nil
-(use-package general
-  :ensure t
-  :config
-  (general-evil-setup t)
-  (general-create-definer ns/leader-def
-    :keymaps '(normal visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-  (general-create-definer ns/local-leader-def
-    :keymaps '(normal visual emacs)
-    :prefix "SPC m"
-    :global-prefix "C-SPC m"))
-(elpaca-wait)
 #+END_SRC
 
 ** Electric-pair-mode
@@ -265,7 +174,7 @@ Keybindings for working with files.
 
   ;; Keep track of recently-opened files
   (use-package recentf
-    :elpaca nil
+    :ensure nil
     :config
     (recentf-mode 1)
     :custom
@@ -277,7 +186,7 @@ Keybindings for working with files.
     ;; (ns/leader-def "fr" 'consult-recent-file))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :tangle nil
+#+BEGIN_SRC emacs-lisp :tangle no
   (ns/leader-def
     "." 'find-file
     "f" '(:ignore t :which-key "files")
@@ -285,7 +194,7 @@ Keybindings for working with files.
 #+END_SRC
 
 ** Buffers
-#+BEGIN_SRC emacs-lisp :tangle nil
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "," '(consult-buffer :which-key "select buffer")
   "b" '(:ignore t :which-key "buffers")
@@ -302,13 +211,13 @@ Keybindings for operating windows.
 
 ** Text manipulation
 
-#+BEGIN_SRC emacs-lisp :tangle nil
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "/" '(comment-line :which-key "Toggle comment"))
 #+END_SRC
 
 ** Eval
-#+BEGIN_SRC emacs-lisp :tangle nil
+#+BEGIN_SRC emacs-lisp :tangle no
 (ns/leader-def
   "e" '(:ignore t :which-key "eval")
   "el" '(eval-last-sexp :which-key "eval last sexpr")
@@ -336,7 +245,7 @@ Keybindings for operating windows.
 #+END_SRC
 
 ** evil-textobj-tree-sitter
-#+BEGIN_SRC emacs-lisp :tangle nil
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package evil-textobj-tree-sitter
   :config
   ; functions
@@ -360,7 +269,7 @@ Keybindings for operating windows.
 ** Misc
 #+BEGIN_SRC emacs-lisp
 (use-package emacs
-  :elpaca nil
+  :ensure nil
   :custom
   (scroll-margin 5)
   (ring-bell-function 'ignore)
@@ -373,7 +282,7 @@ Keybindings for operating windows.
 #+BEGIN_SRC emacs-lisp
 
 (use-package saveplace
-  :elpaca nil
+  :ensure nil
   :unless noninteractive
   :config
   (setq save-place-limit 1000)
@@ -385,7 +294,7 @@ Keybindings for operating windows.
 #+BEGIN_SRC emacs-lisp
 
 (use-package savehist
-  :elpaca nil
+  :ensure nil
   :unless noninteractive
   :defer 1
   :config
@@ -397,7 +306,7 @@ Keybindings for operating windows.
 ** +Global-auto-revert-mode+
 Auto-revert all buffers by default
 
-#+BEGIN_SRC emacs-lisp :tangle nil
+#+BEGIN_SRC emacs-lisp :tangle no
 (global-auto-revert-mode 1)
 #+END_SRC
 
@@ -439,7 +348,7 @@ I got the basic code for this from [[https://emacs.stackexchange.com/questions/3
 ** display-line-numbers-mode: Displaying line numbers
 #+BEGIN_SRC emacs-lisp
 (use-package display-line-numbers-mode
-  :elpaca nil
+  :ensure nil
   :custom
   (display-line-numbers-type 'relative)
   :hook
@@ -447,11 +356,6 @@ I got the basic code for this from [[https://emacs.stackexchange.com/questions/3
   (markdown-mode . display-line-numbers-mode))
 #+END_SRC
 
-** Apply changes
-Process the elpaca queue in case later packages depend on these settings
-#+BEGIN_SRC emacs-lisp
-(elpaca-wait)
-#+END_SRC
 * UI
 Set up all the fancy user-interface elements to make Emacs look nice.
 
@@ -511,7 +415,7 @@ Give Emacs a nice color scheme! Other themes that I like include:
   :config
   (load-theme 'doom-one t))
 
-(use-package ef-themes
+(use-package ef-themes :disabled t
   :config
   (setq ef-themes-headings ; read the manual's entry or the doc string
       '((0 . (variable-pitch light 1.9))
@@ -769,16 +673,7 @@ Sets up minibuffer completion with Vertico.
 
 #+END_SRC 
 
-* Editor
-** Aggressive-indent: Always keep code properly indented
-#+BEGIN_SRC emacs-lisp
-
-(use-package aggressive-indent
-  :hook
-  (emacs-lisp-mode-hook . aggressive-indent-mode))
-
-#+END_SRC 
-
+* Editor 
 ** Rainbow-delimiters: Different color for each parenthesis level
 Give parenthases rainbow coloring depending on their nested level in all programming modes.
 
@@ -807,16 +702,6 @@ Add various templates to Emacs.
   :config
   (setq which-key-idle-delay 0.3))
 #+end_src
-
-** Olivetti: Centered document editing
-#+BEGIN_SRC emacs-lisp
-(use-package olivetti
-  :custom
-  (olivetti-body-width 110)
-  (olivetti-style t))
-  ;; :hook
-  ;; (org-mode . olivetti-mode))
-#+END_SRC
 
 ** Iedit: Simple multi-cursor editing
 
@@ -847,84 +732,13 @@ Add various templates to Emacs.
   ("C-e" . mwim-end))
 #+END_SRC
 
-* Email
-** +Basic configuration+
-Taken from [[https://firminmartin.com/en/posts/2020/10/read_email_in_emacs_with_notmuch/]]
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(setq mail-user-agent 'message-user-agent
-      user-mail-address "nicksalesky@gmail.com"
-      user-full-name "Nicholas Salesky"
-      )
-#+END_SRC
-
-** +smtpmail-multi+
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package smtpmail-multi
-  :config
-  (setq smtpmail-multi-accounts
-        '((gmail-main . ("nicksalesky@gmail.com" "smtp.gmail.com" 587 "nicksalesky@gmail.com" nil nil nil nil))))
-
-  (setq smtpmail-multi-associations
-        '(("nicksalesky@gmail.com" gmail-main)))
-
-  (setq smtpmail-multi-default-account 'gmail-main)
-  (setq message-send-mail-function 'smtpmail-multi-send-it)
-
-  (setq smtpmail-debug-info t)
-  (setq smtpmail-debug-verbose t)
-
-  (when (>= emacs-major-version 25)
-    (setq smtpmail-local-domain (car (split-string (shell-command-to-string "hostname -f"))))))
-#+END_SRC 
-
-** +notmuch-el+
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package notmuch
-  :bind
-  ("C-c b" . notmuch)
-  :hook
-  (notmuch-show . variable-pitch-mode)
-  :custom
-  (notmuch-search-oldest-first nil)
-  (notmuch-kill-buffer-on-exit t))
-#+END_SRC
-
-** +auth-source-pass+
-Make Emacs read credentials through ~pass~
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package auth-source-pass
-  :diminish t
-  :config
-  (auth-source-pass-enable))
-#+END_SRC 
-
-* Spell checker
-** +Flyspell+
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package flyspell
-  :hook ((prog-mode . flyspell-prog-mode)
-        ((org-mode markdown-mode) . flyspell-mode)))
-#+END_SRC 
-
-** +Flyspell-correct: Show list of correct spelling suggestions+
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package flyspell-correct
-  :after (flyspell)
-  :bind
-  (:map flyspell-mode-map
-        ("C-;" . flyspell-correct-wrapper)))
-#+END_SRC 
-
 * Project Management
 Tools to distinguish projects and quickly navigate inside projects and between them.
 
 ** Dired
 #+BEGIN_SRC emacs-lisp
 (use-package dired
-  :elpaca nil
+  :ensure nil
   :custom
   (dired-kill-when-opening-new-dired-buffer t))
 #+END_SRC
@@ -951,7 +765,7 @@ Tools to distinguish projects and quickly navigate inside projects and between t
 ** Tab-bar-mode
 #+BEGIN_SRC emacs-lisp
 (use-package tab-bar
-  :elpaca nil
+  :ensure nil
   :init
   (tab-bar-mode)
   :custom
@@ -979,7 +793,7 @@ The very basics for Org-mode, setting up fonts and basic visual features.
 #+begin_src emacs-lisp
 
 (use-package org
-  :elpaca nil
+  :ensure nil
   :bind
   ("C-c l" . org-store-link)
   :hook (org-mode . org-indent-mode)
@@ -1035,9 +849,9 @@ The very basics for Org-mode, setting up fonts and basic visual features.
 
 #+end_src
 
-** Org-appear: auto-reveal emphasis markers at point
+** +Org-appear: auto-reveal emphasis markers at point+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package org-appear
   :elpaca (org-appear :type git :host github :repo "awth13/org-appear")
   :hook (org-mode . org-appear-mode))
@@ -1053,7 +867,7 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   (setq org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$")))
 
 (use-package org-agenda
-  :elpaca nil
+  :ensure nil
   :custom
   (org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$"))
 
@@ -1078,141 +892,11 @@ The very basics for Org-mode, setting up fonts and basic visual features.
   ("C-c a" . org-agenda)
   ("C-c r" . ns/org-agenda-reload-files))
   
-#+END_SRC 
-
-*** +Agenda Views+
-~TODO~: Need to find a better way to organize this into the ~org-agenda~ section even though it depends on ~org-roam~.
-
-#+BEGIN_SRC emacs-lisp :tangle nil
-(defun cmp-date-property-stamp (prop)
-  "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
-If a is before b, return -1. If a is after b, return 1. If they
-are equal return nil."
-  (lexical-let ((prop prop))
-	#'(lambda (a b)
-
-		(let* ((a-pos (get-text-property 0 'org-marker a))
-			   (b-pos (get-text-property 0 'org-marker b))
-			   (a-date (or (org-entry-get a-pos prop)
-						   (format "<%s>" (org-read-date t nil "now"))))
-			   (b-date (or (org-entry-get b-pos prop)
-						   (format "<%s>" (org-read-date t nil "now"))))
-			   (cmp (compare-strings a-date nil nil b-date nil nil))
-			   )
-		  (if (eq cmp t) nil (signum cmp))
-		  ))))
-
-(elpaca nil
-  ;; Got this from https://d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5.html
-  (defun ns/org-roam-files-by-tag (tag)
-    "Finds the org roam files with the given TAG."
-    (seq-uniq
-     (seq-map
-      #'car
-      (org-roam-db-query
-       [:select [nodes:file]
-                :from tags
-                :left-join nodes
-                :on (= tags:node_id nodes:id)
-                :where (= tag $s1)]
-       tag))))
-
-  (setq org-agenda-custom-commands
-        '(
-          ("r" "Resonance Cal" tags "Type={.}"
-	       ((org-agenda-files (ns/org-roam-files-by-tag "rez"))
-	        (org-overriding-columns-format
-		     "%35Item %Type %Start %Fin %Rating")
-	        (org-agenda-cmp-user-defined
-		     (cmp-date-property-stamp "Start"))
-	        (org-agenda-sorting-strategy
-		     '(user-defined-down))
-            (org-agenda-overriding-header "C-u r to re-run Type={.}")
-            (org-agenda-mode-hook
-	         (lambda ()
-	           (visual-line-mode -1)
-	           (setq truncate-lines 1)
-	           (setq display-line-numbers-offset -1)
-	           (display-line-numbers-mode 1)))
-	        (org-agenda-view-columns-initially t)))
-          ("u" "Super view"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-overriding-header "Time-Sensitive")
-                        (org-super-agenda-groups
-                         '(
-                           (:discard (:todo ("DONE")))
-                           (:name "Today"
-                                  :tag ("bday" "ann" "hols" "cal" "today")
-                                  :scheduled today
-                                  :time-grid t
-                                  ;; :todo ("WIP" "TODO")
-                                  :order 0)
-                           ;; (:name "Due Today"
-                           ;;        :deadline today
-                           ;;        :order 2)
-                           ;; (:name "Overdue"
-                           ;;        :deadline past)
-                           ;; (:name "Reschedule"
-                           ;;        :scheduled past)
-                           (:name "Personal"
-                                  :tag "perso")
-                           (:name "School"
-                                  :tag "school")
-                           (:name "Work"
-                                  :tag "work")))))
-                           ;; (:name "Due Soon"
-                           ;;        :deadline future
-                           ;;        :scheduled future)
-                           ;; ))))
-            (tags
-             (concat "w" (format-time-string "%V"))
-             ((org-agenda-overriding-header
-               (concat "Todos Week " (format-time-string "%V")))
-              (org-super-agenda-groups
-               '(
-                 (:discard (:deadline t))
-                 (:discard (:scheduled t))
-                 (:discard (:todo ("DONE")))
-                 (:name "Someday" :tag "someday")
-                 (:name "Personal"
-                        :and (:tag "perso" :not (:tag "someday")))
-                 (:name "School"
-                        :and (:tag "school" :not (:tag "someday")))
-                 (:name "Work"
-                        :and (:tag "work" :not (:tag "someday")))
-                 ))))))
-          ("t" "Todo View"
-           (
-            (todo "" ((org-agenda-overriding-header "")
-                      (org-super-agenda-groups
-                       '(
-                         (:auto-category t :order 9)
-                         )))))))))
-#+END_SRC
-
-*** +org-super-agenda+
-
-#+BEGIN_SRC emacs-lisp :tangle nil 
-(use-package org-super-agenda
-  :after org-agenda
-  :init
-  ;; (setq org-agenda-skip-scheduled-if-done t
-  ;;       org-agenda-skip-deadline-if-done t
-  ;;       org-agenda-include-deadlines t
-  ;;       org-agenda-block-separator nil
-  ;;       org-agenda-compact-blocks t
-  ;;       org-agenda-start-day nil
-  ;;       org-agenda-span 1
-  ;;       org-agenda-start-on-weekday nil)
-  :config
-  (org-super-agenda-mode))
-
-#+END_SRC 
+#+END_SRC  
  
 ** Org-present
 
 #+BEGIN_SRC emacs-lisp
-
 (defun ns/org-present-begin ()
   (setq-local ns/olivetti-mode-enabled (bound-and-true-p olivetti-mode)) ;; remember if olivetti was already enabled or not
   (olivetti-mode 1)                                                      ;; enable olivetti-mode regardless
@@ -1271,9 +955,9 @@ Give Org-mode documents some extra visual polish.
 #+END_SRC
 
 * Note Taking
-** Org-roam
+** +Org-roam+
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package emacsql-sqlite-builtin)
 
 (use-package org-roam
@@ -1318,8 +1002,8 @@ Give Org-mode documents some extra visual polish.
   (org-roam-db-autosync-enable))
 #+END_SRC
 
-** consult-org-roam
-#+BEGIN_SRC emacs-lisp
+** +consult-org-roam+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package consult-org-roam
   :diminish
   :after org-roam
@@ -1343,10 +1027,9 @@ Give Org-mode documents some extra visual polish.
   ("C-c n s" . consult-org-roam-search))
 #+END_SRC
 
-** Org-roam-ui
-#+BEGIN_SRC emacs-lisp
+** +Org-roam-ui+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package org-roam-ui
-  :elpaca
     (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
     :after org-roam
 ;;  :hook (after-init . org-roam-ui-mode)
@@ -1422,7 +1105,7 @@ Give Org-mode documents some extra visual polish.
 
 *** Eglot: Language-server protocols
 #+BEGIN_SRC emacs-lisp
-(use-package jsonrpc :elpaca t)
+(use-package jsonrpc)
 
 (use-package eglot
   :bind
@@ -1437,7 +1120,7 @@ Give Org-mode documents some extra visual polish.
   (eglot-managed-mode . eglot-inlay-hints-mode)
   :config
   (add-to-list 'eglot-server-programs
-               '(python-ts-mode . ("pyright")))
+               '(python-ts-mode . ("basedpyright-langserver")))
   ;; (add-to-list 'eglot-server-programs
                ;; `(rustic-mode . ("/home/nsalesky/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-analyzer"
                                 ;; :initializationOptions
@@ -1455,8 +1138,8 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
 
 #+BEGIN_SRC emacs-lisp
 (use-package corfu
-  :elpaca (corfu :files (:defaults "extensions/*")
-                   :includes (corfu-info corfu-history))
+  ;; :elpaca (corfu :files (:defaults "extensions/*")
+  ;;                  :includes (corfu-info corfu-history))
   :bind
   (:map corfu-map
         ("C-n" . corfu-next)
@@ -1510,7 +1193,7 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
   (add-to-list 'completion-at-point-functions #'my-cape-dabbrev-accept-all))
   
 
-(use-package kind-icon
+(use-package kind-icon :disabled t
   :custom
   (kind-icon-default-face 'corfu-default)
   :config
@@ -1521,7 +1204,7 @@ Configure the ~corfu~ completion-at-point package. This configuration was inspir
 I've been eagerly awaiting a package just like this for a long time now, so I'm very excited to try it out.
 It'll be nice having a good debug experience with the simplicity of eglot.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (use-package dape
   :hook
   ;; Save breakpoints on quit
@@ -1594,7 +1277,7 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
 
 #+BEGIN_SRC emacs-lisp
 (use-package re-builder
-  :elpaca nil
+  :ensure nil
   :custom
   (reb-re-syntax 'string))
 #+END_SRC 
@@ -1643,21 +1326,6 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
   (inferior-lisp-program "sbcl"))
 #+END_SRC
 
-*** Gameboy
-
-#+BEGIN_SRC emacs-lisp
-(use-package rgbds-mode
-  :elpaca (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
-  :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
-#+END_SRC
-
-*** Guile
-
-#+BEGIN_SRC emacs-lisp
-(use-package geiser)
-(use-package geiser-guile)
-#+END_SRC
-
 *** +GLSL: OpenGL shaders+
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package glsl-mode
@@ -1667,12 +1335,25 @@ A pretty useful tool for debugging regular expressions. I use the ~string~ mode 
 *** Go
 #+BEGIN_SRC emacs-lisp
 (use-package go-ts-mode
-  :elpaca nil
+  :ensure nil
   :mode "\\.go\\'"
   :hook (go-ts-mode . eglot-ensure)
   :custom
   (go-ts-mode-indent-offset 4))
 #+END_SRC 
+
+*** Janet
+#+BEGIN_SRC emacs-lisp :tangle nil
+;; (use-package janet-ts-mode
+;;   :vc (:url "https://github.com/sogaiu/janet-ts-mode.git"
+;;        :branch "master"))
+
+(use-package janet-mode)
+
+;; (autoload 'inf-janet "inf-janet" "Run an inferior Janet process" t)
+;; (add-hook 'janet-mode-hook 'inf-janet-minor-mode)
+
+#+END_SRC
 
 *** LaTeX
 Recompile LaTeX documents automatically when saved. 
@@ -1684,7 +1365,7 @@ Recompile LaTeX documents automatically when saved.
   ;; (async-shell-command (concat "pdflatex " (buffer-file-name))))
 
 (use-package tex-mode
-  :elpaca nil
+  :ensure nil
   :hook (latex-mode . (lambda () (add-hook 'after-save-hook #'ns/compile-tex-doc nil t))))
 #+END_SRC
 
@@ -1740,14 +1421,6 @@ Recompile LaTeX documents automatically when saved.
    'org-src-lang-modes
    '("plantuml" . plantuml)))
 #+END_SRC
-*** Protobuf
-#+BEGIN_SRC emacs-lisp
-(use-package protobuf-mode
-  :elpaca (:repo "protocolbuffers/protobuf"
-           :files ("editors/protobuf-mode.el")
-           :main "editors/protobuf-mode.el")
-  :mode "\\.proto\\'")
-#+END_SRC
 
 *** Python
 #+BEGIN_SRC emacs-lisp
@@ -1783,7 +1456,7 @@ Recompile LaTeX documents automatically when saved.
   web-mode "Svelte"
   "Major mode for Svelte.")
 
-(use-package svelte-mode :elpaca nil
+(use-package svelte-mode :ensure nil
   :hook (svelte-mode . eglot-ensure)
   :mode "\\.svelte\\'")
 #+END_SRC
@@ -1798,24 +1471,11 @@ Recompile LaTeX documents automatically when saved.
   (setq typescript-indent-level 4))
 #+end_src
 
-*** Typst
-
-#+BEGIN_SRC emacs-lisp
-(use-package typst-ts-mode
-  :after consult-imenu
-  :elpaca (:type git :host sourcehut :repo "meow_king/typst-ts-mode")
-  :config
-  (add-to-list 'consult-imenu-config
-               '((typst-ts-mode :toplevel "Headings" :types
-                                ((?h "Headings" typst-ts-markup-header-face)
-                                 (?f "Functions" font-lock-function-name-face))))))
-#+END_SRC
-
 *** Ruby
 
 #+BEGIN_SRC emacs-lisp
 (use-package ruby-mode
-  :elpaca nil)
+  :ensure nil)
 
 (use-package inf-ruby) ;; Interact with a Ruby REPL
 
@@ -1887,33 +1547,6 @@ Editing in a mixed-language web format.
 #+END_SRC 
 
 * Utilities
-** Visit Important files
-A little transient function for visiting my common files that aren't accessible through ~org-roam~.
-
-#+BEGIN_SRC emacs-lisp
-
-(require 'transient)
-
-(define-prefix-command 'ns/files-map)
-(keymap-global-set "C-c f" 'ns/files-map)
-
-(transient-define-prefix ns/visit-note-transient ()
-  "Visit common note files."
-  ["Visit common note files"
-   ["Agenda"
-    ("a" "agenda.org" (lambda () (interactive) (find-file (expand-file-name "agenda.org" org-directory))))
-    ("p" "projects.org" (lambda () (interactive) (find-file (expand-file-name "projects.org" org-directory))))
-    ("i" "inbox.org" (lambda () (interactive) (find-file (expand-file-name "inbox.org" org-directory))))
-    ]
-   ["Config"
-    ("c" "config.org" (lambda () (interactive) (find-file (expand-file-name "config.org" user-emacs-directory))))
-    ("I" "init.el" (lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))))
-    ]
-   ])
-
-(define-key 'ns/files-map (kbd "f") 'ns/visit-note-transient)
-
-#+END_SRC
 ** Open file as superuser
 
 #+BEGIN_SRC emacs-lisp
@@ -1939,7 +1572,3 @@ Extends ~saveplace-mode~ with support for PDFs using ~pdf-tools~
 (use-package saveplace-pdf-view)
 #+END_SRC
  
-* Process Elpaca Queue
-#+BEGIN_SRC emacs-lisp
-(elpaca-process-queues)
-#+END_SRC

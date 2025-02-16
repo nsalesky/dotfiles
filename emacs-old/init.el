@@ -1,5 +1,3 @@
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-
 (setq native-comp-deferred-compilation t)
 
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
@@ -9,7 +7,7 @@
       read-process-output-max (* 1024 1024))
 
 (tool-bar-mode -1)
-(menu-bar-mode -1)
+(menu-bar-mode 1)
 (scroll-bar-mode -1)
 (tooltip-mode -1)
 (set-fringe-mode 10)
@@ -22,54 +20,16 @@
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-(defvar elpaca-installer-version 0.6)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                 ((zerop (call-process "git" nil buffer t "clone"
-                                       (plist-get order :repo) repo)))
-                 ((zerop (call-process "git" nil buffer t "checkout"
-                                       (or (plist-get order :ref) "--"))))
-                 (emacs (concat invocation-directory invocation-name))
-                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                 ((require 'elpaca))
-                 ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-(elpaca elpaca-use-package
-        ;; Enable :elpaca use-package keyword
-        (elpaca-use-package-mode)
-        ;; Assume :elpaca t unless otherwise specified
-        (setq elpaca-use-package-by-default t))
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
 
-;; Upgrade built-in packages
-(elpaca transient)
-
-;; Block until current queue processed
-(elpaca-wait)
+(require 'use-package-ensure)
+(setq use-package-always-pin  "melpa"
+      use-package-always-ensure t
+      use-package-compute-statistics t)
 
 (use-package exec-path-from-shell
   :config
@@ -105,18 +65,18 @@
 ;; 1 space at a time
 (setq backward-delete-char-untabify-method 'hungry)
 
-;; Keep track of recently-opened files
-(use-package recentf
-  :elpaca nil
-  :config
-  (recentf-mode 1)
-  :custom
-  (recentf-max-menu-items 5000)
-  (recentf-max-saved-items 10000)
-  :bind
-  ("C-x C-r" . consult-recent-file))
-  ;; :general
-  ;; (ns/leader-def "fr" 'consult-recent-file))
+  ;; Keep track of recently-opened files
+  (use-package recentf
+    :ensure nil
+    :config
+    (recentf-mode 1)
+    :custom
+    (recentf-max-menu-items 5000)
+    (recentf-max-saved-items 10000)
+    :bind
+    ("C-x C-r" . consult-recent-file))
+    ;; :general
+    ;; (ns/leader-def "fr" 'consult-recent-file))
 
 (use-package ace-window
   :bind ("M-o" . ace-window))
@@ -137,7 +97,7 @@
   (keymap-global-set "M-g j" 'dumb-jump-hydra/body))
 
 (use-package emacs
-  :elpaca nil
+  :ensure nil
   :custom
   (scroll-margin 5)
   (ring-bell-function 'ignore)
@@ -146,14 +106,14 @@
   (global-visual-line-mode 1))
 
 (use-package saveplace
-  :elpaca nil
+  :ensure nil
   :unless noninteractive
   :config
   (setq save-place-limit 1000)
   (save-place-mode))
 
 (use-package savehist
-  :elpaca nil
+  :ensure nil
   :unless noninteractive
   :defer 1
   :config
@@ -182,14 +142,12 @@
 (winner-mode 1)
 
 (use-package display-line-numbers-mode
-  :elpaca nil
+  :ensure nil
   :custom
   (display-line-numbers-type 'relative)
   :hook
   (prog-mode . display-line-numbers-mode)
   (markdown-mode . display-line-numbers-mode))
-
-(elpaca-wait)
 
 (setq-default frame-title-format '("GNU Emacs"))
 
@@ -220,7 +178,7 @@
   :config
   (load-theme 'doom-one t))
 
-(use-package ef-themes
+(use-package ef-themes :disabled t
   :config
   (setq ef-themes-headings ; read the manual's entry or the doc string
       '((0 . (variable-pitch light 1.9))
@@ -415,10 +373,6 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-(use-package aggressive-indent
-  :hook
-  (emacs-lisp-mode-hook . aggressive-indent-mode))
-
 (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
 
@@ -434,13 +388,6 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.3))
-
-(use-package olivetti
-  :custom
-  (olivetti-body-width 110)
-  (olivetti-style t))
-  ;; :hook
-  ;; (org-mode . olivetti-mode))
 
 (use-package iedit
   :bind
@@ -458,12 +405,12 @@
   ("C-e" . mwim-end))
 
 (use-package dired
-  :elpaca nil
+  :ensure nil
   :custom
   (dired-kill-when-opening-new-dired-buffer t))
 
 (use-package tab-bar
-  :elpaca nil
+  :ensure nil
   :init
   (tab-bar-mode)
   :custom
@@ -476,7 +423,7 @@
 ;; TODO set up personal access token personal to work with pull requests from Emacs  :after magit)
 
 (use-package org
-  :elpaca nil
+  :ensure nil
   :bind
   ("C-c l" . org-store-link)
   :hook (org-mode . org-indent-mode)
@@ -529,17 +476,13 @@
   ;; (:keymaps 'org-mode-map :states '(normal emacs visual)
   ;;   "SPC m t" '(org-babel-tangle :which-key "Tangle current file")))
 
-(use-package org-appear
-  :elpaca (org-appear :type git :host github :repo "awth13/org-appear")
-  :hook (org-mode . org-appear-mode))
-
 (defun ns/org-agenda-reload-files ()
   (interactive)
   (message "Reloading agenda files")
   (setq org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$")))
 
 (use-package org-agenda
-  :elpaca nil
+  :ensure nil
   :custom
   (org-agenda-files (directory-files-recursively "~/Documents/notes/agenda/" "\\.org$"))
 
@@ -606,108 +549,32 @@
   :hook
   (org-mode . org-superstar-mode))
 
-(use-package emacsql-sqlite-builtin)
-
-(use-package org-roam
-  :diminish
-  :bind
-  (:prefix-map ns/notes-prefix-map
-               :prefix "C-c n"
-               ("l" . org-roam-buffer-toggle)
-               ("f" . org-roam-node-find)
-               ("g" . org-roam-graph)
-               ("i" . org-roam-node-insert)
-               ("c" . org-roam-capture)
-               ;; Dailies
-               ("d" . org-roam-dailies-goto-today)
-               ("j" . org-roam-dailies-capture-today))
-  :custom
-  (org-roam-directory (file-truename "~/Documents/notes/"))
-  (org-roam-file-extensions '("org" "md"))
-  (org-roam-dailies-directory "logs")
-  (org-roam-database-connector 'sqlite-builtin)
-  (org-roam-capture-templates
-   '(("d" "default" plain (file "~/Documents/notes/capture-templates/default.org")
-      :target (file "${slug}.org")
-      :unnarrowed t)
-     ("r" "Rez" plain (file "~/Documents/notes/capture-templates/rez.org")
-      :target (file "${slug}.org")
-      :unnarrowed t)
-     ("p" "Project" plain (file "~/Documents/notes/capture-templates/project.org")
-      :target (file "${slug}.org")
-      :unnarrowed t)
-     ("7" "Weekly" plain (file "~/Documents/notes/capture-templates/weekly.org")
-      :target (file "logs/${slug}.org")
-      :unnarrowed t)))
-  (org-roam-dailies-capture-templates
-      '(("d" "default" plain
-         (file "~/Documents/notes/capture-templates/daily.org")
-         :target (file "%<%Y-%m-%d>.org"))))
-  :init
-  (setq org-roam-v2-ack t)
-  :config
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-enable))
-
-(use-package consult-org-roam
-  :diminish
-  :after org-roam
-  :init
-  (require 'consult-org-roam)
-  (consult-org-roam-mode 1)
-  :custom
-  (consult-org-roam-grep-func #'consult-ripgrep)
-  (consult-org-roam-buffer-narrow-key ?r)
-  (consult-org-roam-buffer-after-buffers nil)
-  :config
-  ;; Eventually suppress previewing for certain functions
-  (consult-customize
-   consult-org-roam-forward-links
-   :preview-key (kbd "M-."))
-  :bind
-  ;; Define some convenient keybindings as an addition
-  ("C-c n f" . consult-org-roam-file-find)
-  ("C-c n b" . consult-org-roam-backlinks)
-  ("C-c n l" . consult-org-roam-forward-links)
-  ("C-c n s" . consult-org-roam-search))
-
-(use-package org-roam-ui
-  :elpaca
-    (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
-    :after org-roam
-;;  :hook (after-init . org-roam-ui-mode)
-    :custom
-    (org-roam-ui-sync-theme t)
-    (org-roam-ui-follow t)
-    (org-roam-ui-update-on-save t)
-    (org-roam-ui-open-on-start t))
-
 (keymap-global-set "M-&" 'with-editor-async-shell-command)
 
-(use-package vterm
-  :custom
-  (vterm-shell "fish")
-  (vterm-max-scrollback 10000))
+  (use-package vterm
+    :custom
+    (vterm-shell "fish")
+    (vterm-max-scrollback 10000))
 
-(use-package multi-vterm
-  :bind
-  (:prefix-map ns/multi-vterm-prefix-map
-               :prefix "C-c v"
-               ("v" . multi-vterm)
-               ("C-p" . multi-vterm-prev)
-               ("p" . multi-vterm-prev)
-               ("C-n" . multi-vterm-next)
-               ("n" . multi-vterm-next)
-               ("t" . multi-vterm-dedicated-toggle)
-               ("p" . multi-vterm-project)
-               ("r" . multi-vterm-rename-buffer)))
-  ;; :general
-  ;; (ns/leader-def
-  ;;   "v" '(:ignore t :which-key "terminal")
-  ;;   "vv" '(multi-vterm :which-key "open new term")
-  ;;   "vp" '(multi-vterm-prev :which-key "prev term")
-  ;;   "vn" '(multi-vterm-next :which-key "next term")
-  ;;   "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
+  (use-package multi-vterm
+    :bind
+    (:prefix-map ns/multi-vterm-prefix-map
+                 :prefix "C-c v"
+                 ("v" . multi-vterm)
+                 ("C-p" . multi-vterm-prev)
+                 ("p" . multi-vterm-prev)
+                 ("C-n" . multi-vterm-next)
+                 ("n" . multi-vterm-next)
+                 ("t" . multi-vterm-dedicated-toggle)
+                 ("p" . multi-vterm-project)
+                 ("r" . multi-vterm-rename-buffer)))
+    ;; :general
+    ;; (ns/leader-def
+    ;;   "v" '(:ignore t :which-key "terminal")
+    ;;   "vv" '(multi-vterm :which-key "open new term")
+    ;;   "vp" '(multi-vterm-prev :which-key "prev term")
+    ;;   "vn" '(multi-vterm-next :which-key "next term")
+    ;;   "vr" '(multi-vterm-rename-buffer :which-key "rename term")))
 
 (setq treesit-language-source-alist
    '((bash "https://github.com/tree-sitter/tree-sitter-bash")
@@ -732,7 +599,7 @@
 
 (customize-set-variable 'treesit-font-lock-level 4)
 
-(use-package jsonrpc :elpaca t)
+(use-package jsonrpc)
 
 (use-package eglot
   :bind
@@ -760,8 +627,8 @@
                '(svelte-mode . ("svelteserver" "--stdio"))))
 
 (use-package corfu
-  :elpaca (corfu :files (:defaults "extensions/*")
-                   :includes (corfu-info corfu-history))
+  ;; :elpaca (corfu :files (:defaults "extensions/*")
+  ;;                  :includes (corfu-info corfu-history))
   :bind
   (:map corfu-map
         ("C-n" . corfu-next)
@@ -815,28 +682,11 @@
   (add-to-list 'completion-at-point-functions #'my-cape-dabbrev-accept-all))
   
 
-(use-package kind-icon
+(use-package kind-icon :disabled t
   :custom
   (kind-icon-default-face 'corfu-default)
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
-(use-package dape
-  :hook
-  ;; Save breakpoints on quit
-  (kill-emacs . dape-breakpoint-save)
-  ;; Load breakpoints on startup
-  (after-init . dape-breakpoint-load)
-
-  :config
-  ;; Save buffers on startup, useful for interpreted languages
-  (add-hook 'dape-on-start-hooks (lambda () (save-some-buffers t t))))
-
-  ;; custom debug adapter configs
-  ;; (add-to-list 'dape-configs
-  ;;              (lldb-vscode modes
-  ;;             (c-mode c-ts-mode c++-mode c++-ts-mode rust-mode rust-ts-mode)
-  ;;             ensure dape-ensure-command command-cwd dape-command-cwd command "lldb-vscode" :type "lldb-vscode" :cwd "." :program "a.out")
 
 (use-package format-all)
   ;:hook
@@ -859,7 +709,7 @@
   (prog-mode . ws-butler-mode))
 
 (use-package re-builder
-  :elpaca nil
+  :ensure nil
   :custom
   (reb-re-syntax 'string))
 
@@ -888,15 +738,8 @@
   :custom
   (inferior-lisp-program "sbcl"))
 
-(use-package rgbds-mode
-  :elpaca (rgbds-mode :type git :host github :repo "japanoise/rgbds-mode")
-  :mode ("\\.rgbasm\\'" "\\.rgbinc\\'"))
-
-(use-package geiser)
-(use-package geiser-guile)
-
 (use-package go-ts-mode
-  :elpaca nil
+  :ensure nil
   :mode "\\.go\\'"
   :hook (go-ts-mode . eglot-ensure)
   :custom
@@ -908,7 +751,7 @@
   ;; (async-shell-command (concat "pdflatex " (buffer-file-name))))
 
 (use-package tex-mode
-  :elpaca nil
+  :ensure nil
   :hook (latex-mode . (lambda () (add-hook 'after-save-hook #'ns/compile-tex-doc nil t))))
 
 (use-package markdown-mode
@@ -950,12 +793,6 @@
    'org-src-lang-modes
    '("plantuml" . plantuml)))
 
-(use-package protobuf-mode
-  :elpaca (:repo "protocolbuffers/protobuf"
-           :files ("editors/protobuf-mode.el")
-           :main "editors/protobuf-mode.el")
-  :mode "\\.proto\\'")
-
 (use-package python-mode
   :hook (python-mode . eglot-ensure)
   ;; :hook (python-mode . (lambda ()
@@ -979,7 +816,7 @@
   web-mode "Svelte"
   "Major mode for Svelte.")
 
-(use-package svelte-mode :elpaca nil
+(use-package svelte-mode :ensure nil
   :hook (svelte-mode . eglot-ensure)
   :mode "\\.svelte\\'")
 
@@ -989,17 +826,8 @@
   :config
   (setq typescript-indent-level 4))
 
-(use-package typst-ts-mode
-  :after consult-imenu
-  :elpaca (:type git :host sourcehut :repo "meow_king/typst-ts-mode")
-  :config
-  (add-to-list 'consult-imenu-config
-               '((typst-ts-mode :toplevel "Headings" :types
-                                ((?h "Headings" typst-ts-markup-header-face)
-                                 (?f "Functions" font-lock-function-name-face))))))
-
 (use-package ruby-mode
-  :elpaca nil)
+  :ensure nil)
 
 (use-package inf-ruby) ;; Interact with a Ruby REPL
 
@@ -1055,27 +883,6 @@
     ;; :bind
     ;; ("C-c h" . ns/toggle-web-mode))
 
-(require 'transient)
-
-(define-prefix-command 'ns/files-map)
-(keymap-global-set "C-c f" 'ns/files-map)
-
-(transient-define-prefix ns/visit-note-transient ()
-  "Visit common note files."
-  ["Visit common note files"
-   ["Agenda"
-    ("a" "agenda.org" (lambda () (interactive) (find-file (expand-file-name "agenda.org" org-directory))))
-    ("p" "projects.org" (lambda () (interactive) (find-file (expand-file-name "projects.org" org-directory))))
-    ("i" "inbox.org" (lambda () (interactive) (find-file (expand-file-name "inbox.org" org-directory))))
-    ]
-   ["Config"
-    ("c" "config.org" (lambda () (interactive) (find-file (expand-file-name "config.org" user-emacs-directory))))
-    ("I" "init.el" (lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))))
-    ]
-   ])
-
-(define-key 'ns/files-map (kbd "f") 'ns/visit-note-transient)
-
 (defun ns/sudo-find-file (filename)
   (interactive "F")
   (find-file (concat "/sudo::"
@@ -1088,5 +895,3 @@
   (pdf-loader-install))
 
 (use-package saveplace-pdf-view)
-
-(elpaca-process-queues)
