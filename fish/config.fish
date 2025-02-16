@@ -31,7 +31,7 @@ end
 
 direnv hook fish | source
 zoxide init fish | source
-# starship init fish | source
+starship init fish | source
 
 # opam configuration
 # source /Users/nsalesky/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
