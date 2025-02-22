@@ -1,6 +1,9 @@
 
 ;;; package.el
 
+;; Enable Melpa
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 (package-refresh-contents)
 
@@ -70,16 +73,26 @@
 (use-package emacs
   :ensure nil
   :hook
+  ;; Show line numbers
   (prog-mode . display-line-numbers-mode)
   :custom
   (idle-update-delay 1.0) ; Update the UI a bit slower
-  (use-short-answers t)) ; use "y"/"n" instead of "yes"/"no"
-  
+  (use-short-answers t) ; use "y"/"n" instead of "yes"/"no"
+  :config
+  ;; Configure fonts
+  (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 160))
 
-; Show line numbers
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+(use-package catppuccin-theme
+  :ensure t
+  :custom
+  (catppuccin-flavor 'macchiato)
+  :config
+  (load-theme 'catppuccin t))
 
-(load-theme 'modus-vivendi)
+(use-package rainbow-delimiters
+  :ensure t
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 
 ;;; Indent and formatting
 
@@ -101,7 +114,7 @@
 (use-package corfu
   :ensure t
   :custom
-  (corfu-popupinfo-delay (1.0 . 0.5))
+  (corfu-popupinfo-delay '(1.0 0.5))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode))
@@ -110,7 +123,7 @@
   :ensure nil
   :custom
   (tab-always-indent 'complete)
-  (text-mode-ispell-word-completion nil)
+  (text-mode-ispell-word-completion nil))
   
 
 ;;; Version control
