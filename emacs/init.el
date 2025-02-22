@@ -114,7 +114,7 @@
 (use-package corfu
   :ensure t
   :custom
-  (corfu-popupinfo-delay '(1.0 0.5))
+  (corfu-popupinfo-delay '(1.0 . 0.5))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode))
@@ -124,6 +124,13 @@
   :custom
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil))
+
+;; Snippets
+
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode))
   
 
 ;;; Version control
