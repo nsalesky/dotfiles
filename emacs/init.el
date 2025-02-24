@@ -1,4 +1,3 @@
-
 ;;; package.el
 
 ;; Enable Melpa
@@ -109,6 +108,12 @@
 
 ;;; Editor
 
+(use-package avy
+  :ensure t
+  :bind
+  ("C-;" . avy-goto-char-timer)
+  ("C-:" . avy-goto-char))
+
 ;; Completion
 
 (use-package corfu
@@ -136,4 +141,23 @@
 ;;; Version control
 
 (use-package magit
+  :ensure t)
+
+;; Programming
+
+(use-package eglot
+  :ensure nil
+  :config
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode) . ("basedpyright-langserver" "--stdio"))))
+
+;;; Python
+
+(use-package python-mode
+  :ensure nil
+  :hook (python-mode . eglot))
+
+;; Terminal emulator
+
+(use-package eat
   :ensure t)

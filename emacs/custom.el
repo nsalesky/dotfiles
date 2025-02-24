@@ -6,7 +6,7 @@
  '(custom-safe-themes
    '("7bea8c8136b95e40a3def71cc2953e29d2553078ba1730d8262f1dccc586fbab" default))
  '(package-selected-packages
-   '(yasnippet rainbow-delimiters catppuccin-theme orderless corfu magit marginalia consult vertico)))
+   '(eat avy yasnippet rainbow-delimiters catppuccin-theme orderless corfu magit marginalia consult vertico)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
