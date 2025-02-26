@@ -6,8 +6,20 @@
 (package-initialize)
 (package-refresh-contents)
 
+;;; Set up PATH
+(when (memq window-system '(mac ns x))
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (exec-path-from-shell-initialize)))
 
 ;;; Basic Emacs settings
+
+;; Startup
+(use-package emacs
+  :ensure nil
+  :custom
+  (inhibit-startup-screen t))
 
 ;; Don't clobber certain directories
 (use-package emacs
@@ -19,6 +31,7 @@
 
 ;; Backup files
 (use-package emacs
+  :ensure nil
   :custom
   ;; Avoid generating backups or lockfiles
   (create-lockfiles nil)
@@ -32,6 +45,13 @@
   (version-control t) ; Use version numbers for backup files
   (kept-new-versions 5)
   (kept-old-versions 5))
+
+;; Disable bell
+(use-package emacs
+  :ensure nil
+  :custom
+  (visible-bell t)
+  (ring-bell-function 'ignore))
 
 ;;; Minibuffer
 
@@ -60,12 +80,23 @@
   ("C-x b" . consult-buffer)
   ("M-y" . consult-yank-pop)
   ("M-s r" . consult-ripgrep)
-  ("M-g i" . consult-imenu))
+  ("M-g i" . consult-imenu)
+  ("C-x C-r" . consult-recent-file))
 
 (use-package marginalia
   :ensure t
   :config
   (marginalia-mode))
+
+(use-package which-key
+  :ensure nil
+  :config
+  (which-key-mode))
+
+(use-package recentf
+  :ensure nil
+  :config
+  (recentf-mode))
 
 ;;; User interface
 
@@ -130,12 +161,25 @@
   (tab-always-indent 'complete)
   (text-mode-ispell-word-completion nil))
 
-;; Snippets
+;;; Snippets
 
 (use-package yasnippet
   :ensure t
   :config
   (yas-global-mode))
+
+;;; Notes
+(use-package howm
+  :ensure t
+  :init
+  (setq
+   howm-directory "~/Documents/howm"
+   ;; howm-file-name-format "%Y-%m-%d-%H%M%S.md"
+   howm-view-title-header "#"))
+
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode))
   
 
 ;;; Version control

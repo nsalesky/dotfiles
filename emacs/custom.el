@@ -4,9 +4,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("7bea8c8136b95e40a3def71cc2953e29d2553078ba1730d8262f1dccc586fbab" default))
+   '("7bea8c8136b95e40a3def71cc2953e29d2553078ba1730d8262f1dccc586fbab"
+     default))
  '(package-selected-packages
-   '(eat avy yasnippet rainbow-delimiters catppuccin-theme orderless corfu magit marginalia consult vertico)))
+   '(avy catppuccin-theme consult corfu eat exec-path-from-shell howm
+         magit marginalia markdown-mode orderless rainbow-delimiters
+         vertico yasnippet)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
