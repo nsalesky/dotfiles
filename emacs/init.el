@@ -134,10 +134,65 @@
   (tab-width 4)
   (require-final-newline t)
   (comment-empty-lines t)
+  (tab-stop-list (number-sequence 4 200 4))
+  (indent-line-function 'insert-tab)
   ;; Kill ring
   (kill-do-not-save-duplicates t))
 
+;;; Repeat-mode
+
+(use-package emacs
+  :ensure nil
+  :config
+  (repeat-mode))
+
+(defun repeatize (keymap)
+  "Add `repeat-mode' support to a KEYMAP."
+  (map-keymap
+   (lambda (_key cmd)
+     (when (symbolp cmd)
+       (put cmd 'repeat-map keymap)))
+   (symbol-value keymap)))
+
+(use-package smerge-mode
+  :ensure nil
+  :config
+  (repeatize 'smerge-basic-map))
+
+(defvar-keymap flymake-repeat-map
+  :repeat t
+    "n" #'flymake-goto-next-error
+    "p" #'flymake-goto-prev-error
+    "M-n" #'flymake-goto-next-error
+    "M-p" #'flymake-goto-prev-error)
+
+(use-package flymake
+  :ensure nil
+  ;; :custom
+  ;; (flymake-show-diagnostics-at-end-of-line nil)
+  :bind
+  (:map flymake-mode-map
+   ("M-p" . flymake-goto-prev-error)
+   ("M-n" . flymake-goto-next-error)))
+
+(defvar-keymap isearch-repeat-map
+  :repeat t
+  "s" #'isearch-repeat-forward
+  "r" #'isearch-repeat-backward)
+
+
 ;;; Editor
+
+(use-package emacs
+  :ensure nil
+  :config
+  (delete-selection-mode))
+
+(use-package mwim
+  :ensure t
+  :bind
+  ("C-a" . mwim-beginning)
+  ("C-e" . mwim-end))
 
 (use-package avy
   :ensure t
@@ -200,6 +255,13 @@
 (use-package python-mode
   :ensure nil
   :hook (python-mode . eglot))
+
+;;; C
+(use-package emacs
+  :ensure nil
+  :custom
+  (c-default-style "linux")
+  (c-basic-offset 4))
 
 ;; Terminal emulator
 
