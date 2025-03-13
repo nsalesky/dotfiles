@@ -19,7 +19,10 @@
 (use-package emacs
   :ensure nil
   :custom
-  (inhibit-startup-screen t))
+  (inhibit-startup-screen t)
+  :config
+  (pixel-scroll-precision-mode)
+  (scroll-bar-mode -1))
 
 ;; Don't clobber certain directories
 (use-package emacs
@@ -80,6 +83,7 @@
   ("C-x b" . consult-buffer)
   ("M-y" . consult-yank-pop)
   ("M-s r" . consult-ripgrep)
+  ("M-s l" . consult-line)
   ("M-g i" . consult-imenu)
   ("C-x C-r" . consult-recent-file))
 
@@ -135,7 +139,7 @@
   (require-final-newline t)
   (comment-empty-lines t)
   (tab-stop-list (number-sequence 4 200 4))
-  (indent-line-function 'insert-tab)
+  ;; (indent-line-function 'insert-tab)
   ;; Kill ring
   (kill-do-not-save-duplicates t))
 
@@ -161,10 +165,10 @@
 
 (defvar-keymap flymake-repeat-map
   :repeat t
-    "n" #'flymake-goto-next-error
-    "p" #'flymake-goto-prev-error
-    "M-n" #'flymake-goto-next-error
-    "M-p" #'flymake-goto-prev-error)
+  "n" #'flymake-goto-next-error
+  "p" #'flymake-goto-prev-error
+  "M-n" #'flymake-goto-next-error
+  "M-p" #'flymake-goto-prev-error)
 
 (use-package flymake
   :ensure nil
@@ -172,8 +176,8 @@
   ;; (flymake-show-diagnostics-at-end-of-line nil)
   :bind
   (:map flymake-mode-map
-   ("M-p" . flymake-goto-prev-error)
-   ("M-n" . flymake-goto-next-error)))
+        ("M-p" . flymake-goto-prev-error)
+        ("M-n" . flymake-goto-next-error)))
 
 (defvar-keymap isearch-repeat-map
   :repeat t
@@ -235,7 +239,7 @@
 (use-package markdown-mode
   :ensure t
   :mode ("README\\.md\\'" . gfm-mode))
-  
+
 
 ;;; Version control
 
@@ -250,15 +254,76 @@
   (add-to-list 'eglot-server-programs
                '((python-mode python-ts-mode) . ("basedpyright-langserver" "--stdio"))))
 
+(use-package apheleia
+  :ensure t
+  :config
+  (apheleia-global-mode)
+  (setf (alist-get 'python-mode apheleia-mode-alist)
+        '(ruff-isort ruff))
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+        '(ruff-isort ruff)))
+
+;; Tree-sitter
+(use-package treesit
+  :ensure nil
+  :preface
+  (defun ns/setup-install-grammars ()
+    "Install Tree-sitter grammars if they are absent."
+    (interactive)
+    (dolist (grammar
+             ;; Note the version numbers. These are the versions that
+             ;; are known to work with Combobulate *and* Emacs.
+             '((css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.20.0"))
+               ;; (go . ("https://github.com/tree-sitter/tree-sitter-go" "v0.20.0"))
+               (html . ("https://github.com/tree-sitter/tree-sitter-html" "v0.20.1"))
+               (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.20.1" "src"))
+               (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.20.2"))
+               (markdown . ("https://github.com/ikatyang/tree-sitter-markdown" "v0.7.1"))
+               (python . ("https://github.com/tree-sitter/tree-sitter-python" "v0.20.4"))
+               (rust . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2"))
+               (toml . ("https://github.com/tree-sitter/tree-sitter-toml" "v0.5.1"))
+               ;; (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
+               (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
+               (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
+      (add-to-list 'treesit-language-source-alist grammar)
+      ;; Only install `grammar' if we don't already have it
+      ;; installed. However, if you want to *update* a grammar then
+      ;; this obviously prevents that from happening.
+      (unless (treesit-language-available-p (car grammar))
+        (treesit-install-language-grammar (car grammar)))))
+  (dolist (mapping
+           '((python-mode . python-ts-mode)
+             (css-mode . css-ts-mode)
+             (typescript-mode . typescript-ts-mode)
+             (js2-mode . js-ts-mode)
+             (bash-mode . bash-ts-mode)
+             (conf-toml-mode . toml-ts-mode)
+             (go-mode . go-ts-mode)
+             (css-mode . css-ts-mode)
+             (json-mode . json-ts-mode)
+             (js-json-mode . json-ts-mode)))
+    (add-to-list 'major-mode-remap-alist mapping))
+
+  :custom
+  (treesit-font-lock-level 4)
+
+  :config
+  (ns/setup-install-grammars))
+
 ;;; Python
 
 (use-package python-mode
   :ensure nil
-  :hook (python-mode . eglot))
+  :hook ((python-mode python-ts-mode) . eglot-ensure))
+
+(use-package flymake-ruff
+  :ensure t
+  :hook ((python-mode python-ts-mode) . eglot-ensure))
 
 ;;; C
-(use-package emacs
+(use-package c-mode
   :ensure nil
+  :hook (c-mode . eglot-ensure)
   :custom
   (c-default-style "linux")
   (c-basic-offset 4))
