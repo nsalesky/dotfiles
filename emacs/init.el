@@ -233,7 +233,7 @@
   :init
   (setq
    howm-directory "~/Documents/howm"
-   ;; howm-file-name-format "%Y-%m-%d-%H%M%S.md"
+   howm-file-name-format "%Y-%m-%d-%H%M%S.md"
    howm-view-title-header "#"))
 
 (use-package markdown-mode
