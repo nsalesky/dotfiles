@@ -2,19 +2,16 @@ return {
   {
     "Saghen/blink.cmp",
     lazy = false,
-    version = "v0.*",
-    dependencies = {
-      { "L3MON4D3/LuaSnip", version = "v2.*" },
-    },
+    version = "v1.*",
     opts = {
       appearance = {
         use_nvim_cmp_as_default = true,
         nerd_font_variant = "mono",
       },
       sources = {
-        default = { "lsp", "path", "luasnip", "buffer" },
-        cmdline = {},
+        default = { "lsp", "path", "snippets", "buffer" },
       },
+      cmdline = { enabled = false },
       signature = { enabled = true },
       completion = {
         documentation = {
@@ -36,23 +33,18 @@ return {
         ["<C-k>"] = { "snippet_forward", "fallback" },
         ["<C-j>"] = { "snippet_backward", "fallback" },
       },
-      snippets = {
-        expand = function(snippet)
-          require("luasnip").lsp_expand(snippet)
-        end,
-        active = function(filter)
-          if filter and filter.direction then
-            return require("luasnip").jumpable(filter.direction)
-          end
-          return require("luasnip").in_snippet()
-        end,
-        jump = function(direction)
-          require("luasnip").jump(direction)
-        end,
-      },
     },
     opts_extend = {
       "sources.default",
     },
+  },
+  {
+    "chrisgrieser/nvim-scissors",
+    dependencies = "nvim-telescope/telescope.nvim",
+    opts = function()
+      return {
+        snippetDir = vim.fn.stdpath("config") .. "/snippets",
+      }
+    end,
   },
 }

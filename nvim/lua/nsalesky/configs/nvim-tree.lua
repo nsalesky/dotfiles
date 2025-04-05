@@ -11,7 +11,7 @@ return {
     preserve_window_proportions = true,
   },
   git = {
-    enable = true,
+    enable = false,
   },
   filesystem_watchers = {
     enable = true,
@@ -62,6 +62,6 @@ return {
   filters = {
     dotfiles = false,
     git_ignored = true,
-    custom = { "^\\.git", ".DS_Store" },
+    custom = { "^\\.git$", ".DS_Store" },
   },
 }

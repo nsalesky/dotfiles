@@ -22,6 +22,8 @@ return {
     vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "Diagnostics" })
     vim.keymap.set("n", "<leader>sc", builtin.colorscheme, { desc = "Color Scheme" })
 
+    vim.keymap.set("n", "<leader>cr", builtin.lsp_references, { desc = "References" })
+
     vim.keymap.set("n", "<leader>fs", function()
       require("telescope").extensions.live_grep_args.live_grep_args()
     end, { desc = "Search For Text" })

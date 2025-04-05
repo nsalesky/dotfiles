@@ -1,46 +1,31 @@
 return {
-  {
-    "folke/trouble.nvim",
-    enabled = false,
-    opts = {},
-    cmd = "Trouble",
-    keys = {
-      {
-        "<leader>xx",
-        "<cmd>Trouble diagnostics toggle<cr>",
-        desc = "Diagnostics (Trouble)",
-      },
-      {
-        "<leader>xX",
-        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-        desc = "Buffer Diagnostics (Trouble)",
-      },
-      {
-        "<leader>cs",
-        "<cmd>Trouble symbols toggle focus=false<cr>",
-        desc = "Symbols (Trouble)",
-      },
-      {
-        "<leader>cl",
-        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-        desc = "LSP Definitions / references / ... (Trouble)",
-      },
-      {
-        "<leader>xL",
-        "<cmd>Trouble loclist<cr>",
-        desc = "Location List (Trouble)",
-      },
-      {
-        "<leader>xQ",
-        "<cmd>Trouble qflist toggle<cr>",
-        desc = "Quickfix List (Trouble)",
-      },
-    },
-  },
   -- {
   --   "nsalesky/runnables.nvim",
   --   dir = "~/Projects/neovim/runnables.nvim",
   --   lazy = false,
   --   opts = {},
   -- },
+  {
+    "axelvc/template-string.nvim",
+    ft = { "html", "typescript", "javascript", "typescriptreact", "javascriptreact", "vue", "svelte", "python", "cs" },
+    opts = {
+      filetypes = {
+        "html",
+        "typescript",
+        "javascript",
+        "typescriptreact",
+        "javascriptreact",
+        "vue",
+        "svelte",
+        "python",
+        "cs",
+      },
+      remove_template_string = true,
+      restore_quotes = {
+        normal = [[']],
+        python = [[']],
+        jsx = [["]],
+      },
+    },
+  },
 }
